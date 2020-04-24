@@ -1,0 +1,117 @@
+/* MOBILE AND GLOBAL STYLES */
+
+/* applies to screens smaller than 500px (first breakpoint) */
+/* and above unless overwritten below */
+/* ============ Google fonts =========== */
+@import url("https://fonts.googleapis.com/css2?family=Fredoka+One&family=Roboto+Slab&display=swap");
+/* ===================================== */
+
+/* ============== CSS VARIABLES ======== */
+:root {
+	--main-color: #fff;
+	--second-color: #22223a;
+	--third-color: #d56c2c;
+	--fourth-color: #29414d7e;
+}
+/* ===================================== */
+
+/* ============== CSS Reset ============ */
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	list-style: none;
+	text-decoration: none;
+}
+/* ===================================== */
+
+/* ============ Base styles ============ */
+body,
+html {
+	background: var(--second-color);
+	min-height: 100vh;
+	overflow-x: hidden;
+	font-family: "Roboto Slab", sans-serif;
+	color: var(--main-color);
+}
+
+a {
+	color: black;
+}
+
+/* - Website layout
+ -----------------------*/
+.layout {
+	width: 100%;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	gap: 20px;
+	min-height: 100vh;
+}
+.layout > * {
+	border: 2px solid #f08c00;
+	background-color: #ffec99;
+	border-radius: 5px;
+	padding: 10px;
+	color: black;
+}
+/* - Home page layout
+-------------------- */
+
+main {
+	width: 100%;
+	display: grid;
+	grid-auto-columns: 1fr 3fr;
+	gap: 10px;
+	grid-template-areas:
+		"search slider"
+		"cat items"
+		"cat items";
+}
+
+.search {
+	grid-area: search;
+}
+
+.categories {
+	grid-area: cat;
+}
+
+.slider {
+	grid-area: slider;
+}
+
+.items {
+	grid-area: items;
+}
+
+/* - NavBar
+---------------------- */
+
+nav ul {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+/* TABLET STYLES */
+
+@media screen and (min-width: 500px) {
+	/* applies to screens wider than 499px */
+
+	body {
+		background: #cfc;
+	}
+}
+
+/* DESKTOP STYLES */
+
+@media screen and (min-width: 1000px) {
+	/* applies to screens wider than 999px */
+
+	body {
+		background: #ccf;
+	}
+}
