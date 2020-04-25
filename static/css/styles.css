@@ -9,9 +9,9 @@
 /* ============== CSS VARIABLES ======== */
 :root {
 	--main-color: #fff;
-	--second-color: #22223a;
-	--third-color: #d56c2c;
-	--fourth-color: #29414d7e;
+	--second-color: #425664;
+	--third-color: #f6f4f2;
+	--fourth-color: #c6ad8f;
 }
 /* ===================================== */
 
@@ -32,13 +32,14 @@ body,
 html {
 	background: var(--second-color);
 	min-height: 100vh;
-	overflow-x: hidden;
+	/* overflow-x: hidden; */
 	font-family: "Roboto Slab", sans-serif;
 	color: var(--main-color);
 }
 
 a {
 	color: black;
+	text-decoration: none;
 }
 
 /* - Website layout
@@ -47,23 +48,22 @@ a {
 	width: 100%;
 	display: grid;
 	grid-template-rows: auto 1fr auto;
-	gap: 20px;
 	min-height: 100vh;
 }
 .layout > * {
 	border: 2px solid #f08c00;
 	background-color: #ffec99;
 	border-radius: 5px;
-	padding: 10px;
 	color: black;
 }
 /* - Home page layout
 -------------------- */
 
-main {
+.homepage {
 	width: 100%;
+	height: 100%;
 	display: grid;
-	grid-auto-columns: 1fr 3fr;
+	grid-template-columns: 1fr 3fr;
 	gap: 10px;
 	grid-template-areas:
 		"search slider"
@@ -90,20 +90,72 @@ main {
 /* - NavBar
 ---------------------- */
 
-nav ul {
+.navbar {
 	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
+	flex-wrap: wrap;
+	position: -webkit-sticky; /* for Safari */
+	position: sticky;
+	top: 0;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-start;
+	background-color: var(--third-color);
+	color: var(--second-color);
+	width: 100%;
+}
+
+.navbar-links {
+	display: none;
+	width: 100%;
+}
+
+.navbar-links.active {
+	display: flex;
+}
+
+.navbar-links ul {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	background-color: var(--main-color);
+}
+.navbar-links li {
+	text-align: center;
+}
+
+.navbar-links li a {
+	display: block;
+	padding: 1.5rem;
+}
+
+.brand-name {
+	margin: 0.5rem;
+	font-size: 2rem;
+}
+
+.hamb-menu {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 30px;
+	height: 20px;
+	cursor: pointer;
+}
+
+.hamb-menu .bar {
+	height: 4px;
+	width: 100%;
+	background-color: var(--second-color);
+	border-radius: 15px;
 }
 
 /* TABLET STYLES */
 
 @media screen and (min-width: 500px) {
 	/* applies to screens wider than 499px */
-
-	body {
-		background: #cfc;
-	}
 }
 
 /* DESKTOP STYLES */
@@ -111,7 +163,33 @@ nav ul {
 @media screen and (min-width: 1000px) {
 	/* applies to screens wider than 999px */
 
-	body {
-		background: #ccf;
+	/* -Navbar
+  -------------- */
+	.navbar {
+		flex-direction: row;
+		align-items: center;
+	}
+	.navbar-links {
+		display: flex;
+		height: 100%;
+		width: auto;
+	}
+
+	.navbar-links ul {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+		background-color: var(--third-color);
+	}
+
+	.navbar-links li a {
+		display: block;
+		padding: 1rem;
+	}
+	.navbar-links li:hover {
+		background-color: var(--main-color);
+	}
+	.hamb-menu {
+		display: none;
 	}
 }

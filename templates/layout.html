@@ -1,41 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        {% if title %}
-            <title> FYP - {{ title }} </title>
-        {% else %}
-            <title> FYP </title>
-        {% endif %}
+		{% if title %}
+		<title>FYP - {{ title }}</title>
+		{% else %}
+		<title>FYP</title>
+		{% endif %}
 
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+		<link
+			rel="stylesheet"
+			href="{{ url_for('static', filename='css/styles.css') }}"
+		/>
+	</head>
 
-    </head>
+	<body>
+		<div class="layout">
+			<header>
+				<nav class="navbar">
+					<div class="brand-name">Brand Name</div>
+					<div class="hamb-menu">
+						<span class="bar"></span>
+						<span class="bar"></span>
+						<span class="bar"></span>
+					</div>
+					<div class="navbar-links">
+						<ul>
+							<li><a href="#">Home</a></li>
+							<li><a href="#">My Account</a></li>
+							<li><a href="#">Login</a></li>
+							<li><a href="#">Register</a></li>
+							<li><a href="#">Support</a></li>
+							<li><a href="#">About</a></li>
+						</ul>
+					</div>
+				</nav>
+			</header>
 
-    <body>
-        <div class="layout">
-            <header>
-                <nav>
-                    <ul>
-                        <li><a href="">Link 1</a></li>
-                        <li><a href="">Link 2</a></li>
-                        <li><a href="">Link 3</a></li>
-                    </ul>
-                </nav>
-            </header>
+			<main>
+				{% block content %} {% endblock content %}
+			</main>
 
-            <main>
-                {% block content %}
-                {% endblock content %}
-            </main>
+			<footer>
+				<h1>Footer</h1>
+			</footer>
+		</div>
 
-            <footer>
-                <h1>Footer</h1>
-            </footer>
-        </div>
-
-        <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-    </body>
+		<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+	</body>
 </html>
