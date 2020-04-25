@@ -20,7 +20,7 @@
 		<div class="layout">
 			<header>
 				<nav class="navbar">
-					<div class="brand-name">Brand Name</div>
+					<div class="brand-name"><a href="{{ url_for("index") }}">Brand Name</a></div>
 					<div class="hamb-menu">
 						<span class="bar"></span>
 						<span class="bar"></span>
@@ -28,12 +28,12 @@
 					</div>
 					<div class="navbar-links">
 						<ul>
-							<li><a href="#">Home</a></li>
+							<li><a href="{{ url_for("index") }}">Home</a></li>
 							<li><a href="#">My Account</a></li>
-							<li><a href="#">Login</a></li>
-							<li><a href="#">Register</a></li>
+							<li><a href="{{ url_for("login") }}">Login</a></li>
+							<li><a href="{{ url_for("register") }}">Register</a></li>
 							<li><a href="#">Support</a></li>
-							<li><a href="#">About</a></li>
+							<li><a href="{{ url_for("about") }}">About</a></li>
 						</ul>
 					</div>
 				</nav>

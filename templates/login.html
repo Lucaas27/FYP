@@ -1,0 +1,38 @@
+{% extends "layout.html" %} 
+{% block content %}
+<div class="login-container">
+	<div class="bg-form">
+		<div class="login-avatar">
+			<img
+				src="{{ url_for('static', filename='img/login/avatar.png') }}"
+				alt="Login avatar picture"
+			/>
+		</div>
+		<form class="form-inputs" method="POST" action="">
+			{{form.hidden_tag()}}
+            <h3>Login</h3>
+            <hr>
+			<div>
+                {{form.email.label}} 
+                {{form.email (class="input-field")}}
+			</div>
+			<div>
+                {{form.password.label}} 
+                {{form.password (class="input-field")}}
+			</div>
+            <div>
+                {{form.submit(class="btn")}}
+            </div>
+            <small class="text-muted">
+                <a> Forgot your password? </a>
+            </small>
+		</form>
+        <div class="signup-banner">
+            <h2>New here?</h2>
+            <p>Sign up and discover great opportunities!</p>
+            <a class="btn" href="{{ url_for("register") }}">Sign up</a>
+        </div>
+	</div>
+</div>
+
+{% endblock content %}
