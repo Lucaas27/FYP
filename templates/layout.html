@@ -32,7 +32,7 @@
 							<li><a href="#">My Account</a></li>
 							<li><a href="{{ url_for("login") }}">Login</a></li>
 							<li><a href="{{ url_for("register") }}">Register</a></li>
-							<li><a href="#">Support</a></li>
+							<li><a href="#">Contact</a></li>
 							<li><a href="{{ url_for("about") }}">About</a></li>
 						</ul>
 					</div>
@@ -43,7 +43,7 @@
 				{% with messages = get_flashed_messages(with_categories=true) %}
 					{% if messages %}
 						{% for category, message in messages %}
-						<div class="alert alert-{{category}}">
+						<div class="alert {{category}}">
 							<h4>{{message}}</h4>
 						</div>
 						{% endfor %}

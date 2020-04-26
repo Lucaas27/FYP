@@ -7,20 +7,62 @@
             <h3>Sign up</h3>
             <hr>
             <div>
-                {{form.username.label}} 
-                {{form.username}}
+                {{form.username.label}}
+
+                {%if form.username.errors %} 
+                    {{form.username(class="invalid-input")}}
+                    <div class="invalid-feedback">
+                        {%for mistake in form.username.errors %}
+                            <span>{{ mistake }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{form.username}}
+                {%endif%}
             </div>
+
 			<div>
-                {{form.email.label}} 
-                {{form.email}}
+                {{form.email.label}}
+
+                {%if form.email.errors %} 
+                    {{form.email(class="invalid-input")}}
+                    <div class="invalid-feedback">
+                        {%for mistake in form.email.errors %}
+                            <span>{{ mistake }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{form.email}}
+                {%endif%}
 			</div>
+
 			<div>
-                {{form.password.label}} 
-                {{form.password}}
+                {{form.password.label}}
+
+                {%if form.password.errors %} 
+                    {{form.password(class="invalid-input")}}
+                    <div class="invalid-feedback">
+                        {%for mistake in form.password.errors %}
+                            <span>{{ mistake }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{form.password}}
+                {%endif%}
 			</div>
             <div>
-                {{form.confirm_password.label}} 
-                {{form.confirm_password}}
+                {{form.confirm_password.label}}
+
+                {%if form.confirm_password.errors %} 
+                    {{form.confirm_password(class="invalid-input")}}
+                    <div class="invalid-feedback">
+                        {%for mistake in form.confirm_password.errors %}
+                            <span>{{ mistake }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{form.confirm_password}}
+                {%endif%}
 			</div>
             <div>
                 {{form.submit(class="btn")}}
