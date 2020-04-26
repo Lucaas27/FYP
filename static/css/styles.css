@@ -40,22 +40,6 @@ a {
 	color: black;
 	text-decoration: none;
 }
-
-/* - Website layout
- -----------------------*/
-.layout {
-	width: 100%;
-	display: grid;
-	grid-template-rows: auto 1fr auto;
-	min-height: 100vh;
-	justify-items: center;
-	align-content: center;
-}
-.layout > * {
-	width: 100%;
-	height: 100%;
-}
-
 .btn {
 	padding: 0.7rem 1rem;
 	background-color: var(--fourth-color);
@@ -99,6 +83,57 @@ label {
 	width: 70%;
 	margin: 0 auto;
 }
+
+/* Alerts */
+
+.alert {
+	padding: 15px;
+	margin-bottom: 20px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	margin: 0.5rem 0;
+}
+
+.alert > p + p {
+	margin-top: 5px;
+}
+
+.alert > p,
+.alert > ul {
+	margin-bottom: 0;
+}
+
+.alert-success {
+	background-color: #dff0d8;
+	border-color: #d6e9c6;
+	color: #3c763d;
+}
+
+.alert-success hr {
+	border-top-color: #c9e2b3;
+}
+
+.alert-danger {
+	background-color: #f2dede;
+	border-color: #ebccd1;
+	color: #a94442;
+}
+
+/* - Website layout
+ -----------------------*/
+.layout {
+	width: 100%;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	min-height: 100vh;
+	justify-items: center;
+	align-content: center;
+}
+.layout > * {
+	width: 100%;
+	height: 100%;
+}
+
 /* - Home page layout
 -------------------- */
 
@@ -195,9 +230,9 @@ label {
 	border-radius: 15px;
 }
 
-/* - Login page
+/* - Login and Register page
 ---------------------- */
-.login-container {
+.page-container {
 	height: 100%;
 	min-width: 100%;
 	display: flex;
@@ -206,7 +241,7 @@ label {
 	justify-content: center;
 }
 
-.login-container .bg-form {
+.page-container .bg-form {
 	background-color: var(--third-color);
 	min-width: 70%;
 	height: 90%;
@@ -218,25 +253,25 @@ label {
 		"inputs signup";
 	justify-content: center;
 }
-.login-container .bg-form .login-avatar {
+.page-container .bg-form .login-avatar {
 	max-width: 25%;
 	grid-area: pic;
 	align-self: center;
 	justify-self: center;
 }
-.login-container .bg-form .login-avatar img {
+.page-container .bg-form .login-avatar img {
 	width: 100%;
 }
 
-.login-container .bg-form .form-inputs {
+.page-container .bg-form .form-inputs {
 	grid-area: inputs;
 }
 
-.login-container .bg-form .form-inputs h3 {
+.page-container .bg-form .form-inputs h3 {
 	text-transform: uppercase;
 	text-align: center;
 }
-.login-container .bg-form .form-inputs hr {
+.page-container .bg-form .form-inputs hr {
 	border: none;
 	height: 1px;
 	background-image: linear-gradient(
@@ -247,17 +282,17 @@ label {
 	);
 }
 
-.login-container .bg-form .form-inputs small {
+.page-container .bg-form .form-inputs small {
 	text-align: center;
 	display: block;
 	width: 100%;
 }
 
-.login-container .bg-form .form-inputs > * {
+.page-container .bg-form .form-inputs > * {
 	margin: 1rem 0;
 }
 
-.login-container .bg-form .signup-banner {
+.page-container .bg-form .signup-banner {
 	grid-area: signup;
 	background-image: url("../img/login/signup.jpg");
 	border-radius: 0px 20px 20px 0px;
@@ -275,6 +310,17 @@ label {
 
 .signup-banner > * {
 	margin: 0.5rem;
+}
+
+/* - Register page
+---------------------- */
+#register .bg-form {
+	background-color: var(--third-color);
+	min-width: 50%;
+	height: 90%;
+	border-radius: 20px;
+	display: grid;
+	grid-template-columns: 1fr;
 }
 /* TABLET STYLES */
 

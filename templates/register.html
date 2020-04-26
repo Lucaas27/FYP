@@ -1,5 +1,36 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} 
 {% block content %}
-<h1>register</h1>
+<div class="page-container" id="register">
+	<div class="bg-form">
+		<form class="form-inputs" method="POST" action="">
+			{{form.hidden_tag()}}
+            <h3>Sign up</h3>
+            <hr>
+            <div>
+                {{form.username.label}} 
+                {{form.username}}
+            </div>
+			<div>
+                {{form.email.label}} 
+                {{form.email}}
+			</div>
+			<div>
+                {{form.password.label}} 
+                {{form.password}}
+			</div>
+            <div>
+                {{form.confirm_password.label}} 
+                {{form.confirm_password}}
+			</div>
+            <div>
+                {{form.submit(class="btn")}}
+            </div>
+            <small class="text-muted">
+                Already a member? <a href="{{ url_for("login") }}"> Sign in </a>
+            </small>
+		</form>
+        {# <div class="signup-banner"></div> #}
+	</div>
+</div>
 
 {% endblock content %}
