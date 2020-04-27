@@ -38,7 +38,7 @@ class Listing(db.Model):
     end_time = db.Column(db.Time, default=time, nullable=False)
     listing_views = db.Column(db.Integer, default=0)
     image_file = db.Column(db.String(20), nullable=False,
-                           default='default.jpg')
+                           default='default-listing.jpg')
     category = db.Column(db.String(50), unique=False, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     available = db.Column(db.Boolean, default=True, nullable=False)
