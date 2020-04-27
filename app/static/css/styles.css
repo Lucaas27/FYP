@@ -1,0 +1,406 @@
+/* MOBILE AND GLOBAL STYLES */
+
+/* applies to screens smaller than 500px (first breakpoint) */
+/* and above unless overwritten below */
+/* ============ Google fonts =========== */
+@import url("https://fonts.googleapis.com/css2?family=Raleway&display=swap");
+/* ===================================== */
+
+/* ============== CSS VARIABLES ======== */
+:root {
+	--main-color: #fff;
+	--second-color: #425664;
+	--third-color: #f6f4f2;
+	--fourth-color: #c6ad8f;
+}
+
+/* ===================================== */
+
+/* ============== CSS Reset ============ */
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	list-style: none;
+	text-decoration: none;
+}
+
+/* ===================================== */
+
+/* ============ Base styles ============ */
+body,
+html {
+	background: var(--main-color);
+	min-height: 100vh;
+	width: 100%;
+	/* overflow-x: hidden; */
+	color: var(--second-color);
+	font-family: "Raleway", sans-serif;
+}
+
+a {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
+}
+a:hover {
+	text-decoration: none;
+	color: var(--second-color);
+}
+ul {
+	margin: 0;
+}
+.btn {
+	padding: 0.7rem 1rem;
+	background-color: var(--fourth-color);
+	border-radius: 20px;
+	max-width: 100%;
+	color: var(--main-color);
+	filter: drop-shadow(5px 5px 1px rgba(0, 0, 0, 0.25));
+	cursor: pointer;
+	text-transform: uppercase;
+	display: block;
+	text-align: center;
+	border: none;
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: 0.8rem;
+	text-overflow: ellipsis;
+}
+
+.btn:hover {
+	background-color: var(--main-color);
+	color: var(--second-color);
+	transform: translateX(13px);
+}
+
+input {
+	display: block;
+	height: 35px;
+	width: 70%;
+	margin: 0.5rem auto;
+	border: none;
+	padding-left: 20px;
+	background: transparent;
+	border-bottom: 1px solid black;
+	border-radius: 15px;
+}
+
+input:hover,
+input:focus,
+input:active:focus {
+	color: var(--second-color);
+	outline: none;
+	border-bottom: 1.5px solid var(--fourth-color);
+	transform: translateY(3px);
+}
+
+/* label {
+	display: block;
+	width: 70%;
+	margin: 0 auto;
+} */
+
+/* Form alert styles */
+.invalid-feedback {
+	display: block;
+	width: 70%;
+	margin: 0.25rem auto 0 auto;
+	font-size: 80%;
+	color: #dc3545;
+}
+
+/* - Website layout
+ -----------------------*/
+.layout {
+	width: 100%;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	min-height: 100vh;
+	justify-items: center;
+	align-content: center;
+}
+
+.layout > * {
+	width: 100%;
+	height: 100%;
+}
+
+/* - Home page layout
+-------------------- */
+
+.homepage {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr 3fr;
+	gap: 1rem;
+	grid-template-areas:
+		"search slider"
+		"cat items"
+		"cat items";
+}
+
+.search {
+	grid-area: search;
+}
+
+.categories {
+	grid-area: cat;
+}
+
+.slider {
+	grid-area: slider;
+}
+
+.items {
+	grid-area: items;
+}
+
+/* - NavBar
+---------------------- */
+
+.navbar {
+	display: flex;
+	flex-wrap: nowrap;
+	position: -webkit-sticky;
+	/* for Safari */
+	position: sticky;
+	top: 0;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-start;
+	background-color: var(--third-color);
+	color: var(--second-color);
+	min-width: 100%;
+	padding: 0;
+}
+
+.navbar-links {
+	display: none;
+	width: 100%;
+}
+
+.navbar-links.active {
+	display: flex;
+}
+
+.navbar-links ul {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	background-color: var(--main-color);
+}
+
+.navbar-links li {
+	text-align: center;
+	display: block;
+}
+
+.navbar-links li a {
+	display: block;
+	padding: 1.5rem;
+}
+.brand-name {
+	margin: 0.5rem;
+	font-size: 2rem;
+}
+
+.hamb-menu {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 30px;
+	height: 20px;
+}
+
+.hamb-menu .bar {
+	height: 4px;
+	width: 100%;
+	background-color: var(--second-color);
+	border-radius: 15px;
+}
+
+/* - Login page
+---------------------- */
+.page-container {
+	height: 100%;
+	min-width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.page-container .bg-form {
+	background-color: var(--third-color);
+	min-width: 70%;
+	min-height: 95%;
+	border-radius: 20px;
+	display: grid;
+	grid-template-columns: 1fr 0.5fr;
+	grid-template-areas:
+		"pic signup"
+		"inputs signup";
+	justify-content: center;
+	margin-top: 0.25rem;
+}
+
+.page-container .bg-form .login-avatar {
+	max-width: 25%;
+	grid-area: pic;
+	align-self: center;
+	justify-self: center;
+}
+
+.page-container .bg-form .login-avatar img {
+	width: 100%;
+}
+
+.page-container .bg-form .custom-inputs {
+	grid-area: inputs;
+}
+
+.page-container .bg-form .custom-inputs h3 {
+	text-transform: uppercase;
+	text-align: center;
+}
+
+.page-container .bg-form .custom-inputs hr {
+	border: none;
+	height: 1px;
+	background-image: linear-gradient(
+		to right,
+		rgba(0, 0, 0, 0),
+		rgba(0, 0, 0, 0.75),
+		rgba(0, 0, 0, 0)
+	);
+}
+
+.page-container .bg-form .custom-inputs small {
+	text-align: center;
+	display: block;
+	max-width: 100%;
+}
+
+.page-container .bg-form .custom-inputs > * {
+	margin: 1rem 0;
+}
+
+.page-container .bg-form .custom-inputs div label {
+	display: block;
+	width: 70%;
+	margin: 0 auto;
+}
+
+.page-container .bg-form .custom-inputs .custom-check {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	flex-wrap: nowrap;
+	width: 70%;
+	margin: auto;
+}
+
+.page-container .bg-form .custom-inputs .custom-check .custom-check-input {
+	order: 1;
+	height: 1rem;
+	max-width: 10%;
+	margin: 0;
+}
+
+.custom-check-input:hover,
+.custom-check-input:focus,
+.custom-check-input:active:focus {
+	transform: none;
+}
+
+.page-container .bg-form .custom-inputs .custom-check .custom-check-label {
+	order: 2;
+	max-width: 100%;
+	margin: 0 0 0 0.25rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.page-container .bg-form .signup-banner {
+	grid-area: signup;
+	background-image: url("../img/login/signup.jpg");
+	border-radius: 0px 20px 20px 0px;
+	background-size: cover;
+	opacity: 0.8;
+	height: 100%;
+	max-width: 100%;
+	color: var(--main-color);
+	text-align: center;
+	align-self: center;
+	display: grid;
+	align-content: center;
+	justify-items: center;
+}
+
+.signup-banner > * {
+	margin: 0.5rem;
+}
+
+/* - Register page
+---------------------- */
+#register .bg-form {
+	background-color: var(--third-color);
+	min-width: 50%;
+	min-height: 95%;
+	border-radius: 20px;
+	display: grid;
+	grid-template-columns: 1fr;
+}
+
+/* TABLET STYLES */
+
+@media screen and (min-width: 500px) {
+	/* applies to screens wider than 499px */
+}
+
+/* DESKTOP STYLES */
+
+@media screen and (min-width: 1000px) {
+	/* applies to screens wider than 999px */
+
+	/* -Navbar
+  -------------- */
+	.navbar {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.navbar-links {
+		display: flex;
+		height: 100%;
+		width: auto;
+	}
+
+	.navbar-links ul {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+		background-color: var(--third-color);
+	}
+
+	.navbar-links li a {
+		display: block;
+		padding: 1rem;
+	}
+
+	.navbar-links li:hover {
+		background-color: var(--main-color);
+	}
+
+	.hamb-menu {
+		display: none;
+	}
+}
