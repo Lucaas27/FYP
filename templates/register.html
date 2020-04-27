@@ -2,20 +2,38 @@
 {% block content %}
 <div class="page-container" id="register">
 	<div class="bg-form">
-		<form class="form-inputs" method="POST" action="">
+		<form class="custom-inputs" method="POST" action="">
 			{{form.hidden_tag()}}
             <h3>Sign up</h3>
             <hr>
             <div>
-                {{form.username.label}}
+                {{form.full_name.label}}
 
-                {%if form.username.errors %} 
+                {%if form.full_name.errors %}
+
+                    {{form.full_name(class="invalid-input")}}
+                    <div class="invalid-feedback">
+                        {%for mistake in form.full_name.errors %}
+                            <span>{{ mistake }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{form.full_name}}
+                {%endif%}
+            </div>
+
+            <div>
+                {{form.username.label}}
+            
+                {%if form.username.errors %}
+
                     {{form.username(class="invalid-input")}}
                     <div class="invalid-feedback">
                         {%for mistake in form.username.errors %}
                             <span>{{ mistake }}</span>
                         {%endfor%}
                     </div>
+                    
                 {%else%}
                     {{form.username}}
                 {%endif%}

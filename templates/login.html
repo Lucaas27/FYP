@@ -8,7 +8,7 @@
 				alt="Login avatar picture"
 			/>
 		</div>
-		<form class="form-inputs" method="POST" action="">
+		<form class="custom-inputs" method="POST" action="">
 			{{form.hidden_tag()}}
             <h3>Login</h3>
             <hr>
@@ -42,9 +42,9 @@
                 {%endif%}
 			</div>
             
-            <div class="form-check">
-                {{form.remember_me.label(class="form-check-label")}}
-                {{form.remember_me(class="form-check-input")}}
+            <div class="custom-check">
+                {{form.remember_me.label(class="custom-check-label")}}
+                {{form.remember_me(class="custom-check-input")}}
             </div>
             <div>
                 {{form.submit(class="btn")}}

@@ -3,6 +3,7 @@
 /* applies to screens smaller than 500px (first breakpoint) */
 /* and above unless overwritten below */
 /* ============ Google fonts =========== */
+@import url("https://fonts.googleapis.com/css2?family=Raleway&display=swap");
 /* ===================================== */
 
 /* ============== CSS VARIABLES ======== */
@@ -12,6 +13,7 @@
 	--third-color: #f6f4f2;
 	--fourth-color: #c6ad8f;
 }
+
 /* ===================================== */
 
 /* ============== CSS Reset ============ */
@@ -24,6 +26,7 @@
 	list-style: none;
 	text-decoration: none;
 }
+
 /* ===================================== */
 
 /* ============ Base styles ============ */
@@ -34,12 +37,20 @@ html {
 	width: 100%;
 	/* overflow-x: hidden; */
 	color: var(--second-color);
+	font-family: "Raleway", sans-serif;
 }
 
 a {
 	color: black;
 	text-decoration: none;
 	cursor: pointer;
+}
+a:hover {
+	text-decoration: none;
+	color: var(--second-color);
+}
+ul {
+	margin: 0;
 }
 .btn {
 	padding: 0.7rem 1rem;
@@ -86,20 +97,13 @@ input:active:focus {
 	transform: translateY(3px);
 }
 
-label {
+/* label {
 	display: block;
 	width: 70%;
 	margin: 0 auto;
-}
+} */
 
 /* Form alert styles */
-
-.invalid-input {
-	display: block;
-	border-color: #dc3545;
-	box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-}
-
 .invalid-feedback {
 	display: block;
 	width: 70%;
@@ -108,27 +112,6 @@ label {
 	color: #dc3545;
 }
 
-.alert {
-	padding: 0.75rem 1.25rem;
-	margin-bottom: 1rem;
-	border: 1px solid transparent;
-	border-radius: 0.25rem;
-}
-
-.success {
-	color: #155724;
-	background-color: #d4edda;
-	border-color: #c3e6cb;
-}
-
-.danger {
-	color: #721c24;
-	background-color: #f8d7da;
-	border-color: #f5c6cb;
-}
-.text-muted {
-	color: #6c757d;
-}
 /* - Website layout
  -----------------------*/
 .layout {
@@ -139,6 +122,7 @@ label {
 	justify-items: center;
 	align-content: center;
 }
+
 .layout > * {
 	width: 100%;
 	height: 100%;
@@ -181,7 +165,8 @@ label {
 .navbar {
 	display: flex;
 	flex-wrap: nowrap;
-	position: -webkit-sticky; /* for Safari */
+	position: -webkit-sticky;
+	/* for Safari */
 	position: sticky;
 	top: 0;
 	flex-direction: column;
@@ -190,6 +175,7 @@ label {
 	background-color: var(--third-color);
 	color: var(--second-color);
 	min-width: 100%;
+	padding: 0;
 }
 
 .navbar-links {
@@ -207,15 +193,16 @@ label {
 	width: 100%;
 	background-color: var(--main-color);
 }
+
 .navbar-links li {
 	text-align: center;
+	display: block;
 }
 
 .navbar-links li a {
 	display: block;
 	padding: 1.5rem;
 }
-
 .brand-name {
 	margin: 0.5rem;
 	font-size: 2rem;
@@ -253,7 +240,7 @@ label {
 .page-container .bg-form {
 	background-color: var(--third-color);
 	min-width: 70%;
-	height: 90%;
+	min-height: 95%;
 	border-radius: 20px;
 	display: grid;
 	grid-template-columns: 1fr 0.5fr;
@@ -261,26 +248,30 @@ label {
 		"pic signup"
 		"inputs signup";
 	justify-content: center;
+	margin-top: 0.25rem;
 }
+
 .page-container .bg-form .login-avatar {
 	max-width: 25%;
 	grid-area: pic;
 	align-self: center;
 	justify-self: center;
 }
+
 .page-container .bg-form .login-avatar img {
 	width: 100%;
 }
 
-.page-container .bg-form .form-inputs {
+.page-container .bg-form .custom-inputs {
 	grid-area: inputs;
 }
 
-.page-container .bg-form .form-inputs h3 {
+.page-container .bg-form .custom-inputs h3 {
 	text-transform: uppercase;
 	text-align: center;
 }
-.page-container .bg-form .form-inputs hr {
+
+.page-container .bg-form .custom-inputs hr {
 	border: none;
 	height: 1px;
 	background-image: linear-gradient(
@@ -291,17 +282,23 @@ label {
 	);
 }
 
-.page-container .bg-form .form-inputs small {
+.page-container .bg-form .custom-inputs small {
 	text-align: center;
 	display: block;
 	max-width: 100%;
 }
 
-.page-container .bg-form .form-inputs > * {
+.page-container .bg-form .custom-inputs > * {
 	margin: 1rem 0;
 }
 
-.page-container .bg-form .form-inputs .form-check {
+.page-container .bg-form .custom-inputs div label {
+	display: block;
+	width: 70%;
+	margin: 0 auto;
+}
+
+.page-container .bg-form .custom-inputs .custom-check {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -309,19 +306,21 @@ label {
 	width: 70%;
 	margin: auto;
 }
-.page-container .bg-form .form-inputs .form-check .form-check-input {
+
+.page-container .bg-form .custom-inputs .custom-check .custom-check-input {
 	order: 1;
 	height: 1rem;
 	max-width: 10%;
 	margin: 0;
 }
-.form-check-input:hover,
-.form-check-input:focus,
-.form-check-input:active:focus {
+
+.custom-check-input:hover,
+.custom-check-input:focus,
+.custom-check-input:active:focus {
 	transform: none;
 }
 
-.page-container .bg-form .form-inputs .form-check .form-check-label {
+.page-container .bg-form .custom-inputs .custom-check .custom-check-label {
 	order: 2;
 	max-width: 100%;
 	margin: 0 0 0 0.25rem;
@@ -355,11 +354,12 @@ label {
 #register .bg-form {
 	background-color: var(--third-color);
 	min-width: 50%;
-	height: 95%;
+	min-height: 95%;
 	border-radius: 20px;
 	display: grid;
 	grid-template-columns: 1fr;
 }
+
 /* TABLET STYLES */
 
 @media screen and (min-width: 500px) {
@@ -377,6 +377,7 @@ label {
 		flex-direction: row;
 		align-items: center;
 	}
+
 	.navbar-links {
 		display: flex;
 		height: 100%;
@@ -394,9 +395,11 @@ label {
 		display: block;
 		padding: 1rem;
 	}
+
 	.navbar-links li:hover {
 		background-color: var(--main-color);
 	}
+
 	.hamb-menu {
 		display: none;
 	}
