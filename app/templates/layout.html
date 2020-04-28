@@ -30,26 +30,31 @@
 					<div class="navbar-links">
 						<ul>
 							<li><a href="{{ url_for("index") }}">Home</a></li>
-							<li><a href="#">My Account</a></li>
-							<li><a href="{{ url_for("login") }}">Login</a></li>
-							<li><a href="{{ url_for("register") }}">Register</a></li>
+							{% if current_user.is_authenticated %}
+								<li><a href="#">Account</a></li>
+								<li><a href="{{ url_for("logout") }}">Logout</a></li>
+							{% else %}
+								<li><a href="{{ url_for("login") }}">Login</a></li>
+								<li><a href="{{ url_for("register") }}">Register</a></li>
+							{% endif %}
 							<li><a href="#">Contact</a></li>
 							<li><a href="{{ url_for("about") }}">About</a></li>
+
 						</ul>
 					</div>
 				</nav>
 			</header>
-
 			<main>
 				{% with messages = get_flashed_messages(with_categories=true) %}
-					{% if messages %}
-						{% for category, message in messages %}
-						<div class="alert alert-{{category}}">
-							<h4>{{message}}</h4>
-						</div>
-						{% endfor %}
-						</ul>
-					{% endif %}
+				{% if messages %}
+				{% for category, message in messages %}
+				<div class="alert-container">
+					<div class="alert alert-{{category}}">
+						<p>{{message}}</p>
+					</div>
+				</div>
+				{% endfor %}
+				{% endif %}
 				{%endwith%}
 				{% block content %} {% endblock content %}
 			</main>
@@ -58,7 +63,8 @@
 				<h1>Footer</h1>
 			</footer>
 		</div>
-
+		<script src="https://code.jquery.com/jquery-3.5.0.min.js"
+			integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
 		<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 	</body>
 </html>

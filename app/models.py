@@ -1,12 +1,18 @@
 from datetime import datetime, time, date
-from app import db
+from app import db, login_manager
+from flask_login import UserMixin
 
 # A seller can have many listings and a listing has one seller (many to one | users - listings)
 # A bidder can place many bids (one to many | users-bids)
 # A listing can have many bids and a bid is for one listing (many to one | listing-bids)
 
 
-class User(db.Model):
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+class User(db.Model, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(80), nullable=False)
