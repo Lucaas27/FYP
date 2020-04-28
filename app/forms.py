@@ -20,14 +20,14 @@ class RegistrationForm(FlaskForm):
     # Validate unique username
     def validate_username(self, username):
         new_user = User.query.filter_by(username=username.data).first()
-        if new_user:
+        if new_user is not None:
             raise ValidationError(
                 "Username alredy exists. Please chosse a different one.")
 
     # Validate unique email
     def validate_email(self, email):
         new_user = User.query.filter_by(email=email.data).first()
-        if new_user:
+        if new_user is not None:
             raise ValidationError(
                 "This email is linked to an existing account.")
 
