@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm
-from app.models import User, Listing, Bid
+from app.models import User, Item
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -19,7 +19,7 @@ def register():
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode("utf-8")
-        new_user = User(full_name=form.full_name.data, username=form.username.data,
+        new_user = User(full_name=form.full_name.data, username=form.username.data, location=form.location.data,
                         email=form.email.data, password_hash=hashed_password)
         db.session.add(new_user)
         db.session.commit()
@@ -60,7 +60,12 @@ def about():
     return render_template("about.html", title='About')
 
 
-@app.route("/account")
+@app.route("/user/<user_id>/", methods=["GET", "POST"])
 @login_required
-def account():
-    return render_template("about.html", title='Account')
+def user(user_id):
+    user = User.query.filter_by(id=user_id).first_or_404()
+    user_items_active = Item.query.filter_by(owner=user, sold=False).all()
+    user_items_sold = Item.query.filter_by(owner=user, sold=True).all()
+
+    return render_template("user.html", title='Account', user=user, user_items_active=user_items_active,
+                           user_items_sold=user_items_sold)

@@ -1,0 +1,178 @@
+{% extends "layout.html" %} {%block content%}
+<div id="profile-page" class="container">
+	<div class="row mt-4 mb-4">
+		<div class="col-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="card-title mb-4">
+						<div class="d-flex justify-content-start">
+							<div class="image-container w-25">
+								<div class="image">
+									<img
+										src="http://placehold.it/300x300"
+										id="imgProfile"
+										class="img-thumbnail"
+									/>
+								</div>
+								<div class="middle">
+									<div class="input-group">
+										<div class="custom-file">
+											<input
+												type="file"
+												class="custom-file-input"
+												id="inputGroupFile01"
+												aria-describedby="inputGroupFileAddon01"
+											/>
+											<label class="custom-file-label" for="inputGroupFile01"
+												>Choose file</label
+											>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="userData ml-3">
+								<h2 class="d-block">
+									<a href="#">{{user.full_name}}</a>
+								</h2>
+								<h6 class="d-block">
+									Listed products times
+								</h6>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-12">
+							<ul class="nav nav-tabs  mb-4" id="myTab" role="tablist">
+								<!-- nav tabs -->
+								<li class="nav-item">
+									<a class="nav-link active" id="basic-info-tab" data-toggle="tab" href="#basic-info" role="tab"
+										aria-controls="basic-info" aria-selected="true">basic-info</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="live-items-tab" data-toggle="tab" href="#live-items" role="tab" aria-controls="live-items"
+										aria-selected="false">live-items</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="sold-items-tab" data-toggle="tab" href="#sold-items" role="tab" aria-controls="sold-items"
+										aria-selected="false">sold-items</a>
+								</li>
+							</ul>
+							<!-- tab panels -->
+							<div class="tab-content ml-1" id="tabContent">
+								<div class="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+									<div class="row">
+										<div class="col-sm-3 col-md-2 col-5">
+											<label class="details-label">Username:</label>
+										</div>
+										<div class="col-md-8 col-6">
+											{{user.username}}
+										</div>
+									</div>
+									<hr />
+
+									<div class="row">
+										<div class="col-sm-3 col-md-2 col-5">
+											<label class="details-label">Email</label>
+										</div>
+										<div class="col-md-8 col-6">
+											{{user.email}}
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-3 col-md-2 col-5">
+											<label class="details-label">Email</label>
+										</div>
+										<div class="col-md-8 col-6">
+											{{user.last_seen}}
+										</div>
+									</div>
+									<hr />
+								</div>
+								<div class="tab-pane fade" id="live-items" role="tabpanel" aria-labelledby="live-items-tab">
+									{%for item in user_items_active %}
+										<hr />
+
+										<div class="row">
+											<div class="col-sm-3 col-md-2 col-5">
+												<label class="details-label">Title</label>
+											</div>
+											<div class="col-md-8 col-6">
+												{{ item.title }}
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-sm-3 col-md-2 col-5">
+												<label class="details-label">Description</label>
+											</div>
+											<div class="col-md-8 col-6">
+												{{ item.description }}
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-sm-3 col-md-2 col-5">
+												<label class="details-label">Date posted</label>
+											</div>
+											<div class="col-md-8 col-6">
+												{{ item.date_posted }}
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-sm-3 col-md-2 col-5">
+												<a href=""
+													><input
+														class="btn btn-secondary"
+														value="Details"
+														href="#"
+														type="button"
+												/></a>
+											</div>
+										</div>
+										<hr />
+									</div>
+								{% endfor %}
+								<div class="tab-pane fade" id="sold-items" role="tabpanel" aria-labelledby="sold-items-tab">
+									{% for item in user_items_sold %}
+									<hr />
+								
+									<div class="row">
+										<div class="col-sm-3 col-md-2 col-5">
+											<label class="details-label">Title</label>
+										</div>
+										<div class="col-md-8 col-6">
+											{{ item.title }}
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-3 col-md-2 col-5">
+											<label class="details-label">Description</label>
+										</div>
+										<div class="col-md-8 col-6">
+											{{ item.description }}
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-3 col-md-2 col-5">
+											<label class="details-label">Date posted</label>
+										</div>
+										<div class="col-md-8 col-6">
+											{{ item.date_posted }}
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-3 col-md-2 col-5">
+											<a href=""><input class="btn btn-secondary" value="Details" href="#" type="button" /></a>
+										</div>
+									</div>
+									<hr />
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

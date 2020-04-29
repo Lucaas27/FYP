@@ -38,6 +38,21 @@
                     {{form.username}}
                 {%endif%}
             </div>
+            <div>
+                {{form.location.label}}
+            
+                {%if form.location.errors %}
+            
+                {{form.full_name(class="invalid-input")}}
+                <div class="invalid-feedback">
+                    {%for mistake in form.location.errors %}
+                    <span>{{ mistake }}</span>
+                    {%endfor%}
+                </div>
+                {%else%}
+                {{form.location}}
+                {%endif%}
+            </div>
 
 			<div>
                 {{form.email.label}}
@@ -83,13 +98,12 @@
                 {%endif%}
 			</div>
             <div>
-                {{form.submit(class="btn")}}
+                {{form.submit(class="form-bttn")}}
             </div>
             <small class="text-muted">
                 Already a member? <a href="{{ url_for("login") }}"> Sign in </a>
             </small>
 		</form>
-        {# <div class="signup-banner"></div> #}
 	</div>
 </div>
 

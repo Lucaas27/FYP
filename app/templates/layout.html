@@ -9,8 +9,7 @@
 		{% else %}
 		<title>FYP</title>
 		{% endif %}
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
-
+		<link rel="stylesheet" id="bootstrap-css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
 		<link
 			rel="stylesheet"
 			href="{{ url_for('static', filename='css/styles.css') }}"
@@ -33,7 +32,7 @@
 							<li><a href="#">Contact</a></li>
 							<li><a href="{{ url_for("about") }}">About</a></li>
 							{% if current_user.is_authenticated %}
-								<li><a href="{{ url_for("account") }}">Account</a></li>
+								<li><a href="{{ url_for("user", user_id=current_user.id) }}">Account</a></li>
 								<li><a href="{{ url_for("logout") }}">Logout</a></li>
 							{% else %}
 								<li><a href="{{ url_for("register") }}">Register</a></li>
@@ -65,8 +64,9 @@
 				<h1>Footer</h1>
 			</footer>
 		</div>
-		<script src="https://code.jquery.com/jquery-3.5.0.min.js"
-			integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 		<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 	</body>
 </html>

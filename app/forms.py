@@ -7,8 +7,10 @@ from app.models import User
 class RegistrationForm(FlaskForm):
     full_name = StringField("Full name",
                             validators=[DataRequired(), Length(min=6, max=40)])
-    username = StringField("Username",
-                           validators=[DataRequired(), Regexp(r'^[\w]+$', message="Please do not use special characters"), Length(min=4, max=15)])
+    username = StringField("Username", validators=[DataRequired(), Regexp(
+        r'^[\w]+$', message="Please do not use special characters"), Length(min=4, max=15)])
+    location = StringField("Location", validators=[
+                           DataRequired(), Length(min=2, max=30)])
     email = StringField("Email",
                         validators=[DataRequired(), Email()])
     password = PasswordField("Password",

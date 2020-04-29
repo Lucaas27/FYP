@@ -56,11 +56,11 @@ P {
 	margin: 0;
 	padding: 0;
 }
-.btn {
+.form-bttn {
 	padding: 0.7rem 1rem;
 	background-color: var(--fourth-color);
 	border-radius: 20px;
-	max-width: 100%;
+	max-width: 50%;
 	color: var(--main-color);
 	filter: drop-shadow(5px 5px 1px rgba(0, 0, 0, 0.25));
 	cursor: pointer;
@@ -74,7 +74,7 @@ P {
 	text-overflow: ellipsis;
 }
 
-.btn:hover {
+.form-bttn:hover {
 	background-color: var(--main-color);
 	color: var(--second-color);
 	transform: translateX(13px);
@@ -101,7 +101,7 @@ input:active:focus {
 	transform: translateY(3px);
 }
 
-/* Form alert styles */
+/* bootstrap form alert styles */
 .invalid-feedback {
 	display: block;
 	width: 70%;
@@ -138,6 +138,7 @@ input:active:focus {
 
 .layout > * {
 	width: 100%;
+	/* overflow-x: hidden; */
 }
 
 /* - Home page layout
@@ -177,8 +178,7 @@ input:active:focus {
 .navbar {
 	display: flex;
 	flex-wrap: nowrap;
-	position: -webkit-sticky;
-	/* for Safari */
+	position: -webkit-sticky; /* for Safari */
 	position: sticky;
 	top: 0;
 	flex-direction: column;
@@ -260,6 +260,7 @@ input:active:focus {
 		"inputs signup";
 	justify-content: center;
 	margin: 1rem 0 1rem 0;
+	box-shadow: 0.7rem 0.7rem 0.7rem rgba(198, 173, 143, 0.341);
 }
 
 .page-container .bg-form .login-avatar {
@@ -267,6 +268,7 @@ input:active:focus {
 	grid-area: pic;
 	align-self: center;
 	justify-self: center;
+	margin-top: 0.5rem;
 }
 
 .page-container .bg-form .login-avatar img {
@@ -371,13 +373,49 @@ input:active:focus {
 	grid-template-columns: 1fr;
 }
 
-/* TABLET STYLES */
+/* ----------profile page------------- */
+
+.card-body {
+	background-color: var(--third-color);
+	box-shadow: 0.7rem 0.7rem 0.7rem rgba(198, 173, 143, 0.341);
+}
+
+#profile-page .image-container .image {
+	opacity: 1;
+	display: block;
+	width: 100%;
+	height: auto;
+	transition: 0.5s ease;
+	backface-visibility: hidden;
+}
+
+#profile-page .image-container:hover .image {
+	opacity: 0.3;
+}
+
+#profile-page .btn-primary {
+	color: var(--main-color);
+	background-color: var(--fourth-color);
+	border: none;
+}
+#profile-page .btn-primary:focus {
+	box-shadow: none;
+}
+.details-label {
+	font-weight: bold;
+}
+
+.userData h2 {
+	font-size: 1.5rem;
+	font-weight: bold;
+}
+/* =============TABLET STYLES======================= */
 
 @media screen and (min-width: 500px) {
 	/* applies to screens wider than 499px */
 }
 
-/* DESKTOP STYLES */
+/* =================== DESKTOP STYLES =============== */
 
 @media screen and (min-width: 1000px) {
 	/* applies to screens wider than 999px */
