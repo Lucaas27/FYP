@@ -71,7 +71,7 @@ P {
 	white-space: nowrap;
 	overflow: hidden;
 	font-size: 0.8rem;
-	text-overflow: ellipsis;
+	text-overflow: clip;
 }
 
 .form-bttn:hover {
@@ -80,9 +80,28 @@ P {
 	transform: translateX(13px);
 }
 
+.btn {
+	overflow: hidden;
+	font-size: 0.8rem;
+	text-overflow: clip;
+	background-color: var(--fourth-color);
+	color: var(--main-color);
+	border-radius: 20px;
+}
+
+.btn:hover {
+	background-color: var(--main-color);
+	color: var(--second-color);
+	transform: none;
+}
+
+nav-item {
+	text-align: center;
+}
+
 input {
 	display: block;
-	height: 35px;
+	height: 2.5rem;
 	width: 70%;
 	margin: 0.5rem auto;
 	border: none;
@@ -91,6 +110,13 @@ input {
 	border-bottom: 1px solid black;
 	border-radius: 15px;
 }
+input[type="file"] {
+	border: none;
+	padding-left: none;
+	width: 70%;
+	margin: 0.5rem auto;
+	border-bottom: none;
+}
 
 input:hover,
 input:focus,
@@ -98,7 +124,7 @@ input:active:focus {
 	color: var(--second-color);
 	outline: none;
 	border-bottom: 1.5px solid var(--fourth-color);
-	transform: translateY(3px);
+	transform: translateY(2px);
 }
 
 /* bootstrap form alert styles */
@@ -287,12 +313,7 @@ input:active:focus {
 .page-container .bg-form .custom-inputs hr {
 	border: none;
 	height: 1px;
-	background-image: linear-gradient(
-		to right,
-		rgba(0, 0, 0, 0),
-		rgba(0, 0, 0, 0.75),
-		rgba(0, 0, 0, 0)
-	);
+	background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
 }
 
 .page-container .bg-form .custom-inputs small {
@@ -413,6 +434,13 @@ input:active:focus {
 
 @media screen and (min-width: 500px) {
 	/* applies to screens wider than 499px */
+	input {
+		width: 100%;
+	}
+	input[type="text"],
+	input[type="password"] {
+		width: 70%;
+	}
 }
 
 /* =================== DESKTOP STYLES =============== */

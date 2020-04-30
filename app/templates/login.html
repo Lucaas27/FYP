@@ -23,7 +23,7 @@
                         {%endfor%}
                     </div>
                 {%else%}
-                    {{form.email}}
+                    {{form.email (placeholder="Enter your email")}}
                 {%endif%}
 			</div>
 
@@ -38,7 +38,7 @@
                         {%endfor%}
                     </div>
                 {%else%}
-                    {{form.password}}
+                    {{form.password (placeholder="Enter your passord")}}
                 {%endif%}
 			</div>
             

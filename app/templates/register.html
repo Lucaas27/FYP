@@ -18,7 +18,7 @@
                         {%endfor%}
                     </div>
                 {%else%}
-                    {{form.full_name}}
+                    {{form.full_name(placeholder="Enter your full name")}}
                 {%endif%}
             </div>
 
@@ -35,7 +35,7 @@
                     </div>
                     
                 {%else%}
-                    {{form.username}}
+                    {{form.username(placeholder="Enter your username")}}
                 {%endif%}
             </div>
             <div>
@@ -46,11 +46,11 @@
                 {{form.full_name(class="invalid-input")}}
                 <div class="invalid-feedback">
                     {%for mistake in form.location.errors %}
-                    <span>{{ mistake }}</span>
+                        <span>{{ mistake }}</span>
                     {%endfor%}
                 </div>
                 {%else%}
-                {{form.location}}
+                    {{form.location(placeholder="Enter your city")}}
                 {%endif%}
             </div>
 
@@ -65,7 +65,7 @@
                         {%endfor%}
                     </div>
                 {%else%}
-                    {{form.email}}
+                    {{form.email (placeholder="Enter your email")}}
                 {%endif%}
 			</div>
 
@@ -94,7 +94,7 @@
                         {%endfor%}
                     </div>
                 {%else%}
-                    {{form.confirm_password}}
+                    {{form.confirm_password(placeholder="Confirm your password")}}
                 {%endif%}
 			</div>
             <div>

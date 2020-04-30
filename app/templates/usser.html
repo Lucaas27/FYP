@@ -1,27 +1,269 @@
-{% extends "layout.html" %} 
-{%block content%}
+{% extends "layout.html" %} {%block content%}
+<div id="profile-page" class="container">
+    <div class="row mt-4 mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title mb-4">
+                        <div class="d-flex justify-content-start">
+                            <div class="image-container w-25">
+                                <div class="image">
+                                    <img src="{{image_file}}" id="imgProfile" class="img-thumbnail rounded-circle" />
+                                </div>
+                            </div>
+                            <div class="userData ml-3">
+                                <h2 class="d-block">
+                                    <a href="#">{{user.full_name}}</a>
+                                </h2>
+                                <h6 class="d-block">
+                                    Listed {{user_items_count}} products for sale
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                                <!-- nav tabs -->
+                                <li class="nav-item">
+                                    <a class="nav-link active col" id="basic-info-tab" data-toggle="tab"
+                                        href="#basic-info" role="tab" aria-controls="basic-info"
+                                        aria-selected="true">Info</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="live-items-tab" data-toggle="tab" href="#live-items"
+                                        role="tab" aria-controls="live-items" aria-selected="false">Listings</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="sold-items-tab" data-toggle="tab" href="#sold-items"
+                                        role="tab" aria-controls="sold-items" aria-selected="false">Sold</a>
+                                </li>
+                                {%if current_user.id == user.id%}
+                                <li class="nav-item">
+                                    <a class="nav-link" id="edit-info-tab" data-toggle="tab" href="#edit-info"
+                                        role="tab" aria-controls="edit-info" aria-selected="false">Edit</a>
+                                </li>
+                                {%endif%}
+                            </ul>
+                            <!-- tab panels -->
+                            <div class="tab-content ml-1" id="tabContent">
+                                <!-- Info panel -->
+                                <div class="tab-pane fade show active" id="basic-info" role="tabpanel"
+                                    aria-labelledby="basic-info-tab">
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Username:</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{user.username}}
+                                        </div>
+                                    </div>
+                                    <hr />
 
-<!-- Nav tabs -->
-<ul class="nav nav-tabs" id="myTab" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link live-items" id="info-tab" data-toggle="tab" href="#info" role="tab" aria-controls="info"
-            aria-selected="true">info</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="live-items-tab" data-toggle="tab" href="#live-items" role="tab" aria-controls="live-items"
-            aria-selected="false">active</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="sold-tab" data-toggle="tab" href="#sold" role="tab" aria-controls="sold"
-            aria-selected="false">sold</a>
-    </li>
-</ul>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Email</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{user.email}}
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Last seen</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{user.last_seen}}
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Location</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{user.location}}
+                                        </div>
+                                    </div>
+                                    <hr />
+                                </div>
+                                <div class="tab-pane fade" id="live-items" role="tabpanel"
+                                    aria-labelledby="live-items-tab">
+                                    {%for item in user_items_active %}
+                                    <hr />
 
-<!-- Tab panes -->
-<div class="tab-content">
-    <div class="tab-pane live-items" id="info" role="tabpanel" aria-labelledby="info-tab">...</div>
-    <div class="tab-pane" id="live-items" role="tabpanel" aria-labelledby="live-items-tab">...</div>
-    <div class="tab-pane" id="sold" role="tabpanel" aria-labelledby="sold-tab">...</div>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Title</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{ item.title }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Description</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{ item.description }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Date posted</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{ item.date_posted }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <a href=""><input class="btn btn-secondary" value="Details" href="#"
+                                                    type="button" /></a>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                </div>
+                                {% endfor %}
+                                <!-- Sold panel -->
+                                <div class="tab-pane fade" id="sold-items" role="tabpanel"
+                                    aria-labelledby="sold-items-tab">
+                                    {% for item in user_items_sold %}
+                                    <hr />
+
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Title</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{ item.title }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Description</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{ item.description }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <label class="details-label">Date posted</label>
+                                        </div>
+                                        <div class="col-md-8 col-6">
+                                            {{ item.date_posted }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-2 col-5">
+                                            <a href=""><input class="btn btn-secondary" value="Details" href="#"
+                                                    type="button" /></a>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                </div>
+                                {% endfor %}
+                                <!-- edit info panel -->
+                                {%if current_user.id == user.id%}
+                                <div class="tab-pane fade" id="edit-info" role="tabpanel"
+                                    aria-labelledby="edit-info-tab">
+                                    <hr />
+                                    <form method="POST" action="#" id="editForm" enctype="multipart/form-data">
+                                        {{ form.hidden_tag() }}
+                                        <div class="row">
+                                            <div class="col-sm-3 col-md-2 col-5">
+                                                <label class="details-label">Full name</label>
+                                            </div>
+                                            <div class="col-md-8 col-6">
+                                                {%if form.full_name.errors %}
+                                                {{form.full_name(class="invalid-input")}}
+                                                <div class="invalid-feedback">
+                                                    {%for mistake in form.full_name.errors %}
+                                                    <span>{{ mistake }}</span>
+                                                    {%endfor%}
+                                                </div>
+                                                {%else%} {{form.full_name(placeholder="Enter your full name")}}
+                                                {%endif%}
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-sm-3 col-md-2 col-5">
+                                                <label class="details-label">Username</label>
+                                            </div>
+                                            <div class="col-md-8 col-6">
+                                                {%if form.username.errors %} {{form.username(class="invalid-input")}}
+                                                <div class="invalid-feedback">
+                                                    {%for mistake in form.username.errors %}
+                                                    <span>{{ mistake }}</span>
+                                                    {%endfor%}
+                                                </div>
+                                                {%else%} {{form.username(placeholder="Enter your username")}} {%endif%}
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-sm-3 col-md-2 col-5">
+                                                <label class="details-label">Location</label>
+                                            </div>
+                                            <div class="col-md-8 col-6">
+                                                {%if form.location.errors %} {{form.full_name(class="invalid-input")}}
+                                                <div class="invalid-feedback">
+                                                    {%for mistake in form.location.errors %}
+                                                    <span>{{ mistake }}</span>
+                                                    {%endfor%}
+                                                </div>
+                                                {%else%} {{form.location(placeholder="Enter your location")}} {%endif%}
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-sm-3 col-md-2 col-5">
+                                                <label class="details-label">Email</label>
+                                            </div>
+                                            <div class="col-md-8 col-6">
+                                                {%if form.email.errors %} {{form.email(class="invalid-input")}}
+                                                <div class="invalid-feedback">
+                                                    {%for mistake in form.email.errors %}
+                                                    <span>{{ mistake }}</span>
+                                                    {%endfor%}
+                                                </div>
+                                                {%else%} {{form.email(placeholder="Enter your email")}} {%endif%}
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-sm-3 col-md-2 col-5">
+                                                <label class="details-label">Picture</label>
+                                            </div>
+                                            <div class="col-md-8 col-6 form-group">
+                                                {{ form.image_file (class="form-control-file") }}
+                                                {%if form.image_file.errors %}
+                                                {%for error in form.image_file.errors %}
+                                                <span class="text-danger">{{error}} </span>
+                                                {%endfor%}
+                                                {%endif%}
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row justify-content-center">
+                                            <div class="col-sm-3 col-md-2 col-5">
+                                                {{form.submit(class="btn btn-secondary")}}
+                                            </div>
+                                        </div>
+                                        <hr />
+                                    </form>
+                                </div>
+                                {%endif%}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-{%endblock%}
+{% endblock content %}

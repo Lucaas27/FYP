@@ -5,10 +5,11 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 		{% if title %}
-		<title>FYP - {{ title }}</title>
+			<title>FYP - {{ title }}</title>
 		{% else %}
-		<title>FYP</title>
+			<title>FYP</title>
 		{% endif %}
+		
 		<link rel="stylesheet" id="bootstrap-css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
 		<link
 			rel="stylesheet"
@@ -28,15 +29,28 @@
 					</div>
 					<div class="navbar-links">
 						<ul>
-							<li><a href="{{ url_for("index") }}">Home</a></li>
-							<li><a href="#">Contact</a></li>
-							<li><a href="{{ url_for("about") }}">About</a></li>
+							<li>
+								<a href="{{ url_for("index") }}">Home</a>
+							</li>
+							<li>
+								<a href="#">Contact</a></li>
+							<li>
+								<a href="{{ url_for("about") }}">About</a>
+							</li>
 							{% if current_user.is_authenticated %}
-								<li><a href="{{ url_for("user", user_id=current_user.id) }}">Account</a></li>
-								<li><a href="{{ url_for("logout") }}">Logout</a></li>
+								<li>
+									<a href="{{ url_for("user", user_id=current_user.id) }}">Account</a>
+								</li>
+								<li>
+									<a href="{{ url_for("logout") }}">Logout</a>
+								</li>
 							{% else %}
-								<li><a href="{{ url_for("register") }}">Register</a></li>
-								<li><a href="{{ url_for("login") }}">Login</a></li>
+								<li>
+									<a href="{{ url_for("register") }}">Register</a>
+								</li>
+								<li>
+									<a href="{{ url_for("login") }}">Login</a>
+								</li>
 
 							{% endif %}
 				
@@ -47,17 +61,19 @@
 			</header>
 			<main>
 				{% with messages = get_flashed_messages(with_categories=true) %}
-				{% if messages %}
-				{% for category, message in messages %}
-				<div class="alert-container">
-					<div class="alert alert-{{category}}">
-						<p>{{message}}</p>
-					</div>
-				</div>
-				{% endfor %}
-				{% endif %}
+					{% if messages %}
+						{% for category, message in messages %}
+						<div class="alert-container">
+							<div class="alert alert-{{category}}">
+								<p>{{message}}</p>
+							</div>
+						</div>
+						{% endfor %}
+					{% endif %}
 				{%endwith%}
-				{% block content %} {% endblock content %}
+				{% block content %} 
+
+				{% endblock content %}
 			</main>
 
 			<footer>
