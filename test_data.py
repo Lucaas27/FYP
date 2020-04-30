@@ -1,5 +1,4 @@
 from app import db, models, bcrypt
-
 from datetime import datetime
 
 

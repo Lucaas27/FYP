@@ -430,6 +430,55 @@ input:active:focus {
 	font-size: 1.5rem;
 	font-weight: bold;
 }
+
+/* - 404 and 500 error pages
+--------------------------*/
+.error-wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.error-wrapper .error {
+    text-align: center;
+	font-weight: 700;
+	font-size: 5rem;
+}
+
+.error-wrapper .info {
+    font-size: 1rem;
+}
+
+.home-btn, 
+.home-btn:focus, 
+.home-btn:hover, 
+.home-btn:visited {
+    color: var(--second-color);
+    border: 1px solid var(--fourth-color);
+    border-radius: 3px;
+    display: block;
+    margin: 10% 0;
+    min-width: 100%;
+    background-color: transparent;
+    outline: 0;
+}
+
+.btn-primary:not(:disabled):not(.disabled):active{
+	background-color: var(--second-color);
+	color: var(--main-color);
+	border-color: var(--main-color);
+
+}
+
+.man-icon {
+    background: url('https://www.hotstar.com/assets/b5e748831c911ca02f9c07afc11f2ae5.svg') center center no-repeat;
+    display: inline-block;
+    height: 100px;
+    width: 118px;
+    margin-bottom: 1rem;
+}
 /* =============TABLET STYLES======================= */
 
 @media screen and (min-width: 500px) {
