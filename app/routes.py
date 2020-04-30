@@ -1,6 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request
 import secrets
 import os
+from PIL import Image
 from datetime import datetime, date
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, UpdateDetailsForm
@@ -76,7 +77,13 @@ def save_pic(form_picture):
     picture_name = random_hax + f_ext
     picture_path = os.path.join(
         app.root_path, "static", "img/profile/", picture_name)
-    form_picture.save(picture_path)
+
+    output_size = (300, 300)
+    im = Image.open(form_picture)
+    i = im.convert("RGB")
+    i.thumbnail(output_size)
+
+    i.save(picture_path)
 
     return picture_name
 
