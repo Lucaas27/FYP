@@ -1,0 +1,44 @@
+{% extends "layout.html" %} 
+{% block content %}
+
+<div id="item" class="container h-100">
+	<div class="row">
+		<div class="col-12">
+			<div class="row">
+				<div class="header-navigation col-12">
+					<nav>
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="{{url_for("index")}}">Home</a></li>
+							<li class="breadcrumb-item active" aria-current="page">Items</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+			<div class="row mt-4 justify-content-center align-items-center">
+				<div class="col-md-4" aria-labelledby="item-picture">
+					<img class="img-fluid img-thumbnail" src="{{image_file}}" />
+				</div>
+				<div class="col-md-8">
+					<h1>
+						{{item.title}}
+					</h1>
+					<h3>
+						£ {{item.price}}
+					</h3>
+					<p>
+						{{item.item_views}} views
+					</p>
+					<p mt-3>
+						Posted on {{item.date_posted}}
+					</p>
+					<ul>
+						<li class="pb-2"><b>Condition</b> {{item.condition}}</li>
+						<li><b>Bank Offer</b> 5% Instant Discount on EMI with Bank Credit and Debit Cards <b>T&C</b></li>
+					</ul>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+{% endblock content %}

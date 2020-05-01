@@ -48,6 +48,7 @@ a {
 a:hover {
 	text-decoration: none;
 	color: var(--second-color);
+	border-bottom: 0.1rem var(--second-color) solid;
 }
 ul {
 	margin: 0;
@@ -99,28 +100,41 @@ nav-item {
 	text-align: center;
 }
 
-input {
+input,
+select {
 	display: block;
 	height: 2.5rem;
 	width: 70%;
 	margin: 0.5rem auto;
 	border: none;
-	padding-left: 20px;
+	padding-left: 15px;
 	background: transparent;
 	border-bottom: 1px solid black;
 	border-radius: 15px;
 }
+
+textarea {
+	width: 70%;
+	margin: 0.5rem auto;
+	display: block;
+	padding-left: 15px;
+}
 input[type="file"] {
-	border: none;
-	padding-left: none;
+	border-radius: 0;
+	padding-left: 0;
 	width: 70%;
 	margin: 0.5rem auto;
 	border-bottom: none;
 }
 
 input:hover,
-input:focus,
-input:active:focus {
+input:active,
+select:active,
+select:focus,
+textarea:active,
+textarea:focus,
+input:active,
+input:focus {
 	color: var(--second-color);
 	outline: none;
 	border-bottom: 1.5px solid var(--fourth-color);
@@ -154,32 +168,28 @@ input:active:focus {
 /* - Website layout
  -----------------------*/
 .layout {
-	width: 100%;
+	min-height: 100vh;
 	display: grid;
 	grid-template-rows: auto 1fr auto;
-	min-height: 100vh;
-	justify-items: center;
-	align-content: center;
-}
-
-.layout > * {
-	width: 100%;
-	/* overflow-x: hidden; */
 }
 
 /* - Home page layout
 -------------------- */
 
 .homepage {
-	width: 100%;
-	height: 100%;
+	max-width: 100vw;
+	min-height: 100%;
 	display: grid;
-	grid-template-columns: 1fr 3fr;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
 	gap: 1rem;
 	grid-template-areas:
-		"search slider"
+		"search search"
+		"slider slider"
 		"cat items"
 		"cat items";
+}
+.homepage h1 {
+	max-width: 100%;
 }
 
 .search {
@@ -194,80 +204,72 @@ input:active:focus {
 	grid-area: slider;
 }
 
-.items {
-	grid-area: items;
-}
+/* slider */
 
 /* - NavBar
 ---------------------- */
 
 .navbar {
-	display: flex;
-	flex-wrap: nowrap;
-	position: -webkit-sticky; /* for Safari */
+	background: var(--third-color);
+	width: 100vw;
+	display: grid;
 	position: sticky;
-	top: 0;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: flex-start;
-	background-color: var(--third-color);
-	color: var(--second-color);
-	min-width: 100%;
-	padding: 0;
+	grid-template-columns: 1fr 3fr;
+	align-items: center;
 }
 
-.navbar-links {
+.navbar .navbar-links {
 	display: none;
-	width: 100%;
+	align-items: center;
+	justify-items: center;
+	grid-row: 2;
+	grid-column: 1 / span 2;
+	position: relative;
 }
 
-.navbar-links.active {
-	display: flex;
-}
-
-.navbar-links ul {
-	display: flex;
-	flex-direction: column;
+.navbar .navbar-links a {
 	width: 100%;
+	text-align: center;
+	height: 100%;
 	background-color: var(--main-color);
 }
 
-.navbar-links li {
-	text-align: center;
-	display: block;
+.navbar .navbar-links a:hover {
+	color: var(--fourth-color);
 }
 
-.navbar-links li a {
-	display: block;
+.navbar div#toggle-button {
+	display: grid;
+	justify-items: end;
+	align-items: center;
+	grid-column: 2;
+	grid-row: 1;
+	cursor: pointer;
+}
+
+.navbar .brand {
+	display: grid;
+	align-items: center;
+	padding-left: 1rem;
+	font-size: 1.5rem;
+	font-weight: 700;
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.navbar .navbar-links.active {
+	display: grid;
+}
+
+.navbar .navbar-links.active a {
 	padding: 1.5rem;
-}
-.brand-name {
-	margin: 0.5rem;
-	font-size: 2rem;
-}
-
-.hamb-menu {
-	position: absolute;
-	top: 1rem;
-	right: 1rem;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	width: 30px;
-	height: 20px;
-}
-
-.hamb-menu .bar {
-	height: 4px;
-	width: 100%;
-	background-color: var(--second-color);
-	border-radius: 15px;
 }
 
 /* - Login page
 ---------------------- */
 .page-container {
 	min-width: 100%;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -393,7 +395,11 @@ input:active:focus {
 	display: grid;
 	grid-template-columns: 1fr;
 }
-
+.container {
+	background-color: var(--third-color);
+	margin-top: 0.5rem;
+	box-shadow: 0.7rem 0.7rem 0.7rem rgba(198, 173, 143, 0.341);
+}
 /* ----------profile page------------- */
 
 .card-body {
@@ -430,55 +436,66 @@ input:active:focus {
 	font-size: 1.5rem;
 	font-weight: bold;
 }
+/* Listing details */
+.pro-details .nav-item {
+	height: 50px;
+}
 
 /* - 404 and 500 error pages
 --------------------------*/
 .error-wrapper {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
 }
 
 .error-wrapper .error {
-    text-align: center;
+	text-align: center;
 	font-weight: 700;
 	font-size: 5rem;
 }
 
 .error-wrapper .info {
-    font-size: 1rem;
+	font-size: 1rem;
 }
 
-.home-btn, 
-.home-btn:focus, 
-.home-btn:hover, 
+.home-btn,
+.home-btn:focus,
+.home-btn:hover,
 .home-btn:visited {
-    color: var(--second-color);
-    border: 1px solid var(--fourth-color);
-    border-radius: 3px;
-    display: block;
-    margin: 10% 0;
-    min-width: 100%;
-    background-color: transparent;
-    outline: 0;
+	color: var(--second-color);
+	border: 1px solid var(--fourth-color);
+	border-radius: 3px;
+	display: block;
+	margin: 10% 0;
+	min-width: 100%;
+	background-color: transparent;
+	outline: 0;
 }
 
-.btn-primary:not(:disabled):not(.disabled):active{
+.btn-primary:not(:disabled):not(.disabled):active {
 	background-color: var(--second-color);
 	color: var(--main-color);
 	border-color: var(--main-color);
-
 }
 
 .man-icon {
-    background: url('https://www.hotstar.com/assets/b5e748831c911ca02f9c07afc11f2ae5.svg') center center no-repeat;
-    display: inline-block;
-    height: 100px;
-    width: 118px;
-    margin-bottom: 1rem;
+	background: url("https://www.hotstar.com/assets/b5e748831c911ca02f9c07afc11f2ae5.svg") center center no-repeat;
+	display: inline-block;
+	height: 100px;
+	width: 118px;
+	margin-bottom: 1rem;
 }
+
+/* item page */
+
+.header-navigation {
+	margin: 0;
+	padding: 0;
+}
+
 /* =============TABLET STYLES======================= */
 
 @media screen and (min-width: 500px) {
@@ -499,34 +516,29 @@ input:active:focus {
 
 	/* -Navbar
   -------------- */
-	.navbar {
-		flex-direction: row;
-		align-items: center;
+	.navbar .navbar-links {
+		display: grid;
+		grid-column: 2;
+		grid-row: 1;
+		grid-auto-flow: column;
 	}
 
-	.navbar-links {
-		display: flex;
-		height: 100%;
-		width: auto;
-	}
-
-	.navbar-links ul {
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-end;
+	.navbar .navbar-links a {
 		background-color: var(--third-color);
 	}
 
-	.navbar-links li a {
-		display: block;
-		padding: 1rem;
+	.navbar .navbar-links a:hover,
+	.navbar .brand a:hover {
+		color: var(--fourth-color);
+		opacity: 0.6;
 	}
 
-	.navbar-links li:hover {
-		background-color: var(--main-color);
-	}
-
-	.hamb-menu {
+	.navbar div#toggle-button {
 		display: none;
 	}
+
+	.navbar .navbar-links.active a {
+		padding: 0;
+	}
+	/* slider */
 }

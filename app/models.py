@@ -42,8 +42,8 @@ class Item(db.Model):
     price = db.Column(db.Float, unique=False, nullable=False)
     date_posted = db.Column(db.DateTime, default=datetime.now)
     item_views = db.Column(db.Integer, default=0)
-    image_file = db.Column(db.String(20), nullable=False,
-                           default='default.jpg')
+    image_file = db.Column(db.String(80), nullable=False,
+                           default='default-item.jpg')
     category = db.Column(db.String(50), unique=False, nullable=False)
     sold = db.Column(db.Boolean, default=False)
     # relationships

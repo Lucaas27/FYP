@@ -37,9 +37,9 @@ def add_item():
         title="item 1",
         description="something about the item 1",
         item_location="UK",
-        condition="good condition",
+        condition="Used",
         price="10",
-        category="camera",
+        category="DSLR cameras",
         owner=u1
     )
 
@@ -47,9 +47,9 @@ def add_item():
         title="item 2",
         description="something about the item 2",
         item_location="USA",
-        condition="very bad condition",
+        condition="Used",
         price="20",
-        category="Lenses",
+        category="DSLR cameras",
         owner=u2,
 
     )
@@ -57,9 +57,9 @@ def add_item():
         title="Item 3 ",
         description="something about the item 3",
         item_location="Spain",
-        condition="no problems",
+        condition="Used",
         price="50",
-        category="camera",
+        category="DSLR cameras",
         owner=u1,
         sold=True
     )
@@ -68,9 +68,9 @@ def add_item():
         title="item 4",
         description="something about the item 4",
         item_location="Germany",
-        condition="bad condition",
+        condition="Used",
         price="70",
-        category="Lenses",
+        category="DSLR cameras",
         owner=u2,
         sold=True
 

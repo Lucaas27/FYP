@@ -15,47 +15,38 @@
 			rel="stylesheet"
 			href="{{ url_for('static', filename='css/styles.css') }}"
 		/>
+		<script src="https://unpkg.com/ionicons@5.0.0/dist/ionicons.js"></script>
+
 	</head>
 
 	<body>
 		<div class="layout">
 			<header>
 				<nav class="navbar">
-					<div class="brand-name"><a href="{{ url_for("index") }}">Brand Name</a></div>
-					<div class="hamb-menu">
-						<span class="bar"></span>
-						<span class="bar"></span>
-						<span class="bar"></span>
+					<div class="brand">
+						<p>Shop</p>
 					</div>
 					<div class="navbar-links">
-						<ul>
-							<li>
-								<a href="{{ url_for("index") }}">Home</a>
-							</li>
-							<li>
-								<a href="#">Contact</a></li>
-							<li>
-								<a href="{{ url_for("about") }}">About</a>
-							</li>
-							{% if current_user.is_authenticated %}
-								<li>
-									<a href="{{ url_for("user", user_id=current_user.id) }}">Account</a>
-								</li>
-								<li>
-									<a href="{{ url_for("logout") }}">Logout</a>
-								</li>
-							{% else %}
-								<li>
-									<a href="{{ url_for("register") }}">Register</a>
-								</li>
-								<li>
-									<a href="{{ url_for("login") }}">Login</a>
-								</li>
+						<a href="{{ url_for("index") }}">Home</a>
 
-							{% endif %}
-				
+						<a href="#">Contact</a>
 
-						</ul>
+						<a href="{{ url_for("about") }}">About</a>
+
+						{% if current_user.is_authenticated %}
+							<a href="{{ url_for("user", user_id=current_user.id) }}">Account</a>
+
+							<a href="{{ url_for("logout") }}">Logout</a>
+						{% else %}
+
+							<a href="{{ url_for("register") }}">Register</a>
+
+							<a href="{{ url_for("login") }}">Login</a>
+
+						{% endif %}
+					</div>
+					<div id="toggle-button">
+						<ion-icon name="menu-sharp" size="large"></ion-icon>
 					</div>
 				</nav>
 			</header>

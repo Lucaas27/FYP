@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, IntegerField, SelectField, FloatField, TextAreaField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp, ValidationError, NumberRange
 from app.models import User
 from flask_wtf.file import FileAllowed
 from flask_login import current_user
@@ -54,9 +54,8 @@ class UpdateDetailsForm(FlaskForm):
                            DataRequired(), Length(min=2, max=30)])
     email = StringField("Email",
                         validators=[DataRequired(), Email()])
-    picture = FileField('image', validators=[
+    picture = FileField('Image', validators=[
         FileAllowed(['jpg', 'png', 'jpeg'])])
-    # image_file = FileField()
     submit = SubmitField("Update")
 
     # Validate unique username
@@ -74,3 +73,39 @@ class UpdateDetailsForm(FlaskForm):
             if new_user is not None:
                 raise ValidationError(
                     "This email is linked to an existing account.")
+
+
+class AddItemForm(FlaskForm):
+
+    title = StringField('Title', validators=[
+        DataRequired(), Length(min=4, max=140)])
+
+    description = TextAreaField('Description', validators=[
+        DataRequired(), Length(min=4, max=140)])
+
+    quantity = IntegerField(
+        "Quantity", validators=[DataRequired(message="Please only insert numerical values"), NumberRange(min=1)])
+
+    item_location = StringField("Location", validators=[
+        DataRequired(), Length(min=2, max=140)])
+
+    condition = SelectField("Condition", validators=[DataRequired()], choices=[('Used', 'Used'),
+                                                                               ('Like new',
+                                                                                'Like new'),
+                                                                               ('For parts or not working', 'For parts or not working')], default="Used")
+
+    price = FloatField("Price", validators=[
+        DataRequired("Please set a valid price")])
+
+    pic_file = FileField('Image', validators=[
+        FileAllowed(['jpg', 'png', 'jpeg'])])
+
+    category = SelectField("Category", validators=[DataRequired(message="Please select a category")], choices=[('DSLR cameras', 'DSLR cameras'),
+                                                                                                               ('Video camera',
+                                                                                                                'Video cameras'),
+                                                                                                               ('Flashguns',
+                                                                                                                'Flashguns'),
+                                                                                                               ('Studio equipment', 'Studio equipment'),
+                                                                                                               ('Lenses', 'Lenses')], default="DSLR cameras")
+
+    submit = SubmitField('Post')

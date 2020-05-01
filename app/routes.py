@@ -1,10 +1,11 @@
 from flask import render_template, url_for, flash, redirect, request
+from sqlalchemy import desc
 import secrets
 import os
 from PIL import Image
 from datetime import datetime, date
 from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm, UpdateDetailsForm
+from app.forms import RegistrationForm, LoginForm, UpdateDetailsForm, AddItemForm
 from app.models import User, Item
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -72,9 +73,11 @@ def about():
 
 
 def save_pic(form_picture):
-    random_hax = secrets.token_hex(8)
+    random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
-    picture_name = random_hax + f_ext
+
+    picture_name = random_hex + f_ext
+
     picture_path = os.path.join(
         app.root_path, "static", "img/profile/", picture_name)
 
@@ -120,3 +123,53 @@ def user(user_id):
 
     return render_template("user.html", title='Account', image_file=image_file, form=form, user=user, user_items_active=user_items_active,
                            user_items_sold=user_items_sold, user_items_count=user_items_count)
+
+
+@app.route("/addItem/", methods=["GET", "POST"])
+@login_required
+def add_item():
+    form = AddItemForm()
+    ''' transform user inputs using .lower to save into
+            the database in a consistent way'''
+
+    if form.validate_on_submit():
+        # Save picture to img item path after resizing it
+        # save_file funcation cannot be used as it is a different path
+        if form.pic_file.data:
+
+            pic = form.pic_file.data
+            random_hex = secrets.token_hex(8)
+            _, f_ext = os.path.splitext(pic.filename)
+            picture_name = random_hex + f_ext
+            picture_path = os.path.join(
+                app.root_path, "static", "img/items/", picture_name)
+            output_size = (300, 300)
+            im = Image.open(pic)
+            i = im.convert("RGB")
+            i.thumbnail(output_size)
+            i.save(picture_path)
+            item_pic = picture_path
+
+        new_item = Item(title=form.title.data.lower(),
+                        description=form.description.data.lower(),
+                        quantity=form.quantity.data,
+                        item_location=form.item_location.data,
+                        condition=form.condition.data,
+                        price=form.price.data,
+                        image_file=item_pic,
+                        category=form.category.data,
+                        owner_id=current_user.id)
+        db.session.add(new_item)
+        db.session.commit()
+        return redirect(url_for('item',
+                                item_id=Item.query.order_by(Item.id.desc()).first().id))
+    return render_template("addItem.html",  form=form, title="New item")
+
+
+@app.route("/item/<item_id>", methods=["GET", "POST"])
+@login_required
+def item(item_id):
+    item = Item.query.filter_by(id=item_id).first_or_404()
+    image_file = url_for(
+        'static', filename='img/items/' + item.image_file)
+    return render_template("itemDetails.html", title="Item Details", image_file=image_file, item=item)
