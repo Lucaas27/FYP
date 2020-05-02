@@ -6,7 +6,7 @@ from PIL import Image
 from datetime import datetime, date
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, UpdateDetailsForm, AddItemForm
-from app.models import User, Item
+from app.models import User, Item, Category
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -20,6 +20,8 @@ def before_request():
 @app.route("/")
 @app.route("/index")
 def index():
+    #filter only available items
+    available_items = Item.query.filter_by(sold=False)
     return render_template("index.html")
 
 
@@ -31,11 +33,11 @@ def register():
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode("utf-8")
-        new_user = User(full_name=form.full_name.data.lower(), username=form.username.data.lower(), location=form.location.data.lower(),
+        new_user = User(full_name=form.full_name.data.lower(), username=form.username.data.lower(), location=form.location.data.lower(), seller=form.seller.data,
                         email=form.email.data.lower(), password_hash=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        flash(f"Welcome {form.username.data}! You can now login!", "success")
+        flash(f"Welcome {new_user.username}! You can now login!", "success")
         return redirect(url_for("login"))
     return render_template("register.html", title="Register", form=form)
 
@@ -62,7 +64,7 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
-    flash(f"You are logged out", "info")
+    flash(f"You have logged out", "info")
 
     return redirect(url_for("index"))
 
@@ -71,7 +73,7 @@ def logout():
 def about():
     return render_template("about.html", title='About')
 
-
+# compress and save picture with a random hex in the name
 def save_pic(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -125,16 +127,19 @@ def user(user_id):
                            user_items_sold=user_items_sold, user_items_count=user_items_count)
 
 
-@app.route("/addItem/", methods=["GET", "POST"])
+@app.route("/add_item/", methods=["GET", "POST"])
 @login_required
 def add_item():
     form = AddItemForm()
+    form.category_id.choices = [(cat.id, cat.name.title())
+                                for cat in Category.query.all()]
     ''' transform user inputs using .lower to save into
             the database in a consistent way'''
 
     if form.validate_on_submit():
+        item_pic = 'default.jpg'
         # Save picture to img item path after resizing it
-        # save_file funcation cannot be used as it is a different path
+        # save_file function cannot be used as it is a different path
         if form.pic_file.data:
 
             pic = form.pic_file.data
@@ -157,13 +162,13 @@ def add_item():
                         condition=form.condition.data,
                         price=form.price.data,
                         image_file=item_pic,
-                        category=form.category.data,
+                        category_id=form.category_id.data,
                         owner_id=current_user.id)
         db.session.add(new_item)
         db.session.commit()
         return redirect(url_for('item',
-                                item_id=Item.query.order_by(Item.id.desc()).first().id))
-    return render_template("addItem.html",  form=form, title="New item")
+                                item_id=new_item.id))
+    return render_template("add_item.html",  form=form, title="New item")
 
 
 @app.route("/item/<item_id>", methods=["GET", "POST"])

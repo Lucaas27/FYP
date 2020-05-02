@@ -2,15 +2,13 @@ from datetime import datetime, date
 from app import db, login_manager
 from flask_login import UserMixin
 
-# A user can have many items (many to one | users - items)
-# An item has one seller (One to many | items - users)
-
 
 @login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+def load_user(id):
+    return User.query.get(int(id))
 
 
+# User has many items
 class User(db.Model, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -22,14 +20,16 @@ class User(db.Model, UserMixin):
     location = db.Column(db.String(50), unique=False, nullable=False)
     password_hash = db.Column(db.String(60), nullable=False)
     last_seen = db.Column(db.DateTime, default=datetime.now)
+    seller = db.Column(db.Boolean, default=False)
 
     # relationships
-    items = db.relationship("Item", backref="owner", lazy=True)
+    items = db.relationship("Item", back_populates="owner", lazy="dynamic")
 
     def __repr__(self):
         return f"User('{self.username}')"
 
 
+# Item has one owner
 class Item(db.Model):
     __tablename__ = "items"
 
@@ -44,10 +44,25 @@ class Item(db.Model):
     item_views = db.Column(db.Integer, default=0)
     image_file = db.Column(db.String(80), nullable=False,
                            default='default-item.jpg')
-    category = db.Column(db.String(50), unique=False, nullable=False)
     sold = db.Column(db.Boolean, default=False)
+    terms = db.Column(db.Boolean, default=True)
     # relationships
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    owner = db.relationship("User", back_populates="items")
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
+    category = db.relationship("Category", back_populates="item_cat")
 
     def __repr__(self):
-        return f"Item('{self.title}', '{self.quantity}','{self.condition}', '{self.category}', '{self.description}', '{self.sold}')"
+        return f"Item('{self.title}', '{self.quantity}','{self.condition}', '{self.category_id}', '{self.sold}')"
+
+
+# Category has many items
+class Category(db.Model):
+    __tablename__ = "categories"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), nullable=False, unique=True)
+    item_cat = db.relationship("Item", back_populates="category", lazy="dynamic")
+
+    def __repr__(self):
+        return f"Category('{self.name}')"

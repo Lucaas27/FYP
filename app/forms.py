@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, IntegerField, SelectField, FloatField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, IntegerField, SelectField, FloatField, TextAreaField, DecimalField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp, ValidationError, NumberRange
 from app.models import User
 from flask_wtf.file import FileAllowed
@@ -11,6 +11,10 @@ class RegistrationForm(FlaskForm):
                             validators=[DataRequired(), Length(min=4, max=40)])
     username = StringField("Username", validators=[DataRequired(), Regexp(
         r'^[\w]+$', message="Please do not use special characters"), Length(min=4, max=15)])
+
+    seller = BooleanField(
+        "Please check the box if you have interest in selling items", default=False)
+
     location = StringField("Location", validators=[
                            DataRequired(), Length(min=2, max=30)])
     email = StringField("Email",
@@ -54,7 +58,7 @@ class UpdateDetailsForm(FlaskForm):
                            DataRequired(), Length(min=2, max=30)])
     email = StringField("Email",
                         validators=[DataRequired(), Email()])
-    picture = FileField('Image', validators=[
+    picture = FileField('Profile picture', validators=[
         FileAllowed(['jpg', 'png', 'jpeg'])])
     submit = SubmitField("Update")
 
@@ -94,18 +98,13 @@ class AddItemForm(FlaskForm):
                                                                                 'Like new'),
                                                                                ('For parts or not working', 'For parts or not working')], default="Used")
 
-    price = FloatField("Price", validators=[
+    price = DecimalField("Price", validators=[
         DataRequired("Please set a valid price")])
 
     pic_file = FileField('Image', validators=[
         FileAllowed(['jpg', 'png', 'jpeg'])])
+    terms = BooleanField("Agree to terms and conditions", validators=[DataRequired()])
 
-    category = SelectField("Category", validators=[DataRequired(message="Please select a category")], choices=[('DSLR cameras', 'DSLR cameras'),
-                                                                                                               ('Video camera',
-                                                                                                                'Video cameras'),
-                                                                                                               ('Flashguns',
-                                                                                                                'Flashguns'),
-                                                                                                               ('Studio equipment', 'Studio equipment'),
-                                                                                                               ('Lenses', 'Lenses')], default="DSLR cameras")
+    category_id = SelectField('Select category', coerce=int)
 
     submit = SubmitField('Post')

@@ -25,112 +25,118 @@
 						<div class="col-12">
 							<ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
 								<!-- nav tabs -->
-								{%if current_user.id == user.id%}
+								{%if current_user.id == user.id%} 
+								<!-- any user can edit and see their purchase history their own info -->
 								<li class="nav-item active">
 									<a class="nav-link active" id="edit-info-tab" data-toggle="tab" 
 									href="#edit-info" role="tab" aria-controls="edit-info" aria-selected="true">Edit</a>
 								</li>
 								{%else%}
-
+								<!-- this information is displayed to the public -->
 								<li class="nav-item active">
 									<a class="nav-link active" id="basic-info-tab" data-toggle="tab" 
 									href="#basic-info" role="tab" aria-controls="basic-info" aria-selected="true">Info</a>
 								</li>
 								{%endif%}
-								<li class="nav-item">
-									<a class="nav-link" id="live-items-tab" data-toggle="tab" 
-									href="#live-items" role="tab" aria-controls="live-items" aria-selected="false">Listings</a>
-								</li>
+								{%if current_user.id == user.id and current_user.seller == True %} 
+								<!-- onyl sellers can see their own sales and active listings -->
 								<li class="nav-item">
 									<a class="nav-link" id="sold-items-tab" data-toggle="tab" 
 									href="#sold-items" role="tab" aria-controls="sold-items" aria-selected="false">Sold</a>
 								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="live-items-tab" data-toggle="tab" 
+									href="#live-items" role="tab" aria-controls="live-items" aria-selected="false">Active Listings</a>
+								</li>
+								{%endif%}
 							</ul>
 							<!-- tab panels -->
 							<div class="tab-content ml-1" id="tabContent">
 								{%if current_user.id==user.id%}
 								<!-- edit info panel -->
 								<div class="tab-pane fade show active" id="edit-info" role="tabpanel" aria-labelledby="edit-info-tab">
-									<h6><small>This information will be displayed to other users</small></h6>
 									<hr />
 									<form method="POST" id="editForm" enctype="multipart/form-data">
 										{{ form.hidden_tag() }}
-										<div class="row">
+										<div class="row form-group">
 											<div class="col-sm-3 col-md-2 col-5">
-												<label class="details-label">{{form.full_name.label}}</label>
+												<label ">{{form.full_name.label}}</label>
 											</div>
 											<div class="col-md-8 col-6">
-												{%if form.full_name.errors %} {{form.full_name(class="invalid-input")}}
+												{%if form.full_name.errors %} 
+												{{form.full_name(class="form-control is-invalid")}}
 												<div class="invalid-feedback">
 													{%for mistake in form.full_name.errors %}
-													<span>{{ mistake }}</span>
+														<span>{{ mistake }}</span>
 													{%endfor%}
 												</div>
 												{%else%} 
-													{{form.full_name(placeholder="Enter your full name")}}
+													{{form.full_name (class="form-control",placeholder="Enter your full name")}} 
 												{%endif%}
 											</div>
 										</div>
 										<hr />
 										<div class="row">
 											<div class="col-sm-3 col-md-2 col-5">
-												<label class="details-label">{{form.username.label}}</label>
+												<label ">{{form.username.label}}</label>
 											</div>
 											<div class="col-md-8 col-6">
 												{%if form.username.errors %} 
-												
-												{{form.username(class="invalid-input")}}
+												{{form.username(class="form-control is-invalid")}}
 												<div class="invalid-feedback">
 													{%for mistake in form.username.errors %}
 													<span>{{ mistake }}</span>
 													{%endfor%}
 												</div>
 												{%else%} 
-													{{form.username(placeholder="Enter your username")}} 
+													{{form.username (class="form-control",placeholder="Enter your username")}} 
 												{%endif%}
 											</div>
 										</div>
 										<hr />
 										<div class="row">
 											<div class="col-sm-3 col-md-2 col-5">
-												<label class="details-label">{{form.location.label}}</label>
+												<label ">{{form.location.label}}</label>
 											</div>
 											<div class="col-md-8 col-6">
-												{%if form.location.errors %} {{form.full_name(class="invalid-input")}}
+												{%if form.location.errors %} 
+												{{form.full_name (class="form-control is-invalid")}}
 												<div class="invalid-feedback">
 													{%for mistake in form.location.errors %}
 													<span>{{ mistake }}</span>
 													{%endfor%}
 												</div>
 												{%else%} 
-													{{form.location(placeholder="Enter your location")}} 
+													{{form.location (class="form-control",placeholder="Enter your location")}} 
 												{%endif%}
 											</div>
 										</div>
 										<hr />
 										<div class="row">
 											<div class="col-sm-3 col-md-2 col-5">
-												<label class="details-label">{{form.email.label}}</label>
+												<label ">{{form.email.label}}</label>
 											</div>
 											<div class="col-md-8 col-6">
-												{%if form.email.errors %} {{form.email(class="invalid-input")}}
+												{%if form.email.errors %} 
+													{{form.email(class="form-control is-invalid")}}
 												<div class="invalid-feedback">
 													{%for mistake in form.email.errors %}
-													<span>{{ mistake }}</span>
+														<span>{{ mistake }}</span>
 													{%endfor%}
 												</div>
 												{%else%} 
-													{{form.email(placeholder="Enter your email")}} 
+													{{form.email(class="form-control",placeholder="Enter your email")}} 
 												{%endif%}
+												<h6><small>We'll never share your email with anyone else.</small></h6>
 											</div>
 										</div>
 										<hr />
 										<div class="row">
 											<div class="col-sm-3 col-md-2 col-5">
-												<label class="details-label">{{form.picture.label}}</label>
+												{{form.picture.label}}
 											</div>
 											<div class="col-md-8 col-6 form-group">
-												{{ form.picture (class="form-control-file") }} 
+												{{ form.picture }} 
 												{%if form.picture.errors %} 
 													{%for error in form.picture.errors %}
 														<span class="text-danger">{{error}} </span>
@@ -141,7 +147,7 @@
 										<hr />
 										<div class="row justify-content-center">
 											<div class="col-sm-3 col-md-2 col-5">
-												{{form.submit(class="btn btn-secondary")}}
+												{{form.submit(class="btn btn-secondary w-100")}}
 											</div>
 										</div>
 										<hr />
@@ -153,26 +159,16 @@
 									<hr />
 									<div class="row">
 										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">{{form.name.label}}</label>
+											<label ">Full name</label>
 										</div>
 										<div class="col-md-8 col-6">
 											{{user.full_name}}
 										</div>
 									</div>
 									<hr />
-
 									<div class="row">
 										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">{{form.email.label}}</label>
-										</div>
-										<div class="col-md-8 col-6">
-											{{user.email}}
-										</div>
-									</div>
-									<hr />
-									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">{{form.last_seen.label}}</label>
+											<label ">Last seen</label>
 										</div>
 										<div class="col-md-8 col-6">
 											{{user.last_seen}}
@@ -181,7 +177,7 @@
 									<hr />
 									<div class="row">
 										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">Location</label>
+											<label ">Location</label>
 										</div>
 										<div class="col-md-8 col-6">
 											{{user.location}}
@@ -197,7 +193,7 @@
 
 									<div class="row">
 										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">Title</label>
+											<label ">Title</label>
 										</div>
 										<div class="col-md-8 col-6">
 											{{ item.title }}
@@ -205,7 +201,7 @@
 									</div>
 									<div class="row">
 										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">Description</label>
+											<label ">Description</label>
 										</div>
 										<div class="col-md-8 col-6">
 											{{ item.description }}
@@ -213,7 +209,7 @@
 									</div>
 									<div class="row">
 										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">Date posted</label>
+											<label ">Date posted</label>
 										</div>
 										<div class="col-md-8 col-6">
 											{{ item.date_posted }}
@@ -233,7 +229,7 @@
 									<hr />
 									<div class="row">
 										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">Title</label>
+											<label ">Title</label>
 										</div>
 										<div class="col-md-8 col-6">
 											{{ item.title }}
@@ -241,7 +237,7 @@
 									</div>
 									<div class="row">
 										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">Description</label>
+											<label ">Description</label>
 										</div>
 										<div class="col-md-8 col-6">
 											{{ item.description }}
@@ -249,7 +245,7 @@
 									</div>
 									<div class="row">
 										<div class="col-sm-3 col-md-2 col-5">
-											<label class="details-label">Date posted</label>
+											<label ">Date posted</label>
 										</div>
 										<div class="col-md-8 col-6">
 											{{ item.date_posted }}
