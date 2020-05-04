@@ -149,7 +149,6 @@ def add_item():
         price="50",
         owner=u1,
         category=category_c,
-        sold=True
     )
 
     item_d = Item(
@@ -160,6 +159,47 @@ def add_item():
         price="70",
         owner=u2,
         category=category_d,
+
+    )
+    item_e = Item(
+        title="item 5",
+        description="something about the item 5",
+        item_location="Germany",
+        condition="Like new",
+        price="70",
+        owner=u1,
+        category=category_e,
+
+    )
+    item_f = Item(
+        title="item 6",
+        description="something about the item 6",
+        item_location="Germany",
+        condition="Like new",
+        price="70",
+        owner=u2,
+        category=category_f,
+
+    )
+    item_g = Item(
+        title="Item 7 ",
+        description="something about the item 7",
+        item_location="Spain",
+        condition="For parts or not working",
+        price="50",
+        owner=u1,
+        category=category_d,
+        sold=True
+
+    )
+    item_h = Item(
+        title="Item 8 ",
+        description="something about the item 3",
+        item_location="Spain",
+        condition="For parts or not working",
+        price="50",
+        owner=u2,
+        category=category_c,
         sold=True
 
     )
@@ -172,6 +212,14 @@ def add_item():
         title='item_c').first()
     q_item_d = Item.query.filter_by(
         title='item_d').first()
+    q_item_e = Item.query.filter_by(
+        title='item_e').first()
+    q_item_f = Item.query.filter_by(
+        title='item_f').first()
+    q_item_g = Item.query.filter_by(
+        title='item_g').first()
+    q_item_h = Item.query.filter_by(
+        title='item_h').first()
 
     if q_item_a is None:
         db.session.add(item_a)
@@ -181,6 +229,10 @@ def add_item():
         db.session.add(item_c)
     if q_item_d is None:
         db.session.add(item_d)
+    if q_item_e is None:
+        db.session.add(item_e)
+    if q_item_f is None:
+        db.session.add(item_f)
     db.session.flush()
     db.session.commit()
 

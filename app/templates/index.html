@@ -17,7 +17,7 @@
                                             <a class="dropdown-item" href="{{url_for("index", cat_id=cat.id)}}">{{cat.name}}</a>
                                         {%endfor%}
                                     </div>
-                                  </div>
+                                </div>
                             </div>
                             <input type="text" class="form-control no-radius" placeholder="Search">
                             <div class="input-group-append">
@@ -25,7 +25,7 @@
                                 <ion-icon name="search"></ion-icon>
                               </button>
                             </div>
-                          </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -42,19 +42,20 @@
                         </div>
                     </div>
                 </div> 
-                <div id="products" class="row view-group">
+                <div id="products" class="row view-group w-75 mx-auto">
                         <!-- items section -->
                         <!-- recent items first-->
                         {% for item in available_items|sort(reverse=true, attribute="id")%}
-                        <div class=" item col-sm-3 py-2">
-                            <div class="card h-100">
+                        <div class=" item col-sm-12 col-md-3 py-2">
+                            <div class="card custom-bg h-100">
                                 <div class="card-body">
                                     <img class="img-fluid card-img-top group list-group-image img-event" 
                                     src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}" />
-                                    <h3 class="card-title list-group-item-heading">{{item.title}}</h3>
-                                    <small>{{item.item_location}}</small>
-                                    <p class="card-text list-group-item-text">{{item.description}}</p>
-                                    <a href="{{url_for("item", item_id=item.id)}}" class="btn btn-secondary">Details</a>
+                                    <h3 class="card-title list-group-item-heading font-weight-bold ">{{item.title}}</h3>
+                                    <small class="d-block font-weight-bold card-text"><a href="{{url_for("user", user_id=item.owner.id)}}">{{item.owner.username}}</a></small>
+                                    <small class="card-text"><h6>{{item.item_location}}</h6></small>
+                                    <small class="card-text"><h6>{{ item.date_posted }}</h6></small>
+                                    <a href="{{url_for("item", item_id=item.id)}}" class="btn btn-secondary mt-2">Details</a>
                                 </div>
                             </div>
                         </div>

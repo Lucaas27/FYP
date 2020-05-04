@@ -16,8 +16,22 @@
 									<a href="#">{{user.username}}</a>
 								</h2>
 								<h6 class="d-block">
-									Listed {{user_items_count}} products for sale
+									Listed <span class="font-weight-bold">{{user_items_count}}</span> products for sale
 								</h6>
+								<p class="mb-2"><span class="font-weight-bold">{{ user.followers.count() }}</span> followers</p>
+								<p class="mb-2"><span class="font-weight-bold">{{ user.followed.count() }}</span> following.</p>
+
+								<!-- follower system -->
+								{% if not current_user.is_following(user) %}
+								<p>
+									<a class="btn btn-secondary no-radius" href="{{ url_for('follow', user_id=user.id) }}">Follow</a>
+								</p>
+								{% else %}
+								<p>
+									<a class="btn btn-secondary no-radius" href="{{ url_for('unfollow', user_id=user.id) }}">Unfollow</a>
+								</p>
+								{% endif %}
+								<!-- !-- follower system -->
 							</div>
 						</div>
 					</div>
@@ -26,16 +40,24 @@
 							<ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
 								<!-- nav tabs -->
 								{%if current_user.id == user.id%} 
-								<!-- any user can edit and see their purchase history their own info -->
+								<!-- any user can edit their info and see items being sold by people they follow -->
 								<li class="nav-item active">
 									<a class="nav-link active" id="edit-info-tab" data-toggle="tab" 
 									href="#edit-info" role="tab" aria-controls="edit-info" aria-selected="true">Edit</a>
+								</li>
+								<li class="nav-item active">
+									<a class="nav-link" id="following-tab" data-toggle="tab" 
+									href="#following" role="tab" aria-controls="edit-info" aria-selected="true">Following</a>
 								</li>
 								{%else%}
 								<!-- this information is displayed to the public -->
 								<li class="nav-item active">
 									<a class="nav-link active" id="basic-info-tab" data-toggle="tab" 
 									href="#basic-info" role="tab" aria-controls="basic-info" aria-selected="true">Info</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="live-items-tab" data-toggle="tab" 
+									href="#live-items" role="tab" aria-controls="live-items" aria-selected="false">Active Listings</a>
 								</li>
 								{%endif%}
 								{%if current_user.id == user.id and current_user.seller == True %} 
@@ -188,76 +210,75 @@
 								{%endif%}
 								<!-- active panel -->
 								<div class="tab-pane fade" id="live-items" role="tabpanel" aria-labelledby="live-items-tab">
-									{%for item in user_items_active %}
-									<hr />
-
+									<hr>
 									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label ">Title</label>
-										</div>
-										<div class="col-md-8 col-6">
-											{{ item.title }}
+										<div class="col-12">
+											<div id="products" class="row view-group w-75 mx-auto">
+												<!-- recent items first-->
+												{% for item in user_items_active|sort(reverse=true, attribute="id")%}
+												<div class="item col-sm-12 col-md-3 py-2 list-group-item">
+													<div class="card custom-bg h-100">
+														<div class="card-body">
+															<img class="img-fluid card-img-top group list-group-image img-event " 
+															src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}" />
+															<h3 class="card-title list-group-item-heading font-weight-bold ">{{item.title}}</h3>
+															<small class="d-block">Date posted: {{ item.date_posted }}</small>
+															<a href="{{url_for("item", item_id=item.id)}}" class="btn btn-secondary mt-2">Details</a>
+														</div>
+													</div>
+												</div>
+												{%endfor%}
+											</div>
 										</div>
 									</div>
-									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label ">Description</label>
-										</div>
-										<div class="col-md-8 col-6">
-											{{ item.description }}
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label ">Date posted</label>
-										</div>
-										<div class="col-md-8 col-6">
-											{{ item.date_posted }}
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<a href=""><input class="btn btn-secondary" value="Details" href="#" type="button" /></a>
-										</div>
-									</div>
-									<hr />
-									{% endfor %}
 								</div>
 								<!-- Sold panel -->
 								<div class="tab-pane fade" id="sold-items" role="tabpanel" aria-labelledby="sold-items-tab">
-									{% for item in user_items_sold %}
 									<hr />
 									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label ">Title</label>
+										<div class="col-12">
+											<div id="products" class="row view-group w-75 mx-auto">
+												{% for item in user_items_sold|sort(reverse=true, attribute="id")%}
+												<div class="item col-sm-12 col-md-3 py-2 list-group-item">
+													<div class="card custom-bg h-100">
+														<div class="card-body">
+															<img class="img-fluid card-img-top group list-group-image img-event " 
+															src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}" />
+															<h3 class="card-title list-group-item-heading font-weight-bold ">{{item.title}}</h3>
+															<small class="d-block">Date posted: {{ item.date_posted }}</small>
+															<a href="{{url_for("item", item_id=item.id)}}" class="btn btn-secondary mt-2">Details</a>
+														</div>
+													</div>
+												</div>
+												{%endfor%}
+											</div>
 										</div>
-										<div class="col-md-8 col-6">
-											{{ item.title }}
-										</div>
-									</div>
+									</div>										
+								</div>
+								<!-- following panel -->
+								<div class="tab-pane fade" id="following" role="tabpanel" aria-labelledby="following-tab">
+									<hr>
 									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label ">Description</label>
+											<div class="col-12">
+												<div id="products" class="row view-group w-75 mx-auto">
+													<!-- recent items first-->
+													{% for item in  items_following|sort(reverse=true, attribute="id")%}
+													<div class="item col-sm-12 col-md-3 py-2 list-group-item">
+														<div class="card custom-bg h-100">
+															<div class="card-body">
+																<img class="img-fluid card-img-top group list-group-image img-event " 
+																src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}" />
+																<h3 class="card-title list-group-item-heading font-weight-bold ">{{item.title}}</h3>
+																<small class="d-block">Date posted: {{ item.date_posted }}</small>
+																<small class="d-block"><a href="{{url_for("user", user_id=item.owner.id)}}">{{item.owner.username}}</a></small>
+																<a href="{{url_for("item", item_id=item.id)}}" class="btn btn-secondary mt-2">Details</a>
+															</div>
+														</div>
+													</div>
+													{%endfor%}
+												</div>
+											</div>
 										</div>
-										<div class="col-md-8 col-6">
-											{{ item.description }}
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label ">Date posted</label>
-										</div>
-										<div class="col-md-8 col-6">
-											{{ item.date_posted }}
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<a href=""><input class="btn btn-secondary" value="Details" href="#" type="button" /></a>
-										</div>
-									</div>
-									<hr />
-									{% endfor %}
 								</div>
 							</div>
 						</div>

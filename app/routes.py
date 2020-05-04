@@ -33,13 +33,6 @@ def index(cat_id=None):
     
     return render_template("index.html", available_items=available_items, categories=categories)
 
-# @app.route('/cat/<cat_id>', methods=['GET', 'POST'])
-# def get_cat(cat_id):
-    
-#     cat = Category.query.join(Item, cat_id == Item.category_id).all()
-        
-#     return render_template("index.html", cat=cat)
-
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -48,9 +41,11 @@ def register():
         return redirect(url_for("index"))
     form = RegistrationForm()
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(
-            form.password.data).decode("utf-8")
-        new_user = User(full_name=form.full_name.data.lower(), username=form.username.data.lower(), location=form.location.data.lower(), seller=form.seller.data,
+        
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
+        
+        new_user = User(full_name=form.full_name.data.lower(), username=form.username.data.lower(), 
+                        location=form.location.data.lower(), seller=form.seller.data,
                         email=form.email.data.lower(), password_hash=hashed_password)
         db.session.add(new_user)
         db.session.commit()
@@ -66,7 +61,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
+        if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get("next")
             if next_page is not None:
@@ -82,7 +77,6 @@ def login():
 def logout():
     logout_user()
     flash(f"You have logged out", "info")
-
     return redirect(url_for("index"))
 
 
@@ -114,14 +108,44 @@ def user(user_id):
         form.username.data = current_user.username
         form.location.data = current_user.location
         form.email.data = current_user.email
-
+    
+    items_following = current_user.followed_items().all()
     user_items_count = Item.query.filter_by(owner=user).count()
     user_items_active = Item.query.filter_by(owner=user, sold=False).all()
     user_items_sold = Item.query.filter_by(owner=user, sold=True).all()
 
     return render_template("user.html", title='Account', form=form, user=user, user_items_active=user_items_active,
-                           user_items_sold=user_items_sold, user_items_count=user_items_count)
+                           user_items_sold=user_items_sold, user_items_count=user_items_count,  items_following= items_following)
 
+@app.route('/follow/<user_id>')
+@login_required
+def follow(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        flash(f'User {user.username} not found.', "danger")
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('You cannot follow yourself!', "info")
+        return redirect(url_for('user', user_id=current_user.id))
+    current_user.follow(user)
+    db.session.commit()
+    flash(f'You are following {user.username}!', "success")
+    return redirect(url_for('user', user_id=user_id))
+
+@app.route('/unfollow/<user_id>')
+@login_required
+def unfollow(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        flash(f'User {user.username} not found.', "danger")
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('You cannot unfollow yourself!', "info")
+        return redirect(url_for('user', user_id=current_user.id))
+    current_user.unfollow(user)
+    db.session.commit()
+    flash(f'You unfollowed {user.username}.', "info")
+    return redirect(url_for('user', user_id=user_id))
 
 @app.route("/add_item/", methods=["GET", "POST"])
 @login_required

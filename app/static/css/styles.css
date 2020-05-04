@@ -57,7 +57,6 @@ P {
 	padding: 0;
 }
 .container {
-	background-color: var(--third-color);
 	box-shadow: 0.7rem 0.7rem 0.7rem rgba(198, 173, 143, 0.341);
 	border-radius: 15px;
 }
@@ -123,6 +122,9 @@ hr {
 	filter: none;
 	border-radius: 0px;
 	color: var(--main-color);
+}
+.custom-bg {
+	background-color: var(--third-color);
 }
 
 /* layout */
@@ -306,15 +308,12 @@ hr {
 }
 
 /*-------Index page----------*/
-#items .card {
-	background-color: rgba(198, 173, 143, 0.788);
-}
 
 .item.list-group-item {
 	float: none;
 	width: 100%;
 	background-color: var(--third-color);
-	margin-bottom: 2rem;
+	margin-bottom: 1rem;
 	flex: 0 0 100%;
 	max-width: 100%;
 	padding: 0 1rem;
