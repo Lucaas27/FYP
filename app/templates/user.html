@@ -8,7 +8,7 @@
 						<div class="d-flex justify-content-start">
 							<div class="image-container w-25">
 								<div class="image">
-									<img src="{{image_file}}" id="imgProfile" class="img-thumbnail rounded-circle" />
+									<img src="{{url_for('static', filename='img/profile/' + user.image_file)}}" id="imgProfile" class="img-thumbnail" />
 								</div>
 							</div>
 							<div class="userData ml-3">

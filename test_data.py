@@ -5,7 +5,7 @@ from datetime import datetime
 
 def add_user():
     
-    u1 = User(
+    admin = User(
         full_name='Lucas Gomes',
         username='admin',
         email='admin@gmail.com',
@@ -35,10 +35,13 @@ def add_user():
     )
     q_u1 = User.query.filter_by(username='user1').first()
     q_u2 = User.query.filter_by(username='user2').first()
+    q_admin = User.query.filter_by(username='admin').first()
     if q_u1 is None:
         db.session.add(u1)
     if q_u2 is None:
         db.session.add(u2)
+    if q_admin is None:
+        db.session.add(admin)
 
     db.session.commit()
 

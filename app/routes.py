@@ -1,8 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request
 from sqlalchemy import desc
-import secrets
 import os
-from PIL import Image
+from app.funcs import save_pic
 from datetime import datetime, date
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm, UpdateDetailsForm, AddItemForm
@@ -19,10 +18,28 @@ def before_request():
 
 @app.route("/")
 @app.route("/index")
-def index():
-    #filter only available items
-    available_items = Item.query.filter_by(sold=False)
-    return render_template("index.html")
+@app.route('/index/<cat_id>', methods=['GET', 'POST'])
+def index(cat_id=None):
+    
+    # filter only available items
+    available_items = Item.query.filter_by(sold=False).all()
+    
+    if cat_id is not None:
+        #inner join query returns all data from items that match the value of cat_id
+        available_items= Item.query.filter_by(sold=False).join(Category, (Item.category_id == cat_id)).all()
+
+    # Display only categories with available items
+    categories = Category.query.join(Item, (Category.id == Item.category_id)).filter_by(sold=False).all()
+    
+    return render_template("index.html", available_items=available_items, categories=categories)
+
+# @app.route('/cat/<cat_id>', methods=['GET', 'POST'])
+# def get_cat(cat_id):
+    
+#     cat = Category.query.join(Item, cat_id == Item.category_id).all()
+        
+#     return render_template("index.html", cat=cat)
+
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -73,25 +90,6 @@ def logout():
 def about():
     return render_template("about.html", title='About')
 
-# compress and save picture with a random hex in the name
-def save_pic(form_picture):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-
-    picture_name = random_hex + f_ext
-
-    picture_path = os.path.join(
-        app.root_path, "static", "img/profile/", picture_name)
-
-    output_size = (300, 300)
-    im = Image.open(form_picture)
-    i = im.convert("RGB")
-    i.thumbnail(output_size)
-
-    i.save(picture_path)
-
-    return picture_name
-
 
 @app.route("/user/<user_id>/", methods=["GET", "POST"])
 @login_required
@@ -106,7 +104,7 @@ def user(user_id):
         current_user.location = form.location.data.lower()
         current_user.email = form.email.data.lower()
         if form.picture.data:
-            picture_file = save_pic(form.picture.data)
+            picture_file = save_pic(form.picture.data, "static/img/profile")
             current_user.image_file = picture_file
         db.session.commit()
         flash("You have updated your information!", "success")
@@ -116,14 +114,12 @@ def user(user_id):
         form.username.data = current_user.username
         form.location.data = current_user.location
         form.email.data = current_user.email
-    image_file = url_for(
-        'static', filename='img/profile/' + user.image_file)
 
     user_items_count = Item.query.filter_by(owner=user).count()
     user_items_active = Item.query.filter_by(owner=user, sold=False).all()
     user_items_sold = Item.query.filter_by(owner=user, sold=True).all()
 
-    return render_template("user.html", title='Account', image_file=image_file, form=form, user=user, user_items_active=user_items_active,
+    return render_template("user.html", title='Account', form=form, user=user, user_items_active=user_items_active,
                            user_items_sold=user_items_sold, user_items_count=user_items_count)
 
 
@@ -131,29 +127,19 @@ def user(user_id):
 @login_required
 def add_item():
     form = AddItemForm()
-    form.category_id.choices = [(cat.id, cat.name.title())
+    # List comprehension
+    form.category_id.choices = [(cat.id, cat.name)
                                 for cat in Category.query.all()]
     ''' transform user inputs using .lower to save into
             the database in a consistent way'''
 
     if form.validate_on_submit():
-        item_pic = 'default.jpg'
         # Save picture to img item path after resizing it
         # save_file function cannot be used as it is a different path
         if form.pic_file.data:
-
-            pic = form.pic_file.data
-            random_hex = secrets.token_hex(8)
-            _, f_ext = os.path.splitext(pic.filename)
-            picture_name = random_hex + f_ext
-            picture_path = os.path.join(
-                app.root_path, "static", "img/items/", picture_name)
-            output_size = (300, 300)
-            im = Image.open(pic)
-            i = im.convert("RGB")
-            i.thumbnail(output_size)
-            i.save(picture_path)
-            item_pic = picture_path
+            item_pic = save_pic(form.pic_file.data, "static/img/items")
+        else:
+            item_pic = 'item.jpg'
 
         new_item = Item(title=form.title.data.lower(),
                         description=form.description.data.lower(),
@@ -172,9 +158,8 @@ def add_item():
 
 
 @app.route("/item/<item_id>", methods=["GET", "POST"])
-@login_required
 def item(item_id):
     item = Item.query.filter_by(id=item_id).first_or_404()
-    image_file = url_for(
-        'static', filename='img/items/' + item.image_file)
-    return render_template("itemDetails.html", title="Item Details", image_file=image_file, item=item)
+    image_file = url_for('static', filename='img/items/' + item.image_file)
+
+    return render_template("item_details.html", title="Item Details", item=item, image_file=image_file)

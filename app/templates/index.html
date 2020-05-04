@@ -1,71 +1,67 @@
-{% extends "layout.html" %}
-{% block  content %}
-<div class="homepage">
-  <section class="search">
-    <h1>Search section</h1>
-  </section>
-  
-  <section class="categories">
-    <h1>categories</h1>
-  </section>
-  
-  <section class="slider">
-    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="row">
-                    <div class="col-4">
-                        <img class="d-block w-100 bg-danger" src="..." alt="First slide">
-                    </div>
-                    <div class="col-4">
-                        <img class="d-block w-100 bg-danger" src="..." alt="First slide">
-                    </div>
-                    <div class="col-4">
-                        <img class="d-block w-100 bg-danger" src="..." alt="First slide">
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="row">
-                    <div class="col-4">
-                        <img class="d-block w-100 bg-dark text-white" src="..." alt="Second slide">
-                    </div>
-                    <div class="col-4">
-                        <img class="d-block w-100 bg-dark text-white" src="..." alt="Second slide">
-                    </div>
-                    <div class="col-4">
-                        <img class="d-block w-100 bg-dark text-white" src="..." alt="Second slide">
+{% extends "layout.html" %} {% block content %}
+<div class="container-fluid h-100 mt-4">
+    <div class="row">
+        <div class="col-12 h-100">
+            <div class="container-fluid">
+                <div class="row justify-content-center mb-4">    
+                    <div class="col-12 col-sm-8">
+                        <div class="input-group">
+                            <div class="input-group-append">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle no-radius" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      All categories
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item" href="{{url_for("index")}}">All Categories</a>
+                                        {%for cat in categories%}
+                                            <a class="dropdown-item" href="{{url_for("index", cat_id=cat.id)}}">{{cat.name}}</a>
+                                        {%endfor%}
+                                    </div>
+                                  </div>
+                            </div>
+                            <input type="text" class="form-control no-radius" placeholder="Search">
+                            <div class="input-group-append">
+                              <button class="btn btn-secondary no-radius" type="submit">
+                                <ion-icon name="search"></ion-icon>
+                              </button>
+                            </div>
+                          </div>
                     </div>
                 </div>
-            </div>
-            <div class="carousel-item">
                 <div class="row">
-                    <div class="col-4">
-                        <img class="d-block w-100 bg-info" src="..." alt="Third slide">
+                    <div class="col-lg-12 my-3">
+                        <div class="float-right">
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" id="list">
+                                    List View
+                                </button>
+                                <button class="btn btn-secondary" id="grid">
+                                    Grid View
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-4">
-                        <img class="d-block w-100 bg-info" src="..." alt="Third slide">
-                    </div>
-                    <div class="col-4">
-                        <img class="d-block w-100 bg-info" src="..." alt="Third slide">
-                    </div>
+                </div> 
+                <div id="products" class="row view-group">
+                        <!-- items section -->
+                        <!-- recent items first-->
+                        {% for item in available_items|sort(reverse=true, attribute="id")%}
+                        <div class=" item col-sm-3 py-2">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <img class="img-fluid card-img-top group list-group-image img-event" 
+                                    src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}" />
+                                    <h3 class="card-title list-group-item-heading">{{item.title}}</h3>
+                                    <small>{{item.item_location}}</small>
+                                    <p class="card-text list-group-item-text">{{item.description}}</p>
+                                    <a href="{{url_for("item", item_id=item.id)}}" class="btn btn-secondary">Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    {%endfor%}
                 </div>
             </div>
         </div>
-        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
     </div>
-  </section>
-  
-  <section class="items">
-    <h1>Items</h1>
-  </section>
-</dix>
-
-{% endblock  content %}
+</div>
+{% endblock content %}
