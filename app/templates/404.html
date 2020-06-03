@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
-{% block content %}
+{% block app_content %}
 <div class="container">
     <div class="error-wrapper">
         <h3 class="error">404 Error</h3>
         <div class="man-icon"></div>
-            <p class="info">Page not found</p>
+        <p class="info">Page not found</p>
         <a href="{{ url_for('index') }}" class="btn btn-primary btn-round home-btn">HOME</a>
     </div>
 </div>
 
-{% endblock content %}
+{% endblock app_content %}

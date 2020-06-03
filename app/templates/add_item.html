@@ -1,156 +1,64 @@
-{% extends "layout.html" %} 
-{% block content %}
-<div class="container custom-bg w-50 mt-2">
-	<div class="row align-content-start">
-		<div class="col pt-4 pb-4">
-			<div class="row justify-content-center mt-4">
-                <h3 class="text-uppercase text-center">Sell</h3>
-            </div>
-            <hr>
-			<form method="POST" enctype="multipart/form-data">
-				{{form.hidden_tag()}}
-				<div class="form-group">
-                    <!-- title -->
-                    {{form.title.label}}
-                    
-                    {%if form.title.errors %} 
-                    {{form.title(class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.title.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.title (class="form-control",placeholder="Enter a title")}} 
-                    {%endif%}
-                    <!-- !-- title ---  -->
-                </div>
-                
-				<div class="form-group">
-                    <!-- price -->
-                    {{form.price.label}}
-                    
-                    {%if form.price.errors %} 
-                    {{form.price(class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.price.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.price (class="form-control",placeholder="Choose a price")}} 
-                    {%endif%}
-                    <!-- !-- price -- -->
-                </div>
-                <div class="form-group">
-                    <!-- description -->
-                    {{form.description.label}}
-                    
-                    {%if form.description.errors %} 
-                    {{form.description(cols=32, rows=4, class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.description.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.description (cols=32, rows=4, class="form-control",placeholder="Describe your item")}} 
-                    {%endif%}
-                    <!-- !-- description -- -->
-                </div>
-                <div class="form-group">
-                    <!-- condition -->
-                    {{form.condition.label}}
-                    
-                    {%if form.condition.errors %} 
-                    {{form.condition(class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.condition.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.condition (class="form-control")}} 
-                    {%endif%}
-                    <!-- !-- condition -- -->
-                </div>
-                <div class="form-group">
-                    <!-- quantity -->
-                    {{form.quantity.label}}
-                    
-                    {%if form.quantity.errors %} 
-                    {{form.quantity(class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.quantity.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.quantity (class="form-control",placeholder="How many items")}} 
-                    {%endif%}
-                    <!-- !-- quantity -- -->
-                </div>
-                <div class="form-group">
-                    
-                    <!-- category -->
-                    {{form.category_id.label}}
-                    
-                    {%if form.category_id.errors %} 
-                    {{form.category_id(class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.category_id.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.category_id (class="form-control")}} 
-                    {%endif%}
-                    <!-- !-- category -- -->
-                </div>
-                <div class="form-group">
-                    <!-- picture -->
-                    {{form.pic_file.label}}
-                    
-                    {%if form.pic_file.errors %} 
-                    {{form.pic_file(class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.pic_file.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.pic_file (class="form-control")}} 
-                    {%endif%}
-                    <!-- !-- picture -- -->
-                </div>
-                <div class="form-group">
-                    <!-- location -->
-                    {{form.item_location.label}}
-                    
-                    {%if form.item_location.errors %} 
-                    {{form.item_location(class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.item_location.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.item_location (class="form-control",placeholder="Plese insert your city")}} 
-                    {%endif%}
-                    <!-- !-- location --- -->
-				</div>
-				<div class="form-group form-check">
-                    <!-- terms and conditions -->
-                    {{form.terms(class="form-check-input")}}
-                    {{form.terms.label(class="form-check-label")}}
-                    <!-- !-- terms and conditions -->
-                </div>
-				<div class="row justify-content-center">
-					{{form.submit(class="btn btn-secondary w-25")}}
-				</div>
-			</form>
-		</div>
-	</div>
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{%block app_content%}
+<div class="container custom-bg my-4">
+  <div class="row justify-content-center py-4">
+    <form method="POST" enctype="multipart/form-data" class="py-4 col-12">
+      {{form.hidden_tag()}}
+      <h2 class="mb-3 text-center">Sell</h2>
+      <hr>
+      <div class="form-group col-12">
+        {{wtf.form_field(form.title, class="form-control",placeholder="Enter a title")}}
+        {% for error in form.errors.title %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group col-12">
+        {{wtf.form_field(form.price, class="form-control",placeholder="Choose your price")}}
+        {% for error in form.errors.price %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group col-12">
+        {{wtf.form_field(form.condition, class="form-control")}}
+        {% for error in form.errors.condition %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group col-12">
+        {{wtf.form_field(form.description, rows="8", class="form-control",placeholder="Enter a short description")}}
+        {% for error in form.errors.description %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group col-12">
+        {{wtf.form_field(form.category_id, class="form-control")}}
+        {% for error in form.errors.category_id %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group col-12">
+        {{wtf.form_field(form.quantity, class="form-control",placeholder="How many items")}}
+        {% for error in form.errors.quantity %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group col-12">
+        {{wtf.form_field(form.item_city, class="form-control",placeholder="Enter your city")}}
+        {% for error in form.errors.item_city %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+      </div>
+      <div class="form-group col-12">
+        {{wtf.form_field(form.picture, class="form-control p-0 mb-3")}}
+        {% for error in form.errors.picture %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+      </div>
+      <div class="form-row justify-content-center">
+        {{wtf.form_field(form.submit, class="btn btn-block btn-secondary col-5")}}
+      </div>
+    </form>
+  </div>
 </div>
-
-{% endblock content %}
+{% endblock app_content %}

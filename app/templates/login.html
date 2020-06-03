@@ -1,68 +1,64 @@
-{% extends "layout.html" %} {% block content %}
-<div class="container mt-2 custom-bg">
-	<div class="row align-content-start">
-		<div class="col-md-7 pt-4 pb-4">
-			<div class="row justify-content-center mt-4">
-				<div class="w-25">
-					<img
-						class="img-fluid img-thumbnail mb-3 rounded-circle"
-						src="{{ url_for('static', filename='img/login/avatar.png') }}"
-						alt="loginImage"
-					/>
-					<h3 class="text-uppercase text-center">Login</h3>
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block app_content %}
+<div class="container my-4 custom-bg col-10 col-md-6">
+    <div class="row align-content-start">
+        <div class="col-md-7 pt-4 pb-4">
+            <div class="row justify-content-center mt-4">
+                <div class="col-8 col-md-12 text-center">
+                    <img class="img-fluid img-thumbnail mb-3 rounded-circle w-50"
+                        src="{{ url_for('static', filename='img/login/avatar.png') }}" alt='loginImage'>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-12 mb-3 text-center">
+                    <h3 class="text-uppercase">Login</h3>
                     <hr>
                 </div>
-			</div>
-			<form method="POST">
-				{{form.hidden_tag()}}
-				<div class="form-group">
-                    {{form.email.label}}
-                    
-                    {%if form.email.errors %} 
-                    {{form.email(class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.email.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.email (class="form-control",placeholder="Enter email")}} 
-                    {%endif%}
-				</div>
-				<div class="form-group">
-                    {{form.password.label}}
-                    
-                    {%if form.password.errors %} 
-                    {{form.password(class="form-control is-invalid")}}
-					<div class="invalid-feedback">
-						{%for mistake in form.password.errors %}
-						    <span>{{ mistake }}</span>
-						{%endfor%}
-					</div>
-                    {%else%} 
-                        {{form.password (class="form-control",placeholder="Enter email")}} 
-                    {%endif%}
-				</div>
-				<div class="form-group form-check">
-                    {{form.remember_me(class="form-check-input")}}
-                    {{form.remember_me.label(class="form-check-label")}}
-                </div>
+            </div>
+            <div class="row">
+                <form method="POST" class="col-12">
+                    {{form.hidden_tag()}}
+                    <div class="form-group">
+                        {{ wtf.form_field(form.email, class="form-control col-12",placeholder="Enter email") }}
+                        {% for error in form.errors.email %}
+                        <div class="text-danger">{{error}}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ wtf.form_field(form.password, class="form-control col-12",placeholder="Enter password") }}
+                        {% for error in form.errors.password %}
+                        <div class="text-danger">{{error}}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group form-check">
+                        {{wtf.form_field(form.remember_me, class="form-check-input")}}
+
+                    </div>
                     <small>
                         <a class="text-muted" href="#"> Forgot your password? </a>
                     </small>
-				<div class="row justify-content-center">
-					{{form.submit(class="btn btn-secondary w-25")}}
-				</div>
-			</form>
-		</div>
-		<div class="col-md-5 p-0">
-			<div class="overlay login d-flex flex-column justify-content-center align-items-center">
-                <h2>New here?</h2>
-                <p class="text-center">Sign up and discover great opportunities!</p>
-                <a class="btn btn-secondary" href="{{ url_for("register") }}">Sign up</a>
-            </div>              
-		</div>
-	</div>
+                    <div class="row justify-content-center">
+                        {{wtf.form_field(form.submit, class="btn btn-secondary col-8 col-md-6 mt-3")}}
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-5 p-0">
+            <div class="overlay login d-flex flex-column justify-content-center align-items-center">
+                <h2 class="text-center mt-3">New here?</h2>
+                <p class="text-center mt-3 mb-3">Sign up and discover great opportunities!</p>
+                <a class="btn btn-secondary" href="{{ url_for('register') }}">Sign up</a>
+                <div class="separator">or</div>
+                <a id="gg-btn" class="btn btn-dark mb-3" href="{{url_for('gg_login')}}">
+                    <i class="fab fa-google">
+                        Login with google
+                    </i>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
-{% endblock content %}
+
+{% endblock app_content %}

@@ -1,291 +1,209 @@
-{% extends "layout.html" %} {%block content%}
-<div id="profile-page" class="container">
-	<div class="row mt-4 mb-4">
-		<div class="col-12">
-			<div class="card">
-				<div class="card-body">
-					<div class="card-title mb-4">
-						<div class="d-flex justify-content-start">
-							<div class="image-container w-25">
-								<div class="image">
-									<img src="{{url_for('static', filename='img/profile/' + user.image_file)}}" id="imgProfile" class="img-thumbnail" />
-								</div>
-							</div>
-							<div class="userData ml-3">
-								<h2 class="d-block">
-									<a href="#">{{user.username}}</a>
-								</h2>
-								<h6 class="d-block">
-									Listed <span class="font-weight-bold">{{user_items_count}}</span> products for sale
-								</h6>
-								<p class="mb-2"><span class="font-weight-bold">{{ user.followers.count() }}</span> followers</p>
-								<p class="mb-2"><span class="font-weight-bold">{{ user.followed.count() }}</span> following.</p>
+{% extends "layout.html" %}
+{%block app_content%}
+<div id="profile-page">
+  <div class="row mt-4 mb-4">
+    <div class="card custom-bg col-10 mx-auto">
+      <div class="card-body">
+        <div class="card-title mb-4">
+          <div class="row justify-content-start">
+            <div class="image-container col-5 col-md-3">
+              <div class="image">
+                <img src="{{url_for('static', filename='img/profile/' + user.image_file)}}" id="imgProfile"
+                  class="img-thumbnail rounded-circle" />
+              </div>
+            </div>
+            <div class="userData col-5 ml-3">
+              <h2 class="d-block">
+                <a href="#">{{user.username.capitalize()}}</a>
+              </h2>
+              <p class="mb-2">
+                <span class="font-weight-bold">
+                  {{ user.followers.count() }}
+                </span>
+                followers
+              </p>
+              <p class="mb-4">
+                <span class="font-weight-bold">
+                  {{ user.followed.count() }}
+                </span>
+                following.
+              </p>
+              <!-- follower system -->
+              {% if not current_user.is_following(user) %}
+              <p>
+                <a class="btn btn-outline-secondary no-radius"
+                  href="{{ url_for('follow', username=user.username) }}">Follow</a>
+              </p>
+              {% else %}
+              <p>
+                <a class="btn btn-outline-secondary no-radius"
+                  href="{{ url_for('unfollow', username=user.username) }}">Unfollow</a>
+              </p>
+              {% endif %}
+              <!--follower system -->
+            </div>
 
-								<!-- follower system -->
-								{% if not current_user.is_following(user) %}
-								<p>
-									<a class="btn btn-secondary no-radius" href="{{ url_for('follow', user_id=user.id) }}">Follow</a>
-								</p>
-								{% else %}
-								<p>
-									<a class="btn btn-secondary no-radius" href="{{ url_for('unfollow', user_id=user.id) }}">Unfollow</a>
-								</p>
-								{% endif %}
-								<!-- !-- follower system -->
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-12">
-							<ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
-								<!-- nav tabs -->
-								{%if current_user.id == user.id%} 
-								<!-- any user can edit their info and see items being sold by people they follow -->
-								<li class="nav-item active">
-									<a class="nav-link active" id="edit-info-tab" data-toggle="tab" 
-									href="#edit-info" role="tab" aria-controls="edit-info" aria-selected="true">Edit</a>
-								</li>
-								<li class="nav-item active">
-									<a class="nav-link" id="following-tab" data-toggle="tab" 
-									href="#following" role="tab" aria-controls="edit-info" aria-selected="true">Following</a>
-								</li>
-								{%else%}
-								<!-- this information is displayed to the public -->
-								<li class="nav-item active">
-									<a class="nav-link active" id="basic-info-tab" data-toggle="tab" 
-									href="#basic-info" role="tab" aria-controls="basic-info" aria-selected="true">Info</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" id="live-items-tab" data-toggle="tab" 
-									href="#live-items" role="tab" aria-controls="live-items" aria-selected="false">Active Listings</a>
-								</li>
-								{%endif%}
-								{%if current_user.id == user.id and current_user.seller == True %} 
-								<!-- onyl sellers can see their own sales and active listings -->
-								<li class="nav-item">
-									<a class="nav-link" id="sold-items-tab" data-toggle="tab" 
-									href="#sold-items" role="tab" aria-controls="sold-items" aria-selected="false">Sold</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" id="live-items-tab" data-toggle="tab" 
-									href="#live-items" role="tab" aria-controls="live-items" aria-selected="false">Active Listings</a>
-								</li>
-								{%endif%}
-							</ul>
-							<!-- tab panels -->
-							<div class="tab-content ml-1" id="tabContent">
-								{%if current_user.id==user.id%}
-								<!-- edit info panel -->
-								<div class="tab-pane fade show active" id="edit-info" role="tabpanel" aria-labelledby="edit-info-tab">
-									<hr />
-									<form method="POST" id="editForm" enctype="multipart/form-data">
-										{{ form.hidden_tag() }}
-										<div class="row form-group">
-											<div class="col-sm-3 col-md-2 col-5">
-												<label ">{{form.full_name.label}}</label>
-											</div>
-											<div class="col-md-8 col-6">
-												{%if form.full_name.errors %} 
-												{{form.full_name(class="form-control is-invalid")}}
-												<div class="invalid-feedback">
-													{%for mistake in form.full_name.errors %}
-														<span>{{ mistake }}</span>
-													{%endfor%}
-												</div>
-												{%else%} 
-													{{form.full_name (class="form-control",placeholder="Enter your full name")}} 
-												{%endif%}
-											</div>
-										</div>
-										<hr />
-										<div class="row">
-											<div class="col-sm-3 col-md-2 col-5">
-												<label ">{{form.username.label}}</label>
-											</div>
-											<div class="col-md-8 col-6">
-												{%if form.username.errors %} 
-												{{form.username(class="form-control is-invalid")}}
-												<div class="invalid-feedback">
-													{%for mistake in form.username.errors %}
-													<span>{{ mistake }}</span>
-													{%endfor%}
-												</div>
-												{%else%} 
-													{{form.username (class="form-control",placeholder="Enter your username")}} 
-												{%endif%}
-											</div>
-										</div>
-										<hr />
-										<div class="row">
-											<div class="col-sm-3 col-md-2 col-5">
-												<label ">{{form.location.label}}</label>
-											</div>
-											<div class="col-md-8 col-6">
-												{%if form.location.errors %} 
-												{{form.full_name (class="form-control is-invalid")}}
-												<div class="invalid-feedback">
-													{%for mistake in form.location.errors %}
-													<span>{{ mistake }}</span>
-													{%endfor%}
-												</div>
-												{%else%} 
-													{{form.location (class="form-control",placeholder="Enter your location")}} 
-												{%endif%}
-											</div>
-										</div>
-										<hr />
-										<div class="row">
-											<div class="col-sm-3 col-md-2 col-5">
-												<label ">{{form.email.label}}</label>
-											</div>
-											<div class="col-md-8 col-6">
-												{%if form.email.errors %} 
-													{{form.email(class="form-control is-invalid")}}
-												<div class="invalid-feedback">
-													{%for mistake in form.email.errors %}
-														<span>{{ mistake }}</span>
-													{%endfor%}
-												</div>
-												{%else%} 
-													{{form.email(class="form-control",placeholder="Enter your email")}} 
-												{%endif%}
-												<h6><small>We'll never share your email with anyone else.</small></h6>
-											</div>
-										</div>
-										<hr />
-										<div class="row">
-											<div class="col-sm-3 col-md-2 col-5">
-												{{form.picture.label}}
-											</div>
-											<div class="col-md-8 col-6 form-group">
-												{{ form.picture }} 
-												{%if form.picture.errors %} 
-													{%for error in form.picture.errors %}
-														<span class="text-danger">{{error}} </span>
-													{%endfor%} 
-												{%endif%}
-											</div>
-										</div>
-										<hr />
-										<div class="row justify-content-center">
-											<div class="col-sm-3 col-md-2 col-5">
-												{{form.submit(class="btn btn-secondary w-100")}}
-											</div>
-										</div>
-										<hr />
-									</form>
-								</div>
-								{%else%}
-								<!-- Info panel -->
-								<div class="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
-									<hr />
-									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label ">Full name</label>
-										</div>
-										<div class="col-md-8 col-6">
-											{{user.full_name}}
-										</div>
-									</div>
-									<hr />
-									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label ">Last seen</label>
-										</div>
-										<div class="col-md-8 col-6">
-											{{user.last_seen}}
-										</div>
-									</div>
-									<hr />
-									<div class="row">
-										<div class="col-sm-3 col-md-2 col-5">
-											<label ">Location</label>
-										</div>
-										<div class="col-md-8 col-6">
-											{{user.location}}
-										</div>
-									</div>
-									<hr />
-								</div>
-								{%endif%}
-								<!-- active panel -->
-								<div class="tab-pane fade" id="live-items" role="tabpanel" aria-labelledby="live-items-tab">
-									<hr>
-									<div class="row">
-										<div class="col-12">
-											<div id="products" class="row view-group w-75 mx-auto">
-												<!-- recent items first-->
-												{% for item in user_items_active|sort(reverse=true, attribute="id")%}
-												<div class="item col-sm-12 col-md-3 py-2 list-group-item">
-													<div class="card custom-bg h-100">
-														<div class="card-body">
-															<img class="img-fluid card-img-top group list-group-image img-event " 
-															src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}" />
-															<h3 class="card-title list-group-item-heading font-weight-bold ">{{item.title}}</h3>
-															<small class="d-block">Date posted: {{ item.date_posted }}</small>
-															<a href="{{url_for("item", item_id=item.id)}}" class="btn btn-secondary mt-2">Details</a>
-														</div>
-													</div>
-												</div>
-												{%endfor%}
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- Sold panel -->
-								<div class="tab-pane fade" id="sold-items" role="tabpanel" aria-labelledby="sold-items-tab">
-									<hr />
-									<div class="row">
-										<div class="col-12">
-											<div id="products" class="row view-group w-75 mx-auto">
-												{% for item in user_items_sold|sort(reverse=true, attribute="id")%}
-												<div class="item col-sm-12 col-md-3 py-2 list-group-item">
-													<div class="card custom-bg h-100">
-														<div class="card-body">
-															<img class="img-fluid card-img-top group list-group-image img-event " 
-															src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}" />
-															<h3 class="card-title list-group-item-heading font-weight-bold ">{{item.title}}</h3>
-															<small class="d-block">Date posted: {{ item.date_posted }}</small>
-															<a href="{{url_for("item", item_id=item.id)}}" class="btn btn-secondary mt-2">Details</a>
-														</div>
-													</div>
-												</div>
-												{%endfor%}
-											</div>
-										</div>
-									</div>										
-								</div>
-								<!-- following panel -->
-								<div class="tab-pane fade" id="following" role="tabpanel" aria-labelledby="following-tab">
-									<hr>
-									<div class="row">
-											<div class="col-12">
-												<div id="products" class="row view-group w-75 mx-auto">
-													<!-- recent items first-->
-													{% for item in  items_following|sort(reverse=true, attribute="id")%}
-													<div class="item col-sm-12 col-md-3 py-2 list-group-item">
-														<div class="card custom-bg h-100">
-															<div class="card-body">
-																<img class="img-fluid card-img-top group list-group-image img-event " 
-																src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}" />
-																<h3 class="card-title list-group-item-heading font-weight-bold ">{{item.title}}</h3>
-																<small class="d-block">Date posted: {{ item.date_posted }}</small>
-																<small class="d-block"><a href="{{url_for("user", user_id=item.owner.id)}}">{{item.owner.username}}</a></small>
-																<a href="{{url_for("item", item_id=item.id)}}" class="btn btn-secondary mt-2">Details</a>
-															</div>
-														</div>
-													</div>
-													{%endfor%}
-												</div>
-											</div>
-										</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+              <!-- nav tabs -->
+
+              <!-- this information is displayed to the public -->
+              <li class="nav-item active">
+                <a class="nav-link active" id="basic-info-tab" data-toggle="tab" href="#basic-info" role="tab"
+                  aria-controls="basic-info" aria-selected="true">User</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="live-items-tab" data-toggle="tab" href="#live-items" role="tab"
+                  aria-controls="live-items" aria-selected="false">Active Listings</a>
+              </li>
+
+              {% if current_user.id == user.id %}
+              <!-- user can see items being sold by people they follow -->
+              <li class="nav-item active">
+                <a class="nav-link" id="following-tab" data-toggle="tab" href="#following" role="tab"
+                  aria-controls="edit-info" aria-selected="false">Following</a>
+              </li>
+              <!-- sellers can see their own sales -->
+              <li class="nav-item">
+                <a class="nav-link" id="sold-items-tab" data-toggle="tab" href="#sold-items" role="tab"
+                  aria-controls="sold-items" aria-selected="false">Sold</a>
+              </li>
+              <!-- buyers can see their orders -->
+              <li class="nav-item">
+                <a class="nav-link" id="order-tab" data-toggle="tab" href="#order-items" role="tab"
+                  aria-controls="sold-items" aria-selected="false">Orders</a>
+              </li>
+              {%endif%}
+            </ul>
+            <!-- tab panels -->
+            <div class="tab-content ml-1" id="tabContent">
+
+              <!-- Info panel -->
+              <div class="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+                <hr>
+                <div class="row">
+                  <div class="col-sm-3 col-md-2 col-5">
+                    <label ">Member since</label>
+                    </div>
+                    <div class=" col-md-8 col-6">
+                      {{user.created_at}}
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-3 col-md-2 col-5">
+                    <label ">Listed products</label>
+                    </div>
+                    <div class=" col-md-8 col-6">
+                      {{user_items_count}} times
+                  </div>
+                </div>
+              </div>
+              <!-- active panel -->
+              <div class="tab-pane fade" id="live-items" role="tabpanel" aria-labelledby="live-items-tab">
+                <hr>
+                <div class="row">
+                  <div class="col-12">
+                    <div id="products" class="row view-group w-75 mx-auto">
+                      <!-- recent items first-->
+                      {% for item  in  user_items_active %}
+                      <div class="item col-sm-12 col-md-3 py-2 list-group-item custom-bg">
+                        <div class="card custom-bg h-100">
+                          <div class="card-body">
+                            <img class="img-fluid w-25 card-img-top group list-group-image img-event "
+                              src="{{url_for('static', filename='img/items/' + item.image_file[0])}}"
+                              alt="{{item.title}}" />
+                            <h3 class="card-title list-group-item-heading font-weight-bold ">
+                              {{item.title}}</h3>
+                            <small class="d-block">Date posted:
+                              {{ item.created_at }}</small>
+                            <a href="{{url_for('item', item_id=item.id)}}" class="btn btn-secondary mt-5">
+                              Details
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      {%endfor%}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Sold panel -->
+              <div class="tab-pane fade" id="sold-items" role="tabpanel" aria-labelledby="sold-items-tab">
+                <hr>
+                <div class="row">
+                  <div class="col-12">
+                    <div id="products" class="row view-group w-75 mx-auto">
+                      <!-- recent items first-->
+                      {% for item  in  user_items_sold %}
+                      <div class="item col-sm-12 col-md-3 py-2 list-group-item custom-bg">
+                        <div class="card custom-bg h-100">
+                          <div class="card-body">
+                            <img class="img-fluid w-25 card-img-top group list-group-image img-event "
+                              src="{{url_for('static', filename='img/items/' + item.image_file[0])}}"
+                              alt="{{item.title}}" />
+                            <h3 class="card-title list-group-item-heading font-weight-bold ">
+                              {{item.title}}</h3>
+                            <small class="d-block">Date posted:
+                              {{ item.created_at }}</small>
+                            <small class="d-block">
+                              <a href="{{url_for('user', username=current_user.username)}}">
+                                {{item.seller.username}}
+                              </a>
+                            </small>
+                            <a href="{{url_for('item', item_id=item.id)}}" class="btn btn-secondary mt-2">
+                              Details
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      {%endfor%}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- following panel -->
+              <div class="tab-pane fade" id="following" role="tabpanel" aria-labelledby="following-tab">
+                <hr>
+                <div class="row">
+                  <div class="col-12">
+                    <div id="products" class="row view-group w-75 mx-auto">
+                      <!-- recent items first-->
+                      {% for item  in  items_following %}
+                      <div class="item col-sm-12 col-md-3 py-2 list-group-item custom-bg">
+                        <div class="card custom-bg h-100">
+                          <div class="card-body">
+                            <img class="img-fluid w-25 card-img-top group list-group-image img-event "
+                              src="{{url_for('static', filename='img/items/' + item.image_file[0])}}"
+                              alt="{{item.title}}" />
+                            <h3 class="card-title list-group-item-heading font-weight-bold ">
+                              {{item.title}}</h3>
+                            <small class="d-block">Date posted:
+                              {{ item.created_at }}</small>
+                            <small class="d-block">
+                              <a href="{{url_for('user', username=current_user.username)}}">
+                                {{item.seller.username}}
+                              </a>
+                            </small>
+                            <a href="{{url_for('item', item_id=item.id)}}" class="btn btn-secondary mt-2">
+                              Details
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      {%endfor%}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-{% endblock content %}
+{% endblock app_content %}

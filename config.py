@@ -10,3 +10,7 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # TEMPLATES_AUTO_RELOAD = True
+    GOOGLE_OAUTH_CLIENT_ID = os.environ.get(
+        "GOOGLE_OAUTH_CLIENT_ID")
+    GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get(
+        "GOOGLE_OAUTH_CLIENT_SECRET")

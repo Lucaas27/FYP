@@ -6,14 +6,14 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user,AnonymousUserMixin
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
-
-
+from flask_bootstrap import Bootstrap
 
 
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
+bootstrap = Bootstrap(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 login_manager=LoginManager(app)
@@ -21,11 +21,10 @@ login_manager.login_view = "login"
 login_manager.login_message_category="info"
 
 
-from app import routes, models, errors
-from app.models import User, Item, Category
 
-# bootswatch theme
-app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+from app import routes, models, errors
+from app.models import *
+
 
 # Give a username to anonymous users
 class Anonymous(AnonymousUserMixin):
@@ -45,13 +44,15 @@ class ShopModelView(ModelView):
 
     def is_accessible(self):
         return current_user.username== 'admin'
-
-    
+  
 
 admin = Admin(app, index_view=MyAdminIndexView(), name='Admin', template_mode='bootstrap3')
 # administrative views here
 
     
 admin.add_view(ShopModelView(User, db.session))
-admin.add_view(ShopModelView(Item, db.session))
+admin.add_view(ShopModelView(ItemForSale, db.session))
 admin.add_view(ShopModelView(Category, db.session))
+admin.add_view(ShopModelView(OAuth, db.session))
+admin.add_view(ShopModelView(Address, db.session))
+admin.add_view(ShopModelView(Order, db.session))

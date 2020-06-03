@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{%block app_content%}
+<div class="container custom-bg my-4">
+  <form method="POST" enctype="multipart/form-data" class="py-4">
+    {{form.hidden_tag()}}
+    <h2 class="m-3 text-center">Add address</h2>
+    <hr>
+    <div class="form-group col-12">
+      {{wtf.form_field(form.address , class="form-control",placeholder="Enter your street address")}}
+      {% for error in form.errors.address %}
+      <div class="text-danger">{{error}}</div>
+      {% endfor %}
+    </div>
+    <div class="form-group col-12">
+      {{wtf.form_field(form.city , class="form-control",placeholder="Enter your city")}}
+      {% for error in form.errors.city %}
+      <div class="text-danger">{{error}}</div>
+      {% endfor %}
+    </div>
+    <div class="form-group col-12">
+      {{wtf.form_field(form.country , class="form-control")}}
+      {% for error in form.errors.country %}
+      <div class="text-danger">{{error}}</div>
+      {% endfor %}
+    </div>
+    <div class="form-group col-12">
+      {{wtf.form_field(form.post_code , class="form-control",placeholder="Enter your post code")}}
+      {% for error in form.errors.post_code %}
+      <div class="text-danger">{{error}}</div>
+      {% endfor %}
+    </div>
+    <div class="form-row justify-content-center">
+      {{wtf.form_field(form.submit_address, class="btn btn-block w-50 btn-secondary")}}
+    </div>
+
+  </form>
+</div>
+{%endblock app_content%}

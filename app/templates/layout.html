@@ -1,96 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% extends "bootstrap/base.html" %}
 
-        {% if title %}
-            <title>FYP - {{ title }}</title>
-        {% else %}
-            <title>FYP</title>
-        {% endif %}
-        
-        <link rel="stylesheet" id="bootstrap-css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='css/styles.css') }}"
-        />
-        <script src="https://unpkg.com/ionicons@5.0.0/dist/ionicons.js"></script>
+{% block title %}
+{% if title %}
+FYP - {{ title }}
+{% else %}
+FYP
+{% endif %}
+{% endblock title%}
 
-    </head>
+{% block styles %}
+<!-- Bootstrap CSS, font awesome, wow js, animate css and custom css -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<script src="https://kit.fontawesome.com/ee1b094ea5.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css" />
+<link rel="stylesheet" href="{{url_for('.static', filename='css/styles.css')}}" />
+{% endblock styles %}
 
-    <body>
-        <div class="layout">
-            <header>
-                <nav class="navbar px-0">
-                    <div class="brand">
-                        <p>Shop</p>
-                    </div>
-                    <div class="navbar-links">
-                        <a href="{{ url_for("index") }}"> Home </a >
 
-                        <a href="#">Contact</a>
+{% block body %}
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light custom-bg">
+  <!-- navlinks toggle btn-->
+  <button class="navbar-toggler mr-auto" type="button" data-toggle="collapse" data-target="#links"
+    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fa fa-bars"></i>
+  </button>
 
-                        {% if current_user.is_authenticated %}
-                            <a href="{{ url_for("user", user_id=current_user.id) }}">Account</a>
+  <a href="{{url_for('index')}}" class="col-4 col-md-2 logo-container">
+    <img class="navbar-brand img-fluid mt-2" src="{{url_for('.static', filename='img/logo.png')}}" alt="logo" />
+  </a>
 
-                            <a href="{{ url_for("logout") }}">Logout</a>
-                        {% else %}
+  <!-- shopping cart mobile view -->
+  {%if current_user.is_authenticated%}
 
-                            <a href="{{ url_for("register") }}">Register</a>
+  <a href="#" class="ml-auto mr-3 d-lg-none">
+    <i class="fas fa-shopping-cart fa-lg"></i>
+  </a>
+  {%else%}
+  <a href="{{url_for('login')}}" class="ml-auto mr-3 d-lg-none">
+    <i class="fas fa-shopping-cart fa-lg"></i>
+  </a>
+  {%endif%}
+  <!-- search toggle  btn -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#search" aria-controls="navbarNav"
+    aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-search"></i>
+  </button>
 
-                            <a href="{{ url_for("login") }}">Login</a>
-
-                        {% endif %}
-                        
-                        {% if current_user.is_authenticated and current_user.seller==True %}
-                            <a href="{{ url_for("add_item") }}">Sell</a>
-                        {% endif %}
-
-                    </div>
-                    <div id="toggle-button">
-                        <ion-icon class="px-4" name="menu-sharp" size="large"></ion-icon>
-                    </div>
-                </nav>
-            </header>
-            <main>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                        <div class="alert-container">
-                            <div class="alert alert-{{category}}">
-                                <p>{{message}}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    {% endif %}
-                {%endwith%}
-
-                <!-- content will go here -->
-                {% block content %} 
-
-                {% endblock content %}
-            </main>
-
-            <footer class="footer navbar-fixed-bottom">
-                <div class="container-fluid">
-                    <hr>
-                    <p class="text-muted text-center">
-                        &copy;
-                        <script>
-                            document.write(new Date().getFullYear());
-                        </script>, Shop
-                    </p>
-                </div>
-            </footer>
+  <div class="collapse navbar-collapse pt-2 col-12 col-lg-9" id="search">
+    <form class="form-inline col-12 input-group">
+      <div class="dropdown ml-3 input-group-append">
+        <button class="btn btn-secondary dropdown-toggle no-radius" type="button" id="dropdownMenuButton"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Shop by category
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="{{url_for('index')}}">
+            All Categories
+          </a>
+          {%for cat in categories%}
+          <a class="dropdown-item" href="{{url_for('search', cat_id=cat.id)}}">
+            {{cat.name}}
+          </a>
+          {%endfor%}
         </div>
+      </div>
+      <input class="form-control col-8 input-group-append" type="search" placeholder="Search" aria-label="Search" />
 
-        <script
-        src="https://code.jquery.com/jquery-3.5.0.min.js"
-        integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
-        crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-    </body>
-</html>
+      <div class="input-group-append">
+        <button class="btn btn-secondary no-radius" type="submit">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</nav>
+<nav class="navbar navbar-expand-lg navbar-light custom-bg py-0">
+  <div id="links" class="collapse navbar-collapse py-2">
+    <div class="navbar-nav text-center">
+      <a class="nav-item nav-link" href="{{url_for('index')}}">Home</a>
+      <a class="nav-item nav-link" href="#">Contact</a>
+      <a class="nav-item nav-link" href="#">About</a>
+    </div>
+    <div class="navbar-nav ml-auto text-center">
+      {% if current_user.is_authenticated %}
+      <div class="dropdown">
+        <a class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+          aria-expanded="false">
+          Hello, {{current_user.first_name.capitalize()}}
+        </a>
+        <div class="dropdown-menu dropdown-menu-right text-center" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="{{url_for('user', username=current_user.username)}}">
+            Account
+          </a>
+          <a class="dropdown-item" href="{{url_for('user_settings')}}">
+            Settings
+          </a>
+          <a class="dropdown-item" href="{{url_for('add_item')}}">
+            Sell
+          </a>
+          <a class="dropdown-item" href="{{url_for('logout')}}">Sign out</a>
+        </div>
+      </div>
+
+      <div class="ml-3 text-center d-none d-lg-block" id="cart">
+        <a href="#">
+          <i class="fas fa-shopping-cart fa-lg"></i>
+        </a>
+      </div>
+
+      {%else%}
+      <a class="nav-item nav-link mr-2" href="{{url_for('login')}}">Login</a>
+      <a class="nav-item nav-link" href="{{url_for('register')}}">Register</a>
+      {%endif%}
+    </div>
+  </div>
+</nav>
+{% endblock navbar%}
+{% block content %}
+<main class="my-auto">
+  <div class="container-fluid">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{category}}">
+      <p>{{message}}</p>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {%endwith%}
+
+    <!-- page content will go here -->
+    {% block app_content %} {% endblock app_content %}
+  </div>
+</main>
+{% endblock content%}
+
+<footer class="footer navbar-fixed-bottom">
+  <div class="container-fluid">
+    <hr>
+    <p class="text-muted pb-3 text-center">
+      &copy;
+      Copyright
+      <script>
+        document.write(new Date().getFullYear());
+      </script>
+      Lensify
+    </p>
+  </div>
+</footer>
+{% block scripts %}
+
+<!-- Bootstrap and custom JavaScript -->
+{{ super() }}
+<script src="{{url_for('.static', filename='js/scripts.js')}}"></script>
+
+{% endblock scripts %}
+{% endblock body %}

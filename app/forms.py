@@ -1,41 +1,53 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, IntegerField, SelectField, FloatField, TextAreaField, DecimalField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp, ValidationError, NumberRange
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, MultipleFileField, IntegerField, SelectField, FloatField, TextAreaField, DecimalField, BooleanField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
+from wtforms_validators import AlphaNumeric, Alpha
 from app.models import User
 from flask_wtf.file import FileAllowed
 from flask_login import current_user
+from country_list import countries_for_language
+
+choice = countries_for_language('en')
 
 
 class RegistrationForm(FlaskForm):
-    full_name = StringField("Full name",
-                            validators=[DataRequired(), Length(min=4, max=40)])
-    username = StringField("Username", validators=[DataRequired(), Regexp(
-        r'^[\w]+$', message="Please do not use special characters"), Length(min=4, max=15)])
+    first_name = StringField("First name",
+                             validators=[DataRequired(), Alpha(
+                                 message="Please use alphabetic characters only"),
+                                 Length(min=3, max=20)])
 
-    seller = BooleanField(
-        "Please check the box if you have interest in selling items", default=False)
+    last_name = StringField("Last name",
+                            validators=[DataRequired(), Alpha(
+                                message="Please use alphabetic characters only"),
+                                Length(min=3, max=20)])
 
-    location = StringField("Location", validators=[
-                           DataRequired(), Length(min=2, max=30)])
+    username = StringField("Username", validators=[
+                           DataRequired(),  AlphaNumeric(
+                               message="Please use alphabetic characters and numbers only"),
+                           Length(min=4, max=12)])
+
     email = StringField("Email",
                         validators=[DataRequired(), Email()])
-    password = PasswordField("Password",
-                             validators=[DataRequired(), Regexp(r'^[\w]+$', message="Please do not use special characters"), Length(min=4, max=25)])
+
+    password = PasswordField("Password", validators=[
+                             DataRequired(), Length(min=4, max=25)])
+
     confirm_password = PasswordField("Confirm Password",
-                                     validators=[DataRequired(), EqualTo("password", message='Passwords must match'), Length(min=4, max=15)])
+                                     validators=[DataRequired(), EqualTo("password", message='Passwords must match'), Length(min=4, max=25)])
     submit = SubmitField("Sign Up")
 
     # Validate unique username
     def validate_username(self, username):
-        new_user = User.query.filter_by(username=username.data).first()
-        if new_user is not None:
+        user = User.query.filter_by(username=username.data.lower()).first()
+        if user is not None:
             raise ValidationError(
-                "Username alredy exists. Please chosse a different one.")
+                "Username alredy exists. Please chosse a different one."
+            )
 
     # Validate unique email
     def validate_email(self, email):
-        new_user = User.query.filter_by(email=email.data).first()
-        if new_user is not None:
+        user = User.query.filter_by(email=email.data.lower()).first()
+        if user is not None:
             raise ValidationError(
                 "This email is linked to an existing account.")
 
@@ -50,33 +62,62 @@ class LoginForm(FlaskForm):
 
 
 class UpdateDetailsForm(FlaskForm):
-    full_name = StringField("Full name",
-                            validators=[DataRequired(), Length(min=4, max=40)])
-    username = StringField("Username", validators=[DataRequired(), Regexp(
-        r'^[\w]+$', message="Please do not use special characters"), Length(min=4, max=15)])
-    location = StringField("Location", validators=[
-                           DataRequired(), Length(min=2, max=30)])
+
+    first_name = StringField("First name",
+                             validators=[DataRequired(), Alpha(
+                                 message="Please use alphabetic characters only"),
+                                 Length(min=3, max=20)])
+
+    last_name = StringField("Last name",
+                            validators=[DataRequired(), Alpha(
+                                message="Please use alphabetic characters only"),
+                                Length(min=3, max=20)])
+
+    username = StringField("Username", validators=[
+                           DataRequired(),  AlphaNumeric(
+                               message="Please use alphabetic characters and numbers only"),
+                           Length(min=4, max=12)])
+
     email = StringField("Email",
                         validators=[DataRequired(), Email()])
+
     picture = FileField('Profile picture', validators=[
         FileAllowed(['jpg', 'png', 'jpeg'])])
-    submit = SubmitField("Update")
+
+    submit_details = SubmitField("Update")
 
     # Validate unique username
     def validate_username(self, username):
-        if username.data != current_user.username:
-            new_user = User.query.filter_by(username=username.data).first()
-            if new_user is not None:
+        if username.data.lower() != current_user.username:
+            user = User.query.filter_by(username=username.data.lower()).first()
+            if user is not None:
                 raise ValidationError(
                     "Username alredy exists. Please chosse a different one.")
 
     # Validate unique email
     def validate_email(self, email):
-        if email.data != current_user.email:
-            new_user = User.query.filter_by(email=email.data).first()
-            if new_user is not None:
+        if email.data.lower() != current_user.email:
+            user = User.query.filter_by(email=email.data.lower()).first()
+            if user is not None:
                 raise ValidationError(
                     "This email is linked to an existing account.")
+
+
+class AddressForm(FlaskForm):
+
+    address = StringField("Street address", validators=[
+                          DataRequired(), Length(min=5, max=30)])
+
+    country = SelectField("Country", validators=[
+                          DataRequired()], choices=choice)
+
+    city = StringField("City", validators=[
+                       DataRequired(), Length(min=5, max=30)])
+
+    post_code = StringField("Post Code", validators=[
+                            DataRequired(), Length(min=5, max=30)])
+
+    submit_address = SubmitField("Submit")
 
 
 class AddItemForm(FlaskForm):
@@ -85,13 +126,13 @@ class AddItemForm(FlaskForm):
         DataRequired(), Length(min=4, max=140)])
 
     description = TextAreaField('Description', validators=[
-        DataRequired(), Length(min=4, max=140)])
+        DataRequired(), Length(min=4, max=500)])
 
     quantity = IntegerField(
         "Quantity", validators=[DataRequired(message="Please only insert numerical values"), NumberRange(min=1)])
 
-    item_location = StringField("Location", validators=[
-        DataRequired(), Length(min=2, max=140)])
+    item_city = StringField("City", validators=[
+        DataRequired(), Length(min=3, max=140)])
 
     condition = SelectField("Condition", validators=[DataRequired()], choices=[('Used', 'Used'),
                                                                                ('Like new',
@@ -101,9 +142,8 @@ class AddItemForm(FlaskForm):
     price = DecimalField("Price", validators=[
         DataRequired("Please set a valid price")])
 
-    pic_file = FileField('Image', validators=[
+    picture = MultipleFileField('Images (Up to 4)', validators=[
         FileAllowed(['jpg', 'png', 'jpeg'])])
-    terms = BooleanField("Agree to terms and conditions", validators=[DataRequired()])
 
     category_id = SelectField('Select category', coerce=int)
 

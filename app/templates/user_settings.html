@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{%block app_content%}
+<div class="container custom-bg my-4">
+  <div class="row py-4">
+    <div class="nav flex-column nav-tabs pl-3 mb-4 col-12 col-md-3" id="v-pills-tab" role="tablist"
+      aria-orientation="vertical">
+      <!-- Info tab -->
+      <a class="nav-link active" id="v-pills-info-tab" data-toggle="tab" href="#v-pills-info" role="tab"
+        aria-controls="v-pills-info" aria-selected="true">Info</a>
+      <!-- Address tab -->
+      <a class="nav-link" id="v-pills-address-tab" data-toggle="tab" href="#v-pills-address" role="tab"
+        aria-controls="v-pills-address" aria-selected="false">Addresses</a>
+      <a class="nav-link" id="v-pills-messages-tab" data-toggle="tab" href="#v-pills-messages" role="tab"
+        aria-controls="v-pills-messages" aria-selected="false">Messages</a>
+    </div>
+    <!-- Info content -->
+    <div class="tab-content col-12 col-md-9" id="v-pills-tabContent">
+      <div class="tab-pane fade show active" id="v-pills-info" role="tabpanel" aria-labelledby="v-pills-info-tab">
+        <h2 class="ml-2 font-weight-bold"> Basic info</h2>
+        <form method="POST" enctype="multipart/form-data" class="py-4">
+          {{form.hidden_tag()}}
+          <div class="form-row col-12">
+            <div class="form-group col-12 col-lg-5">
+              {{wtf.form_field(form.first_name, class="form-control text-capitalize",placeholder="Enter your first name")}}
+              {% for error in form.errors.first_name %}
+              <div class="text-danger">{{error}}</div>
+              {% endfor %}
+            </div>
+            <div class="form-group col-12 col-lg-5">
+              {{wtf.form_field(form.last_name, class="form-control text-capitalize",placeholder="Enter your last name")}}
+              {% for error in form.errors.last_name %}
+              <div class="text-danger">{{error}}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group col-12">
+            {{wtf.form_field(form.username, class="form-control text-capitalize",placeholder="Choose your username")}}
+            {% for error in form.errors.username %}
+            <div class="text-danger">{{error}}</div>
+            {% endfor %}
+          </div>
+          <div class="form-group col-12">
+            {{wtf.form_field(form.email, class="form-control",placeholder="Enter your email")}}
+            {% for error in form.errors.email %}
+            <div class="text-danger">{{error}}</div>
+            {% endfor %}
+          </div>
+          <div class="form-group col-12">
+            {{wtf.form_field(form.picture, class="form-control p-0 mb-3")}}
+            {% for error in form.errors.picture %}
+            <div class="text-danger">{{error}}</div>
+            {% endfor %}
+          </div>
+          <div class="form-row justify-content-center">
+            {{wtf.form_field(form.submit_details, class="btn btn-block btn-secondary col-5")}}
+          </div>
+        </form>
+
+      </div>
+      <div class="tab-pane fade" id="v-pills-address" role="tabpanel" aria-labelledby="v-pills-address-tab">
+        <div class="row">
+          <a href="{{url_for('user_settings', add_address='True')}}" type="button" class="btn mb-3">
+            <span class="fa fa-plus"></span>
+            New Address
+          </a>
+        </div>
+        <div class="row mb-3">
+          {%for address in all_user_addresses%}
+          <div class="card m-2 custom-bg col-md-3 p-0">
+            <div class="card-body custom-bg ">
+              <p>{{address.address.capitalize()}}</p>
+              <p>{{address.city.capitalize()}}</p>
+              <p>{{address.post_code.upper()}}</p>
+              <p>{{address.country.upper()}}</p>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+              <a href="{{url_for('user_settings', update='True', address_id=address.id)}}">
+                <div class="btn btn-info ">
+                  <span class="fa fa-pencil"></span>
+                </div>
+              </a>
+              <a href="#">
+                <div class="btn btn-danger">
+                  <span class="fa fa-remove"></span>
+                </div>
+              </a>
+            </div>
+          </div>
+          {%endfor%}
+        </div>
+      </div>
+      <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">...
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock app_content%}
