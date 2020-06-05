@@ -127,6 +127,24 @@
                         </div>
                       </div>
                       {%endfor%}
+                      <nav aria-label="Page navigation" class="col-12 my-2">
+                        <ul class="pagination justify-content-center">
+                          <li class="page-item {% if not prev_url_active %} disabled {% endif %}">
+                            <a class="page-link" href="{{ prev_url_active }}" tabindex="-1">Previous</a>
+                          </li>
+                          {% for num in page_num2 %}
+                          {% if num %}
+                          <li class="page-item {% if page == num %} active {% endif %}"><a class="page-link"
+                              href="{{url_for('user', username=current_user.username, page=num)}}">{{ num }}</a></li>
+                          {% else %}
+                          <span class="page-item ellipsis">…</span>
+                          {% endif %}
+                          {% endfor %}
+                          <li class="page-item {% if not next_url_active %} disabled {% endif %}">
+                            <a class="page-link" href="{{ next_url_active }}">Next</a>
+                          </li>
+                        </ul>
+                      </nav>
                     </div>
                   </div>
                 </div>
@@ -161,6 +179,24 @@
                         </div>
                       </div>
                       {%endfor%}
+                      <nav aria-label="Page navigation" class="col-12 my-2">
+                        <ul class="pagination justify-content-center">
+                          <li class="page-item {% if not prev_url_sold %} disabled {% endif %}">
+                            <a class="page-link" href="{{ prev_url_sold }}" tabindex="-1">Previous</a>
+                          </li>
+                          {% for num in page_num1 %}
+                          {% if num %}
+                          <li class="page-item {% if page == num %} active {% endif %}"><a class="page-link"
+                              href="{{url_for('user', username=user.username, page=num)}}">{{ num }}</a></li>
+                          {% else %}
+                          <span class="page-item ellipsis">...</span>
+                          {% endif %}
+                          {% endfor %}
+                          <li class="page-item {% if not next_url_sold %} disabled {% endif %}">
+                            <a class="page-link" href="{{ next_url_sold }}">Next</a>
+                          </li>
+                        </ul>
+                      </nav>
                     </div>
                   </div>
                 </div>
@@ -184,7 +220,7 @@
                             <small class="d-block">Date posted:
                               {{ item.created_at }}</small>
                             <small class="d-block">
-                              <a href="{{url_for('user', username=current_user.username)}}">
+                              <a href="{{url_for('user', username=item.seller.username)}}">
                                 {{item.seller.username}}
                               </a>
                             </small>
@@ -195,6 +231,24 @@
                         </div>
                       </div>
                       {%endfor%}
+                      <nav aria-label="Page navigation" class="col-12 my-2">
+                        <ul class="pagination justify-content-center">
+                          <li class="page-item {% if not prev_url_following %} disabled {% endif %}">
+                            <a class="page-link" href="{{ prev_url_following }}" tabindex="-1">Previous</a>
+                          </li>
+                          {% for num in page_num %}
+                          {% if num %}
+                          <li class="page-item {% if page == num %} active {% endif %}"><a class="page-link"
+                              href="{{url_for('user', username=current_user.username, page=num)}}">{{ num }}</a></li>
+                          {% else %}
+                          <span class="page-item ellipsis">...</span>
+                          {% endif %}
+                          {% endfor %}
+                          <li class="page-item {% if not next_url_following %} disabled {% endif %}">
+                            <a class="page-link" href="{{ next_url_following }}">Next</a>
+                          </li>
+                        </ul>
+                      </nav>
                     </div>
                   </div>
                 </div>

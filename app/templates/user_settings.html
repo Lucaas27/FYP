@@ -80,7 +80,8 @@
                   <span class="fa fa-pencil"></span>
                 </div>
               </a>
-              <a href="#">
+              <a href="{{url_for('user_settings', delete='True', address_id=address.id)}}" class="confirm-delete"
+                data-toggle="modal" data-target="#confirmDeleteModal" id="deleteButton{{address.id}}">
                 <div class="btn btn-danger">
                   <span class="fa fa-remove"></span>
                 </div>

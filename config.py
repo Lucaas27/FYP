@@ -14,3 +14,4 @@ class Config(object):
         "GOOGLE_OAUTH_CLIENT_ID")
     GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get(
         "GOOGLE_OAUTH_CLIENT_SECRET")
+    POSTS_PER_PAGE = 6

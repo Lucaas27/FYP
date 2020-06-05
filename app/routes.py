@@ -33,21 +33,33 @@ def inject_categories():
 @app.route("/")
 @app.route("/index")
 def index():
-    all_items = ItemForSale.query.order_by(ItemForSale.id.desc()).all()
-    return render_template("index.html", all_items=all_items)
+    page = request.args.get('page', 1, type=int)
+    all_items = ItemForSale.query.order_by(ItemForSale.id.desc()).paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('index', page=all_items.next_num) \
+        if all_items.has_next else None
+    prev_url = url_for('index', page=all_items.prev_num) \
+        if all_items.has_prev else None
+    return render_template("index.html", all_items=all_items.items, next_url=next_url,
+                           prev_url=prev_url, page_num=all_items.iter_pages(), page=page)
 
 
 @app.route('/search/<cat_id>', methods=['GET', 'POST'])
 def search(cat_id=None):
     page = request.args.get('page', 1, type=int)
-    per_page = 6
-
-    available_items = ItemForSale.query.all()
+    available_items = ItemForSale.query.paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
     if cat_id is not None:
         # inner join query returns all data from items that match the value of cat_id
         available_items = ItemForSale.query.join(
-            Category, (ItemForSale.category_id == cat_id)).all()
-        return render_template("search.html", available_items=available_items)
+            Category, (ItemForSale.category_id == cat_id)).paginate(
+            page, app.config['POSTS_PER_PAGE'], False)
+        next_url = url_for('search', page=available_items.next_num) \
+            if available_items.has_next else None
+        prev_url = url_for('search', page=available_items.prev_num) \
+            if available_items.has_prev else None
+        return render_template("search.html", available_items=available_items.items,
+                               next_url=next_url, prev_url=prev_url, page=page, page_num=available_items.iter_pages())
     return render_template("search.html")
 
 
@@ -108,19 +120,43 @@ def about():
 @app.route("/profile/<username>", methods=["GET"])
 @login_required
 def user(username):
+    page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
     categories = Category.query.join(
         ItemForSale, (Category.id == ItemForSale.category_id)).all()
 
-    items_following = current_user.followed_items().all()
+    items_following = current_user.followed_items().paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url_following = url_for('user', username=username, page=items_following.next_num) \
+        if items_following.has_next else None
+    prev_url_following = url_for('user', username=username, page=items_following.prev_num) \
+        if items_following.has_prev else None
+
     user_items_count = ItemForSale.query.filter_by(seller=user).count()
+
     user_items_sold = ItemForSale.query.filter_by(
-        sold=True, seller=current_user).order_by(ItemForSale.id.desc()).all()
+        sold=True, seller=current_user).order_by(ItemForSale.id.desc()).paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url_sold = url_for('user', username=username, page=user_items_sold.next_num) \
+        if items_following.has_next else None
+    prev_url_sold = url_for('user', username=username, page=user_items_sold.prev_num) \
+        if items_following.has_prev else None
+
     user_items_active = ItemForSale.query.filter_by(
-        seller=user, sold=False).order_by(ItemForSale.id.desc()).all()
-    return render_template("user.html", title="Account", user=user, user_items_active=user_items_active,
-                           user_items_count=user_items_count, user_items_sold=user_items_sold,
-                           items_following=items_following)
+        seller=user, sold=False).order_by(ItemForSale.id.desc()).paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url_active = url_for('user', username=username, page=user_items_active.next_num) \
+        if items_following.has_next else None
+    prev_url_active = url_for('user', username=username, page=user_items_active.prev_num) \
+        if items_following.has_prev else None
+
+    return render_template("user.html", title="Account", user=user, user_items_active=user_items_active.items,
+                           user_items_count=user_items_count, user_items_sold=user_items_sold.items,
+                           items_following=items_following.items, page_num=items_following.iter_pages(),
+                           page_num1=user_items_sold.iter_pages(), page_num2=user_items_active.iter_pages(),
+                           page=page, next_url_active=next_url_active, prev_url_active=prev_url_active,
+                           next_url_following=next_url_following, prev_url_following=prev_url_following,
+                           next_url_sold=next_url_sold, prev_url_sold=prev_url_sold)
 
 
 # User info and addresses
@@ -173,6 +209,18 @@ def user_settings(address_id=None):
                 db.session.commit()
                 flash("You have updated your address!", "success")
                 return redirect(url_for("user_settings"))
+        else:
+            return render_template('404.html')
+        return render_template("update_address.html", form=form)
+
+    # Delete address
+    if request.args.get('delete') and address_id is not None:
+        address = Address.query.get(address_id)
+        if address in current_user.address:
+            db.session.delete(address)
+            db.session.commit()
+            flash("You have deleted an address!", "success")
+            return redirect(url_for("user_settings"))
         else:
             return render_template('404.html')
         return render_template("update_address.html", form=form)

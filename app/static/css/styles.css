@@ -353,6 +353,10 @@ hr {
   width: 40%;
 }
 
+.pagination {
+  flex-wrap: wrap;
+}
+
 .item.list-group-item .list-group-image {
   margin-right: 0.6rem;
   width: 40%;
