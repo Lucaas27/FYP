@@ -2,7 +2,7 @@
 {%block app_content%}
 <div id="profile-page">
   <div class="row mt-4 mb-4">
-    <div class="card custom-bg col-10 mx-auto">
+    <div class="card custom-bg col-12 col-md-10 mx-auto">
       <div class="card-body">
         <div class="card-title mb-4">
           <div class="row justify-content-start">
@@ -14,7 +14,7 @@
             </div>
             <div class="userData col-5 ml-3">
               <h2 class="d-block">
-                <a href="#">{{user.username.capitalize()}}</a>
+                <a href="#">{{ user.username.capitalize() }}</a>
               </h2>
               <p class="mb-2">
                 <span class="font-weight-bold">
@@ -98,7 +98,7 @@
                     <label ">Listed products</label>
                     </div>
                     <div class=" col-md-8 col-6">
-                      {{user_items_count}} times
+                      {{ user_items_count }} times
                   </div>
                 </div>
               </div>
@@ -109,7 +109,7 @@
                   <div class="col-12">
                     <div id="products" class="row view-group w-75 mx-auto">
                       <!-- recent items first-->
-                      {% for item  in  user_items_active %}
+                      {% for item  in user_items_active %}
                       <div class="item col-sm-12 col-md-3 py-2 list-group-item custom-bg">
                         <div class="card custom-bg h-100">
                           <div class="card-body">
@@ -117,9 +117,9 @@
                               src="{{url_for('static', filename='img/items/' + item.image_file[0])}}"
                               alt="{{item.title}}" />
                             <h3 class="card-title list-group-item-heading font-weight-bold ">
-                              {{item.title}}</h3>
+                              {{ item.title }}</h3>
                             <small class="d-block">Date posted:
-                              {{ item.created_at }}</small>
+                              {{ moment(item.created_at).format('LLLL') }}</small>
                             <a href="{{url_for('item', item_id=item.id)}}" class="btn btn-secondary mt-5">
                               Details
                             </a>
@@ -156,7 +156,7 @@
                   <div class="col-12">
                     <div id="products" class="row view-group w-75 mx-auto">
                       <!-- recent items first-->
-                      {% for item  in  user_items_sold %}
+                      {% for item in user_items_sold %}
                       <div class="item col-sm-12 col-md-3 py-2 list-group-item custom-bg">
                         <div class="card custom-bg h-100">
                           <div class="card-body">
@@ -164,12 +164,12 @@
                               src="{{url_for('static', filename='img/items/' + item.image_file[0])}}"
                               alt="{{item.title}}" />
                             <h3 class="card-title list-group-item-heading font-weight-bold ">
-                              {{item.title}}</h3>
+                              {{ item.title }}</h3>
                             <small class="d-block">Date posted:
-                              {{ item.created_at }}</small>
+                              {{ moment(item.created_at).format('LLL') }}</small>
                             <small class="d-block">
                               <a href="{{url_for('user', username=current_user.username)}}">
-                                {{item.seller.username}}
+                                {{ item.seller.username }}
                               </a>
                             </small>
                             <a href="{{url_for('item', item_id=item.id)}}" class="btn btn-secondary mt-2">
@@ -208,7 +208,7 @@
                   <div class="col-12">
                     <div id="products" class="row view-group w-75 mx-auto">
                       <!-- recent items first-->
-                      {% for item  in  items_following %}
+                      {% for item in items_following %}
                       <div class="item col-sm-12 col-md-3 py-2 list-group-item custom-bg">
                         <div class="card custom-bg h-100">
                           <div class="card-body">
@@ -216,12 +216,12 @@
                               src="{{url_for('static', filename='img/items/' + item.image_file[0])}}"
                               alt="{{item.title}}" />
                             <h3 class="card-title list-group-item-heading font-weight-bold ">
-                              {{item.title}}</h3>
+                              {{ item.title }}</h3>
                             <small class="d-block">Date posted:
-                              {{ item.created_at }}</small>
+                              {{ moment(item.created_at).format('LLL') }}</small>
                             <small class="d-block">
                               <a href="{{url_for('user', username=item.seller.username)}}">
-                                {{item.seller.username}}
+                                {{ item.seller.username }}
                               </a>
                             </small>
                             <a href="{{url_for('item', item_id=item.id)}}" class="btn btn-secondary mt-2">

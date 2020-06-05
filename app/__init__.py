@@ -7,6 +7,8 @@ from flask_login import LoginManager, current_user,AnonymousUserMixin
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+
 
 
 
@@ -16,6 +18,7 @@ db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
+moment = Moment(app)
 login_manager=LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category="info"
