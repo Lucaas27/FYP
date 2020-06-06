@@ -118,8 +118,10 @@
                               alt="{{item.title}}" />
                             <h3 class="card-title list-group-item-heading font-weight-bold ">
                               {{ item.title }}</h3>
-                            <small class="d-block">Date posted:
-                              {{ moment(item.created_at).format('LLLL') }}</small>
+                            <small class="d-block">
+                              <strong>Date posted:</strong>
+                              {{ moment(item.created_at).format('LLLL') }}
+                            </small>
                             <a href="{{url_for('item', item_id=item.id)}}" class="btn btn-secondary mt-5">
                               Details
                             </a>
@@ -165,8 +167,10 @@
                               alt="{{item.title}}" />
                             <h3 class="card-title list-group-item-heading font-weight-bold ">
                               {{ item.title }}</h3>
-                            <small class="d-block">Date posted:
-                              {{ moment(item.created_at).format('LLL') }}</small>
+                            <small class="d-block">
+                              <strong>Date posted:</strong>
+                              {{ moment(item.created_at).format('LLL') }}
+                            </small>
                             <small class="d-block">
                               <a href="{{url_for('user', username=current_user.username)}}">
                                 {{ item.seller.username }}
@@ -217,8 +221,10 @@
                               alt="{{item.title}}" />
                             <h3 class="card-title list-group-item-heading font-weight-bold ">
                               {{ item.title }}</h3>
-                            <small class="d-block">Date posted:
-                              {{ moment(item.created_at).format('LLL') }}</small>
+                            <small class="d-block">
+                              <strong>Date posted:</strong>
+                              {{ moment(item.created_at).format('LLL') }}
+                            </small>
                             <small class="d-block">
                               <a href="{{url_for('user', username=item.seller.username)}}">
                                 {{ item.seller.username }}

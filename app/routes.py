@@ -7,7 +7,7 @@ from datetime import datetime, date
 from app import app, db, bcrypt
 from app.forms import *
 from app.models import *
-from app.funcs import save_pic
+from app.funcs import save_pic, send_reset_email
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.consumer import oauth_authorized, oauth_error
@@ -35,7 +35,7 @@ def inject_categories():
 def index():
     page = request.args.get('page', 1, type=int)
     all_items = ItemForSale.query.order_by(ItemForSale.id.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+        page, app.config['LISTINGS_PER_PAGE'], False)
     next_url = url_for('index', page=all_items.next_num) \
         if all_items.has_next else None
     prev_url = url_for('index', page=all_items.prev_num) \
@@ -48,12 +48,12 @@ def index():
 def search(cat_id=None):
     page = request.args.get('page', 1, type=int)
     available_items = ItemForSale.query.paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+        page, app.config['LISTINGS_PER_PAGE'], False)
     if cat_id is not None:
         # inner join query returns all data from items that match the value of cat_id
         available_items = ItemForSale.query.join(
             Category, (ItemForSale.category_id == cat_id)).paginate(
-            page, app.config['POSTS_PER_PAGE'], False)
+            page, app.config['LISTINGS_PER_PAGE'], False)
         next_url = url_for('search', page=available_items.next_num) \
             if available_items.has_next else None
         prev_url = url_for('search', page=available_items.prev_num) \
@@ -112,6 +112,38 @@ def logout():
     return redirect(url_for("index"))
 
 
+@app.route("/reset_password", methods=["POST", "GET"])
+def request_new_password():
+    if current_user.is_authenticated:
+        return redirect(url_for("index"))
+    form = ResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data.lower()).first()
+        send_reset_email(user)
+        flash(f"Please check your email and follow the instructions to reset your password.", "info")
+        return redirect(url_for('login'))
+    return render_template("request_new_password.html", title="Password Reset", form=form)
+
+
+@app.route("/reset_password/<token>", methods=["POST", "GET"])
+def request_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for("index"))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash(f"This token is invalid or expired.", "danger")
+        return redirect(url_for("request_new_password"))
+    form = NewPasswordForm()
+    if form.validate_on_submit():
+        password_hashed = bcrypt.generate_password_hash(
+            form.password.data).decode("utf-8")
+        user.password_hash = password_hashed
+        db.session.commit()
+        flash(f"You have successfully changed your password!", "success")
+        return redirect(url_for("login"))
+    return render_template("set_new_password.html", title="Password Reset", form=form)
+
+
 @app.route("/about")
 def about():
     return render_template("about.html", title='About')
@@ -126,7 +158,7 @@ def user(username):
         ItemForSale, (Category.id == ItemForSale.category_id)).all()
 
     items_following = current_user.followed_items().paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+        page, app.config['LISTINGS_PER_PAGE'], False)
     next_url_following = url_for('user', username=username, page=items_following.next_num) \
         if items_following.has_next else None
     prev_url_following = url_for('user', username=username, page=items_following.prev_num) \
@@ -136,7 +168,7 @@ def user(username):
 
     user_items_sold = ItemForSale.query.filter_by(
         sold=True, seller=current_user).order_by(ItemForSale.id.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+        page, app.config['LISTINGS_PER_PAGE'], False)
     next_url_sold = url_for('user', username=username, page=user_items_sold.next_num) \
         if items_following.has_next else None
     prev_url_sold = url_for('user', username=username, page=user_items_sold.prev_num) \
@@ -144,7 +176,7 @@ def user(username):
 
     user_items_active = ItemForSale.query.filter_by(
         seller=user, sold=False).order_by(ItemForSale.id.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
+        page, app.config['LISTINGS_PER_PAGE'], False)
     next_url_active = url_for('user', username=username, page=user_items_active.next_num) \
         if items_following.has_next else None
     prev_url_active = url_for('user', username=username, page=user_items_active.prev_num) \

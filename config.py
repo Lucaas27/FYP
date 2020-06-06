@@ -14,4 +14,11 @@ class Config(object):
         "GOOGLE_OAUTH_CLIENT_ID")
     GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get(
         "GOOGLE_OAUTH_CLIENT_SECRET")
-    POSTS_PER_PAGE = 6
+    LISTINGS_PER_PAGE = 6
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get(
+        "EMAIL_USER")
+    MAIL_PASSWORD = os.environ.get(
+        "EMAIL_PASSWORD")

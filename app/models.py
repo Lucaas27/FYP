@@ -1,9 +1,10 @@
 from datetime import datetime, date
-from app import db, login_manager, bcrypt
+from app import db, login_manager, bcrypt, app
 from flask_login import UserMixin
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 from sqlalchemy.orm import column_property
 import json
+from itsdangerous import TimedJSONWebSignatureSerializer as Serilizer
 from sqlalchemy import TypeDecorator, String
 
 
@@ -71,6 +72,19 @@ class User(db.Model, TimestampMixin, UserMixin):
 
     def __repr__(self):
         return f"User('{self.username}')"
+
+    def get_reset_token(self, expires_secs=1800):
+        s = Serilizer(app.config['SECRET_KEY'], expires_secs)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serilizer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
 
     def append_address(self, user_address):
         return self.address.append(user_address)

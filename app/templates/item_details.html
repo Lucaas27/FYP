@@ -45,7 +45,7 @@
         </p>
         <p class="col-md-4">
           <a href="{{url_for('user', username=item.seller.username)}}" class="text-capitalize" alt="{{item.title}}">
-            <b>{{ item.seller.username }} </b>
+            <strong>{{ item.seller.username }} </strong>
           </a>
         </p>
       </div>
@@ -53,16 +53,16 @@
       <div class="row">
         <div class="col-12">
           <h4>
-            <b>Price:</b> £ {{ item.price }}
+            <strong>Price:</strong> £ {{ item.price }}
           </h4>
           <p class="my-2">
-            <b>Posted:</b> {{ moment(item.created_at).fromNow() }}
+            <strong>Posted:</strong> {{ moment(item.created_at).fromNow() }}
           </p>
           <p>
-            <b>Condition:</b> {{ item.condition }}
+            <strong>Condition:</strong> {{ item.condition }}
           </p>
           <p class="my-2">
-            <b class="d-block">Description</b>{{ item.description }}
+            <b class="d-block">Description</strong>{{ item.description }}
           </p>
         </div>
       </div class="row">

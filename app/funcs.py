@@ -1,7 +1,9 @@
-from app import app
+from app import app, mail
+from flask_mail import Message
 import os
 import binascii
 from PIL import Image
+from flask import url_for
 import secrets
 
 # save image file name
@@ -23,3 +25,25 @@ def save_pic(form_picture, pic_path_str):
     i.save(picture_path)
     # return image file
     return picture_name
+
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request',
+                  sender=app.config['MAIL_USERNAME'],
+                  recipients=[user.email]
+                  )
+    msg.body = f''' 
+    
+    Hi, {user.first_name}
+    
+    We got a request to reset your Lensify password.
+    Please visit the following link:
+    
+    {url_for('request_token', token = token, _external = 'True')}
+
+    If you did not make this request please ignore this message and no changes will be made.
+    
+    
+    '''
+    mail.send(msg)

@@ -61,6 +61,28 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Login")
 
 
+class ResetForm(FlaskForm):
+    email = StringField("Email",
+                        validators=[DataRequired(), Email()])
+    submit = SubmitField("Email me")
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data.lower()).first()
+        if user is None:
+            raise ValidationError(
+                "This email is not linked to an existing account."
+            )
+
+
+class NewPasswordForm(FlaskForm):
+    password = PasswordField("Password", validators=[
+        DataRequired(), Length(min=4, max=25)])
+
+    confirm_password = PasswordField("Confirm Password",
+                                     validators=[DataRequired(), EqualTo("password", message='Passwords must match'), Length(min=4, max=25)])
+    submit = SubmitField("Reset password")
+
+
 class UpdateDetailsForm(FlaskForm):
 
     first_name = StringField("First name",

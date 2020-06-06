@@ -68,7 +68,7 @@ ul {
   margin: 0;
 }
 P {
-  word-break: break-word;
+  word-break: normal;
 }
 .container {
   box-shadow: 0.7rem 0.7rem 0.7rem rgba(198, 173, 143, 0.341);
@@ -350,7 +350,6 @@ hr {
 }
 .item.list-group-item .img-event {
   float: left;
-  width: 40%;
 }
 
 .pagination {
@@ -359,11 +358,11 @@ hr {
 
 .item.list-group-item .list-group-image {
   margin-right: 0.6rem;
-  width: 40%;
+  width: 30%;
 }
-.item.list-group-item .thumbnail {
-  margin-bottom: 0px;
-  display: inline-block;
+.item.list-group-item .img-thumbnail {
+  width: 150px;
+  height: 150px;
 }
 .item.list-group-item .caption {
   float: left;
