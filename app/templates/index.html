@@ -76,8 +76,11 @@
         <div class=" item col-12 col-md-6 col-lg-4 py-2">
           <div class="card custom-bg h-100">
             <div class="card-body">
-              <img class="img-fluid img-thumbnail card-img-top group list-group-image img-event"
-                src="{{url_for('static', filename='img/items/' + item.image_file[0])}}" alt="{{ item.title }}" />
+              <a href="{{url_for('item', item_id=item.id)}}">
+                <img class="img-fluid img-thumbnail card-img-top group list-group-image img-event"
+                  src="{{url_for('static', filename='img/items/' + item.image_file[0])}}" alt="{{ item.title }}">
+              </a>
+
               <h3 class="card-title list-group-item-heading font-weight-bold ">{{ item.title }}</h3>
               <small class="d-block font-weight-bold card-text">
                 <h6>£ {{ item.price }}</h6>

@@ -37,12 +37,11 @@ $(document).ready(function () {
     localStorage.setItem("activeTab", $(e.target).attr("href"));
   });
 
-  var activeTab = localStorage.getItem("activeTab");
+  const activeTab = localStorage.getItem("activeTab");
   if (activeTab) {
     $('.nav-tabs a[href="' + activeTab + '"]').tab("show");
   }
 });
-
 
 // Attach modal-body from different template using data-remote url
 // $(document).ready(function () {
@@ -50,3 +49,36 @@ $(document).ready(function () {
 //     $($(this).data("target") + " .modal-body").load($(this).data("remote"));
 //   });
 // });
+
+// Attach modal-body from different template using ajax calls and data-remote url
+// $(document).ready(function () {
+//   $(".btn-action").click(function () {
+//     var url = $(this).data("remote");
+//     $.ajax({
+//       type: "GET",
+//       url: url,
+//       dataType: "json",
+//       success: function (res) {
+//         // get the ajax response data
+//         var data = res.body;
+//         // update modal content
+//         $(".modal-body").text(data.someval);
+//         // show modal
+//         $("#myModal").modal("show");
+//       },
+//       error: function (request, status, error) {
+//         console.log("ajax call went wrong:" + request.responseText);
+//       },
+//     });
+//   });
+// });
+
+// Gallery on Item details page
+$(document).ready(function () {
+  $(".thumbnails img").click(function () {
+    const attr = $(this).attr("src");
+    const src = $("#largeImage").attr("src");
+    $("#largeImage").attr("src", attr);
+    $(this).attr("src", src);
+  });
+});

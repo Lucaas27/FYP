@@ -23,28 +23,50 @@ followers = db.Table('followers',
 
 # A user can have many addresses, an address can be for many users.
 user_addresses = db.Table('user_addresses',
-                          db.Column("user_id", db.Integer, db.ForeignKey(
-                              "users.id")),
-                          db.Column("address_id", db.Integer, db.ForeignKey("addresses.id")))
+                          db.Column("user_id", db.Integer,
+                                    db.ForeignKey("users.id")),
+                          db.Column("address_id", db.Integer,
+                                    db.ForeignKey("addresses.id")))
 
 # An order can have many items, an item can be in many orders.
 item_order = db.Table('item_order',
                       db.Column("order_id", db.Integer,
                                 db.ForeignKey("orders.id")),
-                      db.Column("item_for_sale_id", db.Integer, db.ForeignKey("for_sale.id")))
-
+                      db.Column("item_for_sale_id",
+                                db.Integer, db.ForeignKey("for_sale.id")))
 
 # Adds automatically updated created_at and updated_at timestamp columns to a table
+
+
 class TimestampMixin(object):
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
 
+# User can review many users and get many reviews
+class Review(TimestampMixin, db.Model):
+    __tablename__ = "reviews"
+
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(300))
+    rating = db.Column(db.Float, default=0.0)
+
+    # Relationships
+    user_reviewed_id = db.Column(
+        db.Integer, db.ForeignKey('users.id'))
+    user_reviewer_id = db.Column(
+        db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return f"Review('User: {self.user_reviewer_id} reviewed User: {self.user_reviewed_id}')"
+
 # User can sell many items
 # User can buy many items
 # User can have many addresses
 # User can follow many users
+
+
 class User(db.Model, TimestampMixin, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -69,6 +91,15 @@ class User(db.Model, TimestampMixin, UserMixin):
         primaryjoin=(followers.c.follower_id == id),
         secondaryjoin=(followers.c.followed_id == id),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
+
+    # Self referential many to many relationship with extra fields
+    # A user can review many users and get many reviews
+    reviewed = db.relationship(
+        'Review', backref='user_reviewed', primaryjoin=(Review.user_reviewed_id == id), lazy="dynamic"
+    )
+    reviewer = db.relationship(
+        'Review', backref='user_reviewer', primaryjoin=(Review.user_reviewer_id == id), lazy="dynamic"
+    )
 
     def __repr__(self):
         return f"User('{self.username}')"
@@ -185,6 +216,7 @@ class Order(db.Model, TimestampMixin):
     item = db.relationship(
         "ItemForSale", secondary="item_order", backref="order", lazy="dynamic")
     order_address_id = db.Column(db.Integer, db.ForeignKey("addresses.id"))
+    status = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f"Order('{self.item}', 'buyer_id: {self.buyer_id}')"

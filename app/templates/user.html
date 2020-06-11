@@ -22,12 +22,17 @@
                 </span>
                 followers
               </p>
-              <p class="mb-4">
+              <p>
                 <span class="font-weight-bold">
                   {{ user.followed.count() }}
                 </span>
                 following.
               </p>
+              <div>
+              {% if average %}
+                <strong class="mb-4" data-score="{{ average }}">Rating:</strong> ({{ average }})
+              {% endif %}
+              </div>
               <!-- follower system -->
               {% if not current_user.is_following(user) %}
               <p>
@@ -40,7 +45,7 @@
                   href="{{ url_for('unfollow', username=user.username) }}">Unfollow</a>
               </p>
               {% endif %}
-              <!--follower system -->
+              <!-- end follower system -->
             </div>
 
           </div>

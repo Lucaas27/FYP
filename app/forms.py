@@ -6,7 +6,10 @@ from app.models import User
 from flask_wtf.file import FileAllowed
 from flask_login import current_user
 from country_list import countries_for_language
+from wtforms.fields import html5 as h5fields
+from wtforms.widgets import html5 as h5widgets
 
+# Countries list
 choice = countries_for_language('en')
 
 
@@ -150,8 +153,8 @@ class AddItemForm(FlaskForm):
     description = TextAreaField('Description', validators=[
         DataRequired(), Length(min=4, max=500)])
 
-    quantity = IntegerField(
-        "Quantity", validators=[DataRequired(message="Please only insert numerical values"), NumberRange(min=1)])
+    quantity = h5fields.IntegerField(
+        "Quantity", default=1, widget=h5widgets.NumberInput(min=1, max=100, step=1), validators=[DataRequired(message="Please only insert numerical values")])
 
     item_city = StringField("City", validators=[
         DataRequired(), Length(min=3, max=140)])
@@ -161,7 +164,7 @@ class AddItemForm(FlaskForm):
                                                                                 'Like new'),
                                                                                ('For parts or not working', 'For parts or not working')], default="Used")
 
-    price = DecimalField("Price", validators=[
+    price = h5fields.DecimalField("Price", default=0, widget=h5widgets.NumberInput(min=0, step="0.01"), validators=[
         DataRequired("Please set a valid price")])
 
     picture = MultipleFileField('Images (Up to 4)', validators=[
@@ -170,3 +173,11 @@ class AddItemForm(FlaskForm):
     category_id = SelectField('Select category', coerce=int)
 
     submit = SubmitField('Post')
+
+
+class AddToCartForm(FlaskForm):
+
+    quantity = h5fields.IntegerField(
+        "Quantity", default=1, widget=h5widgets.NumberInput(min=1, max=100, step=1), validators=[DataRequired(message="Please only insert numerical values")])
+
+    submit = SubmitField('Add to cart')

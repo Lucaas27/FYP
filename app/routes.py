@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request, jsonify
+from flask import render_template, url_for, flash, redirect, request, jsonify, session, current_app
 from sqlalchemy import desc, update
 import os
 import secrets
@@ -7,12 +7,13 @@ from datetime import datetime, date
 from app import app, db, bcrypt
 from app.forms import *
 from app.models import *
-from app.funcs import save_pic, send_reset_email
+from app.funcs import save_pic, send_reset_email, array_merge
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.sql import func
 
 
 @app.before_request
@@ -107,6 +108,17 @@ def login():
 
 @app.route("/logout")
 def logout():
+    if google.authorized:
+        resp = google.post(
+            "https://accounts.google.com/o/oauth2/revoke",
+            params={
+                "token": current_app.blueprints["google"].token["access_token"]},
+            headers={"Content-Type": "application/x-www-form-urlencoded"}
+        )
+        if resp.ok:
+            del current_app.blueprints["google"].token
+            session.clear()
+            logout_user()
     logout_user()
     flash(f"You have logged out", "info")
     return redirect(url_for("index"))
@@ -157,6 +169,13 @@ def user(username):
     categories = Category.query.join(
         ItemForSale, (Category.id == ItemForSale.category_id)).all()
 
+    rate = db.session.query(func.avg(Review.rating).label(
+        'average')).filter(Review.user_reviewed_id == user.id)
+    if rate[0].average:
+        avg = round(rate[0].average, 2)
+    else:
+        avg = 0
+
     items_following = current_user.followed_items().paginate(
         page, app.config['LISTINGS_PER_PAGE'], False)
     next_url_following = url_for('user', username=username, page=items_following.next_num) \
@@ -188,7 +207,7 @@ def user(username):
                            page_num1=user_items_sold.iter_pages(), page_num2=user_items_active.iter_pages(),
                            page=page, next_url_active=next_url_active, prev_url_active=prev_url_active,
                            next_url_following=next_url_following, prev_url_following=prev_url_following,
-                           next_url_sold=next_url_sold, prev_url_sold=prev_url_sold)
+                           next_url_sold=next_url_sold, prev_url_sold=prev_url_sold, average=avg)
 
 
 # User info and addresses
@@ -293,9 +312,9 @@ def unfollow(username):
     return redirect(url_for('user', username=username))
 
 
-@ app.route("/add_item/", methods=["GET", "POST"])
+@ app.route("/new_item/", methods=["GET", "POST"])
 @ login_required
-def add_item():
+def new_item():
     form = AddItemForm()
     # List comprehension to fill category choices dinamically.
     form.category_id.choices = [(cat.id, cat.name)
@@ -305,13 +324,13 @@ def add_item():
 
     if form.validate_on_submit():
         # Save picture to img/item path after resizing it
-        if form.picture.data:
-            pics = []
+        pics = []
+        if not form.picture.data or not any(item for item in form.picture.data):
+            pics.append('item.jpg')
+        else:
             for item in form.picture.data:
                 pic_item = save_pic(item, "static/img/items")
                 pics.append(pic_item)
-        else:
-            pic_item = 'item.jpg'
 
         new_item = ItemForSale(title=form.title.data.lower(),
                                description=form.description.data.lower(),
@@ -328,14 +347,84 @@ def add_item():
         db.session.commit()
         return redirect(url_for('item',
                                 item_id=new_item.id))
-    return render_template("add_item.html",  form=form, title="New item")
+    return render_template("new_item.html",  form=form, title="New item")
 
 
-@ app.route("/item/<item_id>", methods=["GET", "POST"])
+@app.route("/item/<item_id>", methods=["GET", "POST"])
 def item(item_id):
+    form = AddToCartForm()
+    # This is the item being viewed on the page.
     item = ItemForSale.query.filter_by(id=item_id).first_or_404()
-    return render_template("item_details.html", title="Item Details", item=item)
+    item.item_views += 1
+    db.session.commit()
 
+    if form.validate_on_submit():
+        if not current_user.is_authenticated:
+            return redirect(url_for("login"))
+        else:
+            quantity = form.quantity.data
+            if quantity > item.quantity:
+                flash(f'There are not enough units, please check availability.', 'info')
+                return redirect(url_for('item', item_id=item_id))
+
+            item_array = {item_id: {'name': item.title, 'quantity': quantity, 'price': item.price, 'qt_available': item.quantity,
+                                    'image': item.image_file[0], 'condition': item.condition, 'item_city': item.item_city}}
+            session.modified = True
+            # Checks to see if the user has already started a cart.
+            if 'cart' in session:
+                # If the item is already in the cart, update the quantity
+                if item_id in session['cart']:
+                    for key, value in session['cart'].items():
+                        if item_id == key:
+                            old_quantity = session['cart'][key]['quantity']
+                            new_quantity = old_quantity + quantity
+                            session['cart'][key]['quantity'] = new_quantity
+                            
+                            
+
+                # If the product is not in the cart, then add it.
+                else:
+                    session['cart'] = array_merge(
+                        session['cart'], item_array
+                    )
+
+            else:
+                # if the user has not started a cart, so we start it for them and add the product.
+                session['cart'] = item_array
+
+    return render_template("item_details.html", title="Item Details", item=item, form=form)
+
+
+@app.route("/cart", methods=["GET", "POST"])
+def cart():
+
+    if 'cart' not in session:
+        return render_template('cart.html', title='Cart')
+    else:
+        individual_quantity = 0
+        price = 0
+        subtotal = 0
+        total = 0
+        qt_available = 0
+        for key, value in session['cart'].items():
+            individual_quantity = int(
+                session['cart'][key]['quantity'])
+            price = float(
+                session['cart'][key]['price'])
+            subtotal = (individual_quantity * price)
+            # Add subtotal to cart session
+            session['cart'][key]['subtotal'] = subtotal
+            # Total value
+            total = total + subtotal
+            
+            qt_available = session['cart'][key]['qt_available']
+            qt_left = (qt_available - individual_quantity)
+            session['cart'][key]['qt_available'] = qt_left
+            
+    if request.args.get('empty'):
+        session.pop('cart')
+
+    return render_template('cart.html', title='Cart', total=total)
 
 # --------------------- Google OAuth login---------------------------------------------
 
@@ -349,11 +438,13 @@ def gg_login():
     return redirect(url_for("index"))
 
 
+# google blueprint
 blueprint = make_google_blueprint(
     scope=["profile", "email"],
     storage=SQLAlchemyStorage(
         OAuth, db.session, user=current_user, user_required=False),
 )
+
 app.register_blueprint(blueprint, url_prefix="/login")
 
 # create/login local user on successful OAuth login
@@ -362,13 +453,13 @@ app.register_blueprint(blueprint, url_prefix="/login")
 @oauth_authorized.connect_via(blueprint)
 def google_logged_in(blueprint, token):
     if not token:
-        flash("Failed to log in.", category="error")
+        flash("Failed to log in.", "error")
         return False
 
     resp = blueprint.session.get("/oauth2/v1/userinfo")
     if not resp.ok:
         msg = "Failed to fetch user info."
-        flash(msg, category="error")
+        flash(msg, "error")
         return False
 
     info = resp.json()
@@ -385,14 +476,14 @@ def google_logged_in(blueprint, token):
 
     if oauth.user:
         login_user(oauth.user)
-        flash("Successfully signed in.")
+        flash("Successfully signed in.", "success")
 
     else:
         #  Create a random username and password for the new user
         alphabet = string.ascii_letters + string.digits
         password = ''.join(secrets.choice(alphabet) for i in range(10))
-        x = secrets.randbelow(100)
-        username = info["given_name"] + info["family_name"]+str(x)
+        random_numb = secrets.randbelow(100000)
+        username = info["given_name"] + info["family_name"]+str(random_numb)
         # Create a new local user account for this user
         user = User(
             username=username, first_name=info["given_name"], last_name=info["family_name"],
@@ -406,7 +497,7 @@ def google_logged_in(blueprint, token):
         db.session.commit()
         # Log in the new local user account
         login_user(user)
-        flash("Successfully signed in.")
+        flash("Successfully signed in.", "success")
 
     # Disable Flask-Dance's default behavior for saving the OAuth token
     return False
@@ -418,6 +509,6 @@ def google_error(blueprint, message, response):
     msg = ("OAuth error from {name}! " "message={message} response={response}").format(
         name=blueprint.name, message=message, response=response
     )
-    flash(msg, category="error")
+    flash(msg, "error")
 
 # !-------------------------------- Google OAuth 2.0 login end -------------------------------------!

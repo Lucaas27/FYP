@@ -35,8 +35,8 @@ FYP
   <!-- shopping cart mobile view -->
   {%if current_user.is_authenticated%}
 
-  <a href="#" class="ml-auto mr-3 d-lg-none">
-    <i class="fas fa-shopping-cart fa-lg"></i>
+  <a href="{{url_for('cart')}}" class="ml-auto mr-3 d-lg-none">
+    <i class="fas fa-shopping-cart fa-lg"></i> ({{session['cart']|length}})
   </a>
   {%else%}
   <a href="{{url_for('login')}}" class="ml-auto mr-3 d-lg-none">
@@ -98,7 +98,7 @@ FYP
           <a class="dropdown-item" href="{{url_for('user_settings')}}">
             Settings
           </a>
-          <a class="dropdown-item" href="{{url_for('add_item')}}">
+          <a class="dropdown-item" href="{{url_for('new_item')}}">
             Sell
           </a>
           <a class="dropdown-item" href="{{url_for('logout')}}">Sign out</a>
@@ -106,8 +106,8 @@ FYP
       </div>
 
       <div class="ml-3 text-center d-none d-lg-block" id="cart">
-        <a href="#">
-          <i class="fas fa-shopping-cart fa-lg"></i>
+        <a href="{{url_for('cart')}}">
+          <i class="fas fa-shopping-cart fa-lg"></i> ({{session['cart']|length}})
         </a>
       </div>
 
@@ -133,7 +133,7 @@ FYP
     {% endif %}
     {%endwith%}
 
-    <!-- page content will go here -->
+    <!-- page content goes here -->
     {% block app_content %} {% endblock app_content %}
   </div>
 </main>

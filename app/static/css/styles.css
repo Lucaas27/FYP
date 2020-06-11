@@ -94,21 +94,33 @@ input[type="password"] {
   border-bottom: 1px solid black;
   border-radius: 15px;
 }
+input[type="number"] {
+  border: none;
+  background: transparent;
+  border-bottom: 1px solid black;
+}
 input[type="file"] {
   border: none;
   background-color: transparent;
 }
-input[type="text"]:hover,
-input[type="password"]:hover {
-  transform: scale(0.99);
+.text-responsive {
+  font-size: 3vmin;
 }
+
 input[type="text"]:active,
 input[type="password"]:active,
 input[type="text"]:focus,
+input[type="text"]:active,
+input[type="text"]:focus,
+input[type="file"]:active,
+input[type="file"]:focus,
 input[type="password"]:focus {
   outline: none;
   background-color: transparent;
   box-shadow: none;
+}
+.thumb {
+  cursor: pointer;
 }
 .form-control:focus {
   border-color: var(--fourth-color);
