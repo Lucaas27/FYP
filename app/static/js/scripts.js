@@ -82,3 +82,53 @@ $(document).ready(function () {
     $(this).attr("src", src);
   });
 });
+
+
+// Fetch API to update quantity in the shopping cart
+//  It sends a Post req to the view that will update
+//  the subtotal and total according to what quantity the user chooses
+
+(function () {
+  // get all number inputs with itemId attribute where the value is not None
+  let qtInput = document.querySelectorAll(
+    'input[value][type="number"][itemId]:not([value=""])'
+  );
+
+  qtInput.forEach(function (el) {
+    el.addEventListener("input", function () {
+      let itemId = this.getAttribute("itemId");
+
+      // check if value is not empty
+      if (this.value) {
+        // get number from total
+        let total = parseInt(document.querySelector('#total').textContent.trim(), 10)
+
+        entry = { quantity: this.value, item_id: itemId, total:total };
+        fetch(`${window.origin}/update_cart`, {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(entry),
+          headers: new Headers({
+            "content-type": "application/json",
+          }),
+        }).then(function (response) {
+          // if response fail
+          if (response.status !== 200) {
+            console.log(
+              `Response status was not successful: ${response.status}`
+            );
+            return;
+          }
+          // if response is successfull
+          response.json().then(function (data) {
+            console.log(data);
+            $('#subtotal'+itemId).each(function () {
+              $(this).text(`Subtotal: £ ${data.new_subtotal}`)
+            })
+            $('#total').text(`${data.new_total}`)
+          });
+        });
+      }
+    });
+  });
+})();

@@ -12,6 +12,7 @@ from flask_mail import Mail
 
 
 
+
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)

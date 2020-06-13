@@ -21,12 +21,12 @@
           </div>
           <div class="col-12 col-md-4 mb-3">
             <p class="mb-3 font-weight-bold">{{item.name.title()}}</p>
-            <input type="number" min="1" id='quantity' max="{{item.qt_available}}" value="{{item.quantity}}" 
-            class="col-6 col-md-6 mr-3">
+            <input type="number" min="1" itemId= '{{ key }}'  id = 'quantity{{ key }}'
+            max="{{item.qt_available}}" value="{{ item.quantity }}" class="quantity col-6 col-md-6 mr-3">
             <small>
               {% if item.qt_available <= 0 %}
               <h6>
-               Item not available in that quantity 
+               Item not available
               </h6>
               {% else %}
               <h6>
@@ -37,7 +37,7 @@
             £ {{item.price}}
           </div>
           <div class="col-12 col-md-4 font-weight-bold">
-            <p>Subtotal: £ {{item.subtotal}}</p>
+            <p id="subtotal{{ key }}">Subtotal: £ {{item.subtotal}}</p>
             <p><button class="btn btn-danger btn-sm"><i class="fa fa-trash-o"></i></button></p>
           </div>
         </div>
@@ -46,7 +46,7 @@
       </div>
       <div class="col-4">
         <h2 class="font-weight-bold">Total</h2>
-        <p>£ {{total}}</p>
+        <p>£ <span id="total"> {{total}} </span></p>
         <a href="#">
           <button class="btn btn-block btn-success p-3 mt-4 d-flex justify-content-center">
             <span class="text-responsive">Checkout <i class="fa fa-angle-right"></i></span>

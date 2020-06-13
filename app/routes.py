@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request, jsonify, session, current_app
+from flask import render_template, url_for, flash, redirect, request, jsonify, make_response, session, current_app
 from sqlalchemy import desc, update
 import os
 import secrets
@@ -364,7 +364,8 @@ def item(item_id):
         else:
             quantity = form.quantity.data
             if quantity > item.quantity:
-                flash(f'There are not enough units, please check availability.', 'info')
+                flash(
+                    f'There are not enough units, please check availability.', 'danger')
                 return redirect(url_for('item', item_id=item_id))
 
             item_array = {item_id: {'name': item.title, 'quantity': quantity, 'price': item.price, 'qt_available': item.quantity,
@@ -379,8 +380,6 @@ def item(item_id):
                             old_quantity = session['cart'][key]['quantity']
                             new_quantity = old_quantity + quantity
                             session['cart'][key]['quantity'] = new_quantity
-                            
-                            
 
                 # If the product is not in the cart, then add it.
                 else:
@@ -416,15 +415,38 @@ def cart():
             session['cart'][key]['subtotal'] = subtotal
             # Total value
             total = total + subtotal
-            
+
             qt_available = session['cart'][key]['qt_available']
-            qt_left = (qt_available - individual_quantity)
-            session['cart'][key]['qt_available'] = qt_left
-            
+            session['cart'][key]['qt_available'] = qt_available
+
     if request.args.get('empty'):
         session.pop('cart')
 
     return render_template('cart.html', title='Cart', total=total)
+
+
+@app.route("/update_cart", methods=["POST", "GET"])
+def update_cart():
+    req = request.get_json()
+    quantity = req['quantity']
+    item_id = req['item_id']
+    total = 0
+    # update session attributes
+    session['cart'][item_id]['quantity'] = quantity
+    new_quantity = session['cart'][item_id]['quantity']
+    
+    price = session['cart'][item_id]['price']
+    session['cart'][item_id]['subtotal'] = (float(new_quantity)*float(price))
+    new_subtotal = session['cart'][item_id]['subtotal']
+    
+    for key, value in session['cart'].items():
+        # Add subtotal to cart session
+        subtotal = session['cart'][key]['subtotal']
+        # Total value
+        total = total + subtotal
+        
+    session.modified = True
+    return jsonify({'new_quantity':new_quantity, 'new_subtotal': new_subtotal, 'new_total':total})
 
 # --------------------- Google OAuth login---------------------------------------------
 
