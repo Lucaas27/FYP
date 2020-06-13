@@ -420,9 +420,30 @@ def cart():
             session['cart'][key]['qt_available'] = qt_available
 
     if request.args.get('empty'):
-        session.pop('cart')
+        session.pop('cart', None)
 
     return render_template('cart.html', title='Cart', total=total)
+
+
+@app.route("/delete_cart", methods=["POST", "GET"])
+def delete_cart():
+    req = request.get_json()
+    item_id = req['item_id']
+    total = 0
+    session['cart'].pop(item_id, None)
+    for key, value in session['cart'].items():
+        individual_quantity = int(
+            session['cart'][key]['quantity'])
+        price = float(
+            session['cart'][key]['price'])
+        subtotal = (individual_quantity * price)
+        # Add subtotal to cart session
+        session['cart'][key]['subtotal'] = subtotal
+        # Total value
+        total = total + subtotal
+
+    session.modified = True
+    return jsonify({'total': total})
 
 
 @app.route("/update_cart", methods=["POST", "GET"])
@@ -433,20 +454,24 @@ def update_cart():
     total = 0
     # update session attributes
     session['cart'][item_id]['quantity'] = quantity
-    new_quantity = session['cart'][item_id]['quantity']
-    
-    price = session['cart'][item_id]['price']
-    session['cart'][item_id]['subtotal'] = (float(new_quantity)*float(price))
-    new_subtotal = session['cart'][item_id]['subtotal']
-    
+    new_quantity = int(session['cart'][item_id]['quantity'])
+
+    price = float(session['cart'][item_id]['price'])
+    session['cart'][item_id]['subtotal'] = float(new_quantity * price)
+
     for key, value in session['cart'].items():
+        individual_quantity = int(
+            session['cart'][key]['quantity'])
+        price = float(
+            session['cart'][key]['price'])
+        subtotal = (individual_quantity * price)
         # Add subtotal to cart session
-        subtotal = session['cart'][key]['subtotal']
+        session['cart'][key]['subtotal'] = subtotal
         # Total value
         total = total + subtotal
-        
+
     session.modified = True
-    return jsonify({'new_quantity':new_quantity, 'new_subtotal': new_subtotal, 'new_total':total})
+    return jsonify({'new_quantity': new_quantity, 'new_subtotal': subtotal, 'new_total': total})
 
 # --------------------- Google OAuth login---------------------------------------------
 

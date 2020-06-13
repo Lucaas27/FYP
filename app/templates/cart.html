@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% block app_content %}
 <div class="container custom-bg my-4">
-  <div class="row">
+  <div class="row ml-3">
     <div class="col-12">
       <a href="{{url_for('cart', empty='True')}}">
         <button class="btn btn-info mt-3 d-flex justify-content-center">
@@ -14,49 +14,51 @@
   <div class="row py-4">
     <div class="col-8">
       {% if session['cart'] %}
-        {% for key, item in session['cart'].items() %}
-        <div class="row">
-          <div class="col-5 col-sm-4">
-            <img class="img-fluid" src="{{url_for('static', filename='img/items/' + item.image)}}" alt="{{item.name}}">
-          </div>
-          <div class="col-12 col-md-4 mb-3">
-            <p class="mb-3 font-weight-bold">{{item.name.title()}}</p>
-            <input type="number" min="1" itemId= '{{ key }}'  id = 'quantity{{ key }}'
-            max="{{item.qt_available}}" value="{{ item.quantity }}" class="quantity col-6 col-md-6 mr-3">
-            <small>
-              {% if item.qt_available <= 0 %}
-              <h6>
-               Item not available
-              </h6>
-              {% else %}
-              <h6>
-                {{item.qt_available}} available
-              </h6>
-              {% endif %}
-            </small>
-            £ {{item.price}}
-          </div>
-          <div class="col-12 col-md-4 font-weight-bold">
-            <p id="subtotal{{ key }}">Subtotal: £ {{item.subtotal}}</p>
-            <p><button class="btn btn-danger btn-sm"><i class="fa fa-trash-o"></i></button></p>
-          </div>
+      {% for key, item in session['cart'].items() %}
+      <div class="row" id="cartItem{{ key }}">
+        <div class="col-5 col-sm-4">
+          <img class="img-fluid" src="{{url_for('static', filename='img/items/' + item.image)}}" alt="{{item.name}}">
         </div>
-        <hr>
-        {% endfor %}
-      </div>
-      <div class="col-4">
-        <h2 class="font-weight-bold">Total</h2>
-        <p>£ <span id="total"> {{total}} </span></p>
-        <a href="#">
-          <button class="btn btn-block btn-success p-3 mt-4 d-flex justify-content-center">
-            <span class="text-responsive">Checkout <i class="fa fa-angle-right"></i></span>
-          </button>
-        </a>
-      </div>
-      {% else %}
-        <div class="row">
-          <p class="col-12 text-center">You have no items in your shopping cart.</p>
+        <div class="col-12 col-md-4 mb-3">
+          <p class="mb-3 font-weight-bold">{{item.name.title()}}</p>
+          <input type="number" min="1" itemId='{{ key }}' id='quantity{{ key }}' max="{{item.qt_available}}"
+            value="{{ item.quantity }}" class="col-6 col-md-6 mr-3">
+          <small>
+            {% if item.qt_available <= 0 %}
+            <h6>
+              Item not available
+            </h6>
+            {% else %}
+            <h6>
+              {{item.qt_available}} available
+            </h6>
+            {% endif %}
+          </small>
+          £ {{item.price}}
         </div>
+        <div class="col-12 col-md-4 font-weight-bold">
+          <p id="subtotal{{ key }}">Subtotal: £ {{item.subtotal}}</p>
+          <a class="btn btn-danger btn-sm" itemId="{{ key }}" id="cartItem{{ key }}" href="#">
+            <i class="fa fa-trash-o"></i>
+          </a>
+        </div>
+      </div>
+      <hr>
+      {% endfor %}
+    </div>
+    <div class="col-4">
+      <h2 class="font-weight-bold">Total</h2>
+      <p>£ <span id="total"> {{total}} </span></p>
+      <a href="#">
+        <button class="btn btn-block btn-success p-3 mt-4 d-flex justify-content-center">
+          <span class="text-responsive">Checkout <i class="fa fa-angle-right"></i></span>
+        </button>
+      </a>
+    </div>
+    {% else %}
+    <div class="row">
+      <p class="col-12 text-center">You have no items in your shopping cart.</p>
+    </div>
     {% endif %}
 
   </div>
