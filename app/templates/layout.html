@@ -54,7 +54,7 @@ FYP
   </button>
 
   <div class="collapse navbar-collapse pt-2 col-12 col-lg-9" id="search">
-    <form class="form-inline col-12 input-group">
+    <form class="form-inline col-12 input-group" method='POST' action="{{ url_for('search') }}">
       <div class="dropdown ml-3 input-group-append">
         <button class="btn btn-secondary dropdown-toggle no-radius" type="button" id="dropdownMenuButton"
           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -71,7 +71,7 @@ FYP
           {%endfor%}
         </div>
       </div>
-      <input class="form-control col-8 input-group-append" type="search" placeholder="Search" aria-label="Search" />
+      <input class="form-control col-8 input-group-append" type="search" placeholder="Search" aria-label="Search" name="search" >
 
       <div class="input-group-append">
         <button class="btn btn-secondary no-radius" type="submit">

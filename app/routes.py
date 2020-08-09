@@ -1,5 +1,5 @@
 from flask import render_template, url_for, flash, redirect, request, jsonify, make_response, session, current_app
-from sqlalchemy import desc, update
+from sqlalchemy import desc, update, or_
 import os
 import secrets
 import string
@@ -28,7 +28,7 @@ def before_request():
 def inject_categories():
     # Display only categories with available items
     categories = Category.query.join(
-        ItemForSale, (Category.id == ItemForSale.category_id)).all()
+        ItemForSale, (Category.id == ItemForSale.category_id)).filter_by(sold=False).all()
     return dict(categories=categories)
 
 
@@ -47,11 +47,30 @@ def index():
 
 
 @app.route('/search/<cat_id>', methods=['GET', 'POST'])
+@app.route('/search', methods=['GET', 'POST'])
 def search(cat_id=None):
     page = request.args.get('page', 1, type=int)
     available_items = ItemForSale.query.paginate(
         page, app.config['LISTINGS_PER_PAGE'], False)
-    if cat_id is not None:
+    if cat_id is None:
+        target_string = request.form['search']
+
+        # Show all items that are available and match the search
+        listings = ItemForSale.query.filter(
+            or_(
+                ItemForSale.title.contains(target_string),
+                ItemForSale.description.contains(target_string)
+            )
+        ).filter_by(sold=False).all()
+
+        if target_string == '':
+            search_msg = 'No record(s) found - displaying all records'
+            color = 'danger'
+        else:
+            search_msg = f'{len(listings)} item(s) found'
+            color = 'success'
+
+    else:
         # inner join query returns all data from items that match the value of cat_id
         available_items = ItemForSale.query.join(
             Category, (ItemForSale.category_id == cat_id)).paginate(
@@ -62,7 +81,9 @@ def search(cat_id=None):
             if available_items.has_prev else None
         return render_template("search.html", available_items=available_items.items,
                                next_url=next_url, prev_url=prev_url, page=page, page_num=available_items.iter_pages())
-    return render_template("search.html")
+
+    return render_template("_search.html", title='Search result', listings=listings,
+                           search_msg=search_msg, color=color)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -563,7 +584,6 @@ def new_order():
             session.modified = True
             db.session.add(order_item)
             db.session.commit()
-
 
         # Process payment using stripe
         stripe.api_key = app.config['STRIPE_SECRET_KEY']
