@@ -76,11 +76,6 @@
                 <a class="nav-link" id="sold-items-tab" data-toggle="tab" href="#sold-items" role="tab"
                   aria-controls="sold-items" aria-selected="false">Sold</a>
               </li>
-              <!-- buyers can see their orders -->
-              <li class="nav-item">
-                <a class="nav-link" id="order-tab" data-toggle="tab" href="#order-items" role="tab"
-                  aria-controls="sold-items" aria-selected="false">Orders</a>
-              </li>
               {%endif%}
             </ul>
             <!-- tab panels -->
@@ -94,7 +89,7 @@
                     <label ">Member since</label>
                     </div>
                     <div class=" col-md-8 col-6">
-                      {{user.created_at}}
+                      {{ moment(user.created_at).format('LLLL') }}
                   </div>
                 </div>
                 <hr>

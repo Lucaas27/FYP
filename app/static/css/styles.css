@@ -87,7 +87,8 @@ select.form-control {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="tel"] {
   border: none;
   padding-left: 15px;
   background: transparent;

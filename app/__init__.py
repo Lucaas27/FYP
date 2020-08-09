@@ -9,6 +9,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_mail import Mail
+from flask_socketio import SocketIO
 
 
 
@@ -21,6 +22,7 @@ migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 moment = Moment(app)
 mail = Mail(app)
+socketio = SocketIO(app)
 login_manager=LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category="info"

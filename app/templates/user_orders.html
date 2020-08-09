@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% block app_content %}
+<div class="container custom-bg my-4">
+  <h2 class="mb-3 text-center">Orders</h2>
+  <hr>
+  {% if user_orders %}
+  {% for order in user_orders %}
+  <div>
+    <div class="card mb-3">
+      <div class="card-header col-12">
+        <p class="col-3">
+          <span class="d-block font-weight-bold">Order placed</span>
+          {{moment(order.created_at).format('LLL')}}
+        </p>
+        <p class="col-3"><span class="d-block font-weight-bold">Shipped to</span>
+          {{order.order_address.address.capitalize()}}, {{order.order_address.city.title()}},
+          {{order.order_address.country.upper()}}, {{order.order_address.post_code.upper()}}</p>
+        <p class="col-3"><span class="d-block font-weight-bold">Order#</span>{{order.id}}</p>
+        <p class="col-3"><span class="d-block font-weight-bold">Total</span> £ {{order.total}}</p>
+      </div>
+      <div class="card-body">
+        {% for item in order.item %}
+        <div class="col-12 mb-3 d-flex">
+          <div class="col-2">
+            <a href="{{url_for('item', item_id = item.item_id)}}">
+              <img class="img-fluid" src="{{url_for('static', filename='img/items/' + item.pic)}}" alt="{{item.title}}">
+            </a>
+          </div>
+          <h5 class="card-title col-5"><a href="{{url_for('item', item_id=item.item_id)}}">{{item.title}}</a>
+          </h5>
+          <p class="card-text col-5"><span class="d-block font-weight-bold">Quantity</span>{{item.quantity}}
+          </p>
+        </div>
+        <hr>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+  {% endfor %}
+  {% else %}
+  <h3 class="text-center">
+    No orders
+  </h3>
+  {% endif %}
+
+  <nav aria-label="Page navigation" class="col-12 my-2 pb-3">
+    <ul class="pagination justify-content-center">
+      <li class="page-item {% if not prev_url %} disabled {% endif %}">
+        <a class="page-link" href="{{ prev_url }}" tabindex="-1">Previous</a>
+      </li>
+      {% for num in page_num %}
+      {% if num %}
+      <li class="page-item {% if page == num %} active {% endif %}"><a class="page-link"
+          href="{{url_for('user_orders', page=num)}}">{{ num }}</a></li>
+      {% else %}
+      <span class="page-item ellipsis">…</span>
+      {% endif %}
+      {% endfor %}
+      <li class="page-item {% if not next_url %} disabled {% endif %}">
+        <a class="page-link" href="{{ next_url }}">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+{% endblock app_content %}

@@ -28,16 +28,8 @@ user_addresses = db.Table('user_addresses',
                           db.Column("address_id", db.Integer,
                                     db.ForeignKey("addresses.id")))
 
-# An order can have many items, an item can be in many orders.
-item_order = db.Table('item_order',
-                      db.Column("order_id", db.Integer,
-                                db.ForeignKey("orders.id")),
-                      db.Column("item_for_sale_id",
-                                db.Integer, db.ForeignKey("for_sale.id")))
 
 # Adds automatically updated created_at and updated_at timestamp columns to a table
-
-
 class TimestampMixin(object):
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.utcnow)
@@ -65,8 +57,6 @@ class Review(TimestampMixin, db.Model):
 # User can buy many items
 # User can have many addresses
 # User can follow many users
-
-
 class User(db.Model, TimestampMixin, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -77,10 +67,10 @@ class User(db.Model, TimestampMixin, UserMixin):
     image_file = db.Column(db.String(80), nullable=False,
                            default="default.jpg")
     password_hash = db.Column(db.String(60), nullable=False)
-    # relationships (one to many)
+    # relationships (many to one)
     items_for_sale = db.relationship(
         "ItemForSale", backref="seller", lazy="dynamic")
-    items_buyer = db.relationship("Order", backref="buyer", lazy="dynamic")
+    orders = db.relationship("Order", backref="buyer", lazy=True)
     # relationships (many to many)
     address = db.relationship(
         "Address", secondary="user_addresses", backref="user", lazy="dynamic"
@@ -138,7 +128,7 @@ class User(db.Model, TimestampMixin, UserMixin):
         return self.followed.filter(
             followers.c.followed_id == user.id).count() > 0
 
-    # Join query to get recent items from the followed users ordered by date posted
+    # Join query to get recent items from the followed users ordered by id
     def followed_items(self):
         return ItemForSale.query.join(
             followers, (followers.c.followed_id == ItemForSale.seller_id)).filter(
@@ -179,6 +169,9 @@ class ItemForSale(db.Model, TimestampMixin):
     # relationships
     seller_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
+    item_in_order = db.relationship(
+        "OrderItem", backref="item", lazy="dynamic"
+    )
 
     def __repr__(self):
         return f"ItemForSale('{self.title}', 'Quantity:{self.quantity}','{self.condition}', 'Cat:{self.category}')"
@@ -209,17 +202,40 @@ class Address(db.Model, TimestampMixin):
 class Order(db.Model, TimestampMixin):
     __tablename__ = "orders"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+    invoice = db.Column(db.String(30), unique=True, nullable='False')
+    status = db.Column(db.String(30), default='Pending', nullable='False')
+    phone_number = db.Column(db.String(13), nullable='False')
+    total = db.Column(db.Float)
 
     # relationships
     buyer_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     item = db.relationship(
-        "ItemForSale", secondary="item_order", backref="order", lazy="dynamic")
+        "OrderItem", backref="order", lazy=True
+    )
+
     order_address_id = db.Column(db.Integer, db.ForeignKey("addresses.id"))
-    status = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
-        return f"Order('{self.item}', 'buyer_id: {self.buyer_id}')"
+        return f"Order('order_id:{self.id}','buyer_id: {self.buyer_id}', status: '{self.status}')"
+
+
+# Items in an order
+# belongs to an item in the order
+class OrderItem(db.Model, TimestampMixin):
+    __tablename__ = "order_items"
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+    quantity = db.Column(db.Integer, nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    pic = db.Column(db.String(100), nullable=False)
+
+    # relationships
+    item_id = db.Column(db.Integer, db.ForeignKey(
+        ItemForSale.id))
+    order_id = db.Column(db.Integer, db.ForeignKey(Order.id))
+    
+    def __repr__(self):
+        return f"OrderItem('Order_id:{self.order_id}', 'item_id':{self.item_id}, 'Quantity:{self.quantity}')"
 
 
 # Category has many items

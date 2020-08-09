@@ -157,10 +157,19 @@ $(document).ready(function () {
               $(this).text(`Subtotal: £ ${data.new_subtotal}`);
             });
             $("#total").text(`${data.new_total}`);
-            console.log(data);
+            // console.log(data);
+            qtInput.forEach(function (el) {
+              if (el.value > data.qt_available) {
+                $(`#cartMessage${itemId}`).text(`Not enough units`);
+              }
+            });
           });
         });
       }
     });
   });
+})();
+
+(function () {
+  
 })();

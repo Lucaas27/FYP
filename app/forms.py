@@ -1,13 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, MultipleFileField, IntegerField, SelectField, FloatField, TextAreaField, DecimalField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
-from wtforms_validators import AlphaNumeric, Alpha
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange, Regexp
+from wtforms_validators import AlphaNumeric, Alpha, Integer
 from app.models import User
 from flask_wtf.file import FileAllowed
 from flask_login import current_user
 from country_list import countries_for_language
 from wtforms.fields import html5 as h5fields
 from wtforms.widgets import html5 as h5widgets
+import phonenumbers
 
 # Countries list
 choice = countries_for_language('en')
@@ -178,6 +179,17 @@ class AddItemForm(FlaskForm):
 class AddToCartForm(FlaskForm):
 
     quantity = h5fields.IntegerField(
-        "Quantity", default=1, widget=h5widgets.NumberInput(min=1, max=100, step=1), validators=[DataRequired(message="Please only insert numerical values")])
+        "Quantity", default=1, widget=h5widgets.NumberInput(min=1, max=100, step=1),
+        validators=[DataRequired(message="Please only insert numerical values")])
 
     submit = SubmitField('Add to cart')
+
+
+class NewOrderForm(FlaskForm):
+    order_address_id = SelectField('Shipping address', coerce=int, validators=[
+                                   DataRequired(message="Please insert an address")])
+    phone_number = StringField('Phone Number', validators=[
+        DataRequired(), Length(min=5, max=30), Regexp(
+            r'^[0-9]+$', message="Please only use numbers")])
+
+    submit = SubmitField('Pay Now')

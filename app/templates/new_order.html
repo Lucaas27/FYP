@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block app_content %}
+<div class="container custom-bg my-4">
+  <div class="row justify-content-center py-4">
+    <form method="POST" action="{{url_for('new_order')}}" class="py-4 col-12">
+      {{form.hidden_tag()}}
+      <h2 class="mb-3 text-center">Buy</h2>
+      <hr />
+      {% if form.order_address_id.choices %}
+      <div class="form-group col-12">
+        {{wtf.form_field(form.order_address_id, class="form-control")}}
+        {% for error in form.errors.order_address_id %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+        <small>
+          <a class="btn btn-outline-secondary form-group" href="{{url_for('new_order', new_address='True')}}">
+            Add new address
+          </a>
+        </small>
+      </div>
+      {% else %}
+      <a class="btn btn-outline-secondary form-group" href="{{url_for('new_order', new_address='True')}}">
+        Add shipping address
+      </a>
+      {% for error in form.errors.order_address_id %}
+      <div class="text-danger mb-3">{{error}}</div>
+      {% endfor %}
+      {% endif %}
+      <div class="form-group col-12">
+        {{wtf.form_field(form.phone_number, class="form-control")}}
+        {% for error in form.errors.phone_number %}
+        <div class="text-danger">{{error}}</div>
+        {% endfor %}
+      </div>
+      <div class="form-row justify-content-center">
+        <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+        data-key="pk_test_51HDRiEBtTvgHcYJhd8HQi3bd1hHkgfpGg2POnz3quNiv0tc1ukmraWLm0PNNPOQiRzLhYl02e0hdQMqLzEpF5raB00CvN9WkVO"
+        data-name="Shop" data-amount={{total}} data-currency="gbp">
+        </script>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock app_content %}

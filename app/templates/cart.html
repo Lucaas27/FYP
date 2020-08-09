@@ -20,7 +20,7 @@
           <img class="img-fluid" src="{{url_for('static', filename='img/items/' + item.image)}}" alt="{{item.name}}">
         </div>
         <div class="col-12 col-md-4 mb-3">
-          <p class="mb-3 font-weight-bold">{{item.name.title()}}</p>
+          <p class="mb-3 font-weight-bold">{{item.title.title()}}</p>
           <input type="number" min="1" itemId='{{ key }}' id='quantity{{ key }}' max="{{item.qt_available}}"
             value="{{ item.quantity }}" class="col-6 col-md-6 mr-3">
           <small>
@@ -29,7 +29,7 @@
               Item not available
             </h6>
             {% else %}
-            <h6>
+            <h6 id="cartMessage{{ key }}">
               {{item.qt_available}} available
             </h6>
             {% endif %}
@@ -49,10 +49,8 @@
     <div class="col-4">
       <h2 class="font-weight-bold">Total</h2>
       <p>£ <span id="total"> {{total}} </span></p>
-      <a href="#">
-        <button class="btn btn-block btn-success p-3 mt-4 d-flex justify-content-center">
-          <span class="text-responsive">Checkout <i class="fa fa-angle-right"></i></span>
-        </button>
+      <a class="btn btn-block btn-success p-3 mt-4 d-flex justify-content-center" href="{{url_for('new_order')}}">
+        <span class="text-responsive">Checkout <i class="fa fa-angle-right"></i></span>
       </a>
     </div>
     {% else %}
@@ -63,4 +61,33 @@
 
   </div>
 </div>
+<!-- <script src="https://js.stripe.com/v3/"></script>
+<script>
+  var stripe = Stripe(
+    "pk_test_51HDRiEBtTvgHcYJhd8HQi3bd1hHkgfpGg2POnz3quNiv0tc1ukmraWLm0PNNPOQiRzLhYl02e0hdQMqLzEpF5raB00CvN9WkVO"
+  );
+  var total = parseFloat(
+    document.querySelector("#total").textContent.trim(),
+    10
+  );
+  // pass the total to the server
+  fetch('/cart', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      total: total,
+    }),
+  })
+    .then((response) => response.json())
+    .then((session) => {
+      // redirect to checkout
+      stripe.redirectToCheckout({ sessionId: session.id });
+      console.log("Success:", data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+</script> -->
 {% endblock app_content %}

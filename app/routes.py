@@ -3,6 +3,7 @@ from sqlalchemy import desc, update
 import os
 import secrets
 import string
+import stripe
 from datetime import datetime, date
 from app import app, db, bcrypt
 from app.forms import *
@@ -35,8 +36,8 @@ def inject_categories():
 @app.route("/index")
 def index():
     page = request.args.get('page', 1, type=int)
-    all_items = ItemForSale.query.order_by(ItemForSale.id.desc()).paginate(
-        page, app.config['LISTINGS_PER_PAGE'], False)
+    all_items = ItemForSale.query.filter_by(sold=False)\
+        .order_by(ItemForSale.id.desc()).paginate(page, app.config['LISTINGS_PER_PAGE'], False)
     next_url = url_for('index', page=all_items.next_num) \
         if all_items.has_next else None
     prev_url = url_for('index', page=all_items.prev_num) \
@@ -166,8 +167,6 @@ def about():
 def user(username):
     page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
-    categories = Category.query.join(
-        ItemForSale, (Category.id == ItemForSale.category_id)).all()
 
     rate = db.session.query(func.avg(Review.rating).label(
         'average')).filter(Review.user_reviewed_id == user.id)
@@ -175,7 +174,7 @@ def user(username):
         avg = round(rate[0].average, 2)
     else:
         avg = 0
-
+    # Items from people the user follows
     items_following = current_user.followed_items().paginate(
         page, app.config['LISTINGS_PER_PAGE'], False)
     next_url_following = url_for('user', username=username, page=items_following.next_num) \
@@ -183,8 +182,9 @@ def user(username):
     prev_url_following = url_for('user', username=username, page=items_following.prev_num) \
         if items_following.has_prev else None
 
+    # Number of items the user is selling
     user_items_count = ItemForSale.query.filter_by(seller=user).count()
-
+    # Items sold
     user_items_sold = ItemForSale.query.filter_by(
         sold=True, seller=current_user).order_by(ItemForSale.id.desc()).paginate(
         page, app.config['LISTINGS_PER_PAGE'], False)
@@ -192,7 +192,7 @@ def user(username):
         if items_following.has_next else None
     prev_url_sold = url_for('user', username=username, page=user_items_sold.prev_num) \
         if items_following.has_prev else None
-
+    # Active items
     user_items_active = ItemForSale.query.filter_by(
         seller=user, sold=False).order_by(ItemForSale.id.desc()).paginate(
         page, app.config['LISTINGS_PER_PAGE'], False)
@@ -239,7 +239,7 @@ def user_settings(address_id=None):
                 address=form.address.data.lower(),
                 post_code=form.post_code.data.lower(),
                 city=form.city.data.lower(),
-                country=form.country.data,
+                country=form.country.data.lower(),
             )
 
             db.session.add(new_address)
@@ -319,7 +319,7 @@ def new_item():
     # List comprehension to fill category choices dinamically.
     form.category_id.choices = [(cat.id, cat.name)
                                 for cat in Category.query.all()]
-    ''' transform user inputs using .lower to save into
+    ''' transforms user inputs using .lower to save into
             the database in a consistent way'''
 
     if form.validate_on_submit():
@@ -359,16 +359,16 @@ def item(item_id):
     db.session.commit()
 
     if form.validate_on_submit():
+        quantity = form.quantity.data
         if not current_user.is_authenticated:
             return redirect(url_for("login"))
+        elif quantity > item.quantity:
+            flash(
+                f'There are not enough units, please check availability.', 'danger')
+            return redirect(url_for('item', item_id=item_id))
         else:
-            quantity = form.quantity.data
-            if quantity > item.quantity:
-                flash(
-                    f'There are not enough units, please check availability.', 'danger')
-                return redirect(url_for('item', item_id=item_id))
 
-            item_array = {item_id: {'name': item.title, 'quantity': quantity, 'price': item.price, 'qt_available': item.quantity,
+            item_array = {item_id: {'title': item.title, 'quantity': quantity, 'price': item.price, 'qt_available': item.quantity,
                                     'image': item.image_file[0], 'condition': item.condition, 'item_city': item.item_city}}
             session.modified = True
             # Checks to see if the user has already started a cart.
@@ -378,8 +378,13 @@ def item(item_id):
                     for key, value in session['cart'].items():
                         if item_id == key:
                             old_quantity = session['cart'][key]['quantity']
-                            new_quantity = old_quantity + quantity
+                            new_quantity = (int(old_quantity) + int(quantity))
                             session['cart'][key]['quantity'] = new_quantity
+                            if new_quantity > item.quantity:
+                                session['cart'][key]['quantity'] = item.quantity
+                                flash(
+                                    'You alredy have all items available in your cart', 'danger')
+                                return redirect(url_for('item', item_id=item_id))
 
                 # If the product is not in the cart, then add it.
                 else:
@@ -388,13 +393,14 @@ def item(item_id):
                     )
 
             else:
-                # if the user has not started a cart, so we start it for them and add the product.
+                # if the user has not started a cart, we start it and add the product.
                 session['cart'] = item_array
 
     return render_template("item_details.html", title="Item Details", item=item, form=form)
 
 
 @app.route("/cart", methods=["GET", "POST"])
+@login_required
 def cart():
 
     if 'cart' not in session:
@@ -404,7 +410,6 @@ def cart():
         price = 0
         subtotal = 0
         total = 0
-        qt_available = 0
         for key, value in session['cart'].items():
             individual_quantity = int(
                 session['cart'][key]['quantity'])
@@ -414,10 +419,8 @@ def cart():
             # Add subtotal to cart session
             session['cart'][key]['subtotal'] = subtotal
             # Total value
-            total = total + subtotal
-
-            qt_available = session['cart'][key]['qt_available']
-            session['cart'][key]['qt_available'] = qt_available
+            total += subtotal
+            session['total'] = total
 
     if request.args.get('empty'):
         session.pop('cart', None)
@@ -426,52 +429,182 @@ def cart():
 
 
 @app.route("/delete_cart", methods=["POST", "GET"])
+@login_required
 def delete_cart():
     req = request.get_json()
     item_id = req['item_id']
     total = 0
     session['cart'].pop(item_id, None)
     for key, value in session['cart'].items():
-        individual_quantity = int(
-            session['cart'][key]['quantity'])
-        price = float(
-            session['cart'][key]['price'])
-        subtotal = (individual_quantity * price)
-        # Add subtotal to cart session
-        session['cart'][key]['subtotal'] = subtotal
+        # calculate subtotal (quantity value stored * price)
+        session['cart'][key]['subtotal'] = (
+            float(session['cart'][key]['quantity']) *
+            float(session['cart'][key]['price'])
+        )
+        # store value in a variable
+        subtotal = session['cart'][key]['subtotal']
         # Total value
-        total = total + subtotal
+        total += float(subtotal)
+        session['total'] = total
 
     session.modified = True
     return jsonify({'total': total})
 
 
 @app.route("/update_cart", methods=["POST", "GET"])
+@login_required
 def update_cart():
     req = request.get_json()
-    quantity = req['quantity']
+    new_quantity = req['quantity']
     item_id = req['item_id']
+    item = ItemForSale.query.get(item_id)
+    qt_available = item.quantity
     total = 0
-    # update session attributes
-    session['cart'][item_id]['quantity'] = quantity
-    new_quantity = int(session['cart'][item_id]['quantity'])
 
-    price = float(session['cart'][item_id]['price'])
-    session['cart'][item_id]['subtotal'] = float(new_quantity * price)
+    # if the new quantity is higher than the quantity available
+    if int(new_quantity) > qt_available:
+        new_quantity = qt_available
 
     for key, value in session['cart'].items():
-        individual_quantity = int(
-            session['cart'][key]['quantity'])
-        price = float(
-            session['cart'][key]['price'])
-        subtotal = (individual_quantity * price)
-        # Add subtotal to cart session
-        session['cart'][key]['subtotal'] = subtotal
-        # Total value
-        total = total + subtotal
+        if key == item_id:
+            # store quantity value in the session
+            session['cart'][item_id]['quantity'] = new_quantity
+            # get the prie
+            price = float(session['cart'][item_id]['price'])
+            # calculate subtotal (quantity value stored * price)
+            session['cart'][item_id]['subtotal'] = (
+                int(session['cart'][item_id]['quantity']) * price)
+            # store value in a variable
+            subtotal = session['cart'][item_id]['subtotal']
+            total += float(subtotal)
+            session['total'] = total
+
+        else:
+            # Total value (add all subtotals and store it in the total variable)
+            individual_quantity = float(
+                session['cart'][key]['quantity'])
+            price = float(
+                session['cart'][key]['price'])
+            subtotal = float(individual_quantity * price)
+            # Add subtotal to cart session
+            session['cart'][key]['subtotal'] = subtotal
+            # Total value
+            total += float(subtotal)
+            session['total'] = total
 
     session.modified = True
-    return jsonify({'new_quantity': new_quantity, 'new_subtotal': subtotal, 'new_total': total})
+    return jsonify({'new_quantity': new_quantity, 'new_subtotal': subtotal, 'new_total': total,
+                    'qt_available': qt_available})
+
+
+@app.route("/new_order", methods=["GET", "POST"])
+@login_required
+def new_order():
+    if 'cart' not in session:
+        return redirect(url_for('login'))
+    form = NewOrderForm()
+    form.order_address_id.choices = [(add.id, '{}, {}, {}, {}'.format(add.address.title(), add.city.title(), add.country.upper(), add.post_code.title()))
+                                     for add in current_user.address.all()]
+
+    if request.args.get('new_address'):
+        form = AddressForm()
+        if form.validate_on_submit():
+            new_address = Address(
+                address=form.address.data.lower(),
+                post_code=form.post_code.data.lower(),
+                city=form.city.data.lower(),
+                country=form.country.data.lower(),
+            )
+
+            db.session.add(new_address)
+            current_user.append_address(new_address)
+            db.session.commit()
+            flash("You have added a new address!", "success")
+            return redirect(url_for("new_order"))
+        return render_template('address.html', form=form)
+
+    if form.validate_on_submit():
+        invoice = secrets.token_hex(5)
+        total = 0
+        order = Order(invoice=invoice, buyer=current_user,
+                      order_address_id=form.order_address_id.data,
+                      phone_number=form.phone_number.data)
+
+        # Get item id and save it to the item_order table where
+        # we can see all items for a certain order
+        for key, value in session['cart'].items():
+            item = ItemForSale.query.get(key)
+            title = item.title
+            item_pic = session['cart'][key]['image']
+            quantity = int(session['cart'][key]['quantity'])
+            price = float(
+                session['cart'][key]['price'])
+            subtotal = float(quantity * price)
+            # Add subtotal to cart session
+            session['cart'][key]['subtotal'] = subtotal
+            # Total value
+            total += float(subtotal)
+            session['total'] = total
+
+            qt_available = item.quantity
+            order.total = total
+            order_item = OrderItem(
+                quantity=quantity, item=item, order=order, title=title, pic=item_pic)
+            # It uptades the quantity available (Move this to after payment is implemented)
+            item.quantity = (qt_available - quantity)
+            # Change item to sold if quantity is zero (Move this after payment is implemented)
+            if item.quantity == 0:
+                item.sold = True
+            if item.quantity < 0:
+                flash(
+                    'You have items in your cart that are not available in that quantity', 'danger')
+                return redirect(url_for('cart'))
+
+            session.modified = True
+            db.session.add(order_item)
+            db.session.commit()
+
+
+        # Process payment using stripe
+        stripe.api_key = app.config['STRIPE_SECRET_KEY']
+        amount = request.form.get('amount')
+        customer = stripe.Customer.create(
+            email=request.form['stripeEmail'],
+            source=request.form['stripeToken'],
+        )
+
+        charge = stripe.Charge.create(
+            customer=customer.id,
+            description='Lensify',
+            amount=int(session['total']*100),
+            currency='gbp',
+        )
+        session.pop('cart', None)
+        flash('Your order has been submitted.', 'success')
+        return redirect(url_for('user_orders'))
+
+    return render_template('new_order.html', form=form, total=session['total']*100)
+
+
+@app.route("/user_orders", methods=["GET"])
+@login_required
+def user_orders():
+    page = request.args.get('page', 1, type=int)
+    user_id = current_user.id
+
+    # all orders made by the user
+    user_orders = Order.query.filter_by(buyer_id=user_id).order_by(Order.id.desc())\
+        .paginate(page, app.config['LISTINGS_PER_PAGE'], False)
+    order_item = OrderItem.query.join(
+        Order, (OrderItem.order_id == Order.id)).all()
+
+    next_url = url_for('user_orders', page=user_orders.next_num) \
+        if user_orders.has_next else None
+    prev_url = url_for('user_orders', page=user_orders.prev_num) \
+        if user_orders.has_prev else None
+
+    return render_template('user_orders.html', user_orders=user_orders.items, page=page,
+                           next_url=next_url, prev_url=prev_url, page_num=user_orders.iter_pages())
 
 # --------------------- Google OAuth login---------------------------------------------
 
