@@ -85,8 +85,7 @@ FYP
   <div id="links" class="collapse navbar-collapse py-2">
     <div class="navbar-nav text-center">
       <a class="nav-item nav-link" href="{{url_for('index')}}">Home</a>
-      <a class="nav-item nav-link" href="#">Contact</a>
-      <a class="nav-item nav-link" href="#">About</a>
+      <a class="nav-item nav-link" href="{{url_for('contact')}}">Contact</a>
     </div>
     <div class="navbar-nav ml-auto text-center">
       {% if current_user.is_authenticated %}

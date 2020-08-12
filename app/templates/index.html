@@ -81,7 +81,7 @@
                   src="{{url_for('static', filename='img/items/' + item.image_file[0])}}" alt="{{ item.title }}">
               </a>
 
-              <h3 class="card-title list-group-item-heading font-weight-bold ">{{ item.title }}</h3>
+              <h3 class="card-title list-group-item-heading font-weight-bold mt-2 ">{{ item.title.title() }}</h3>
               <small class="d-block font-weight-bold card-text">
                 <h6>£ {{ item.price }}</h6>
               </small>

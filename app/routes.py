@@ -5,7 +5,7 @@ import secrets
 import string
 import stripe
 from datetime import datetime, date
-from app import app, db, bcrypt
+from app import app, db, bcrypt, mail
 from app.forms import *
 from app.models import *
 from app.funcs import save_pic, send_reset_email, array_merge
@@ -15,6 +15,7 @@ from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql import func
+from flask_mail import Message
 
 
 @app.before_request
@@ -178,9 +179,25 @@ def request_token(token):
     return render_template("set_new_password.html", title="Password Reset", form=form)
 
 
-@app.route("/about")
-def about():
-    return render_template("about.html", title='About')
+@app.route("/contact", methods=["POST", "GET"])
+def contact():
+    form = ContactForm()
+    if form.validate_on_submit():
+        msg = Message('Customer Enquiry',
+                      sender=app.config['MAIL_USERNAME'],
+                      recipients=[app.config['MAIL_USERNAME']]
+                      )
+        msg.body = f''' 
+        From: {form.name.data}
+        Email: {form.email.data}
+        Message: {form.message.data} 
+        '''
+        mail.send(msg)
+
+        flash("Thank you for your message. We will get back to you shortly!", "success")
+        return redirect(url_for("contact"))
+
+    return render_template("contact.html", title='Contact', form=form)
 
 
 @app.route("/profile/<username>", methods=["GET"])
@@ -379,6 +396,15 @@ def item(item_id):
     item.item_views += 1
     db.session.commit()
 
+    if item in current_user.items_for_sale:
+
+        # Delete listing
+        if request.args.get('delete'):
+            db.session.delete(item)
+            db.session.commit()
+            flash("You have deleted a listing!", "success")
+            return redirect(url_for("index"))
+
     if form.validate_on_submit():
         quantity = form.quantity.data
         if not current_user.is_authenticated:
@@ -571,9 +597,9 @@ def new_order():
             order.total = total
             order_item = OrderItem(
                 quantity=quantity, item=item, order=order, title=title, pic=item_pic)
-            # It uptades the quantity available (Move this to after payment is implemented)
+            # It uptades the quantity available
             item.quantity = (qt_available - quantity)
-            # Change item to sold if quantity is zero (Move this after payment is implemented)
+            # Change item to sold if quantity is zero
             if item.quantity == 0:
                 item.sold = True
             if item.quantity < 0:

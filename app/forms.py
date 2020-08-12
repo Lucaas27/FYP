@@ -193,3 +193,13 @@ class NewOrderForm(FlaskForm):
             r'^[0-9]+$', message="Please only use numbers")])
 
     submit = SubmitField('Pay Now')
+
+
+class ContactForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired(), Length(min=3, max=50)])
+
+    email = h5fields.EmailField(
+        'Email', validators=[DataRequired(message="Please insert an email")])
+    message = TextAreaField('Message', validators=[
+                            DataRequired(message="Please insert a message")])
+    submit = SubmitField('Contact')
