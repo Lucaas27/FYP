@@ -169,7 +169,3 @@ $(document).ready(function () {
     });
   });
 })();
-
-(function () {
-  
-})();

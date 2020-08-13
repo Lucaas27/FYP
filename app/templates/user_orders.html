@@ -22,11 +22,10 @@
         {% for item in order.item %}
         <div class="col-12 mb-3 d-flex">
           <div class="col-2">
-            <a href="{{url_for('item', item_id = item.item_id)}}">
-              <img class="img-fluid" src="{{url_for('static', filename='img/items/' + item.pic)}}" alt="{{item.title}}">
-            </a>
+            <img class="img-fluid" src="{{url_for('static', filename='img/items/' + item.pic)}}" alt="{{item.title}}">
           </div>
-          <h5 class="card-title col-5"><a href="{{url_for('item', item_id=item.item_id)}}">{{item.title}}</a>
+          <h5 class="card-title col-5">
+            {{item.title}}
           </h5>
           <p class="card-text col-5"><span class="d-block font-weight-bold">Quantity</span>{{item.quantity}}
           </p>

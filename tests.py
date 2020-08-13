@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 import unittest
 from app import app, db, bcrypt
-from app.models import User, Item, Category
+from app.models import *
+
 
 class UserModelCase(unittest.TestCase):
     def setUp(self):
@@ -14,35 +15,32 @@ class UserModelCase(unittest.TestCase):
 
     def test_password_hashing(self):
         u = User(
-            full_name='user',
+            first_name='user',
+            last_name='1',
             username='user',
             email='user@gmail.com',
             password_hash=bcrypt.generate_password_hash(
-                'cat').decode("utf-8"),
-            location='UK',
-            seller=True
+                'cat').decode("utf-8")
         )
         self.assertFalse(u.check_password('dog'))
         self.assertTrue(u.check_password('cat'))
 
     def test_follow(self):
         u1 = User(
-            full_name='user 1',
+            first_name='user',
+            last_name='1',
             username='user1',
             email='user1@gmail.com',
             password_hash=bcrypt.generate_password_hash(
-                'password').decode("utf-8"),
-            location='UK',
-            seller=True
+                'password').decode("utf-8")
         )
         u2 = User(
-            full_name='user 2',
+            first_name='user',
+            last_name='2',
             username='user2',
             email='user2@gmail.com',
             password_hash=bcrypt.generate_password_hash(
-                'password').decode("utf-8"),
-            location='UK',
-            seller=False
+                'password').decode("utf-8")
         )
         db.session.add(u1)
         db.session.add(u2)
@@ -63,7 +61,7 @@ class UserModelCase(unittest.TestCase):
         self.assertFalse(u1.is_following(u2))
         self.assertEqual(u1.followed.count(), 0)
         self.assertEqual(u2.followers.count(), 0)
-        
+
     def add_cat(self):
 
         category_a = Category(
@@ -93,8 +91,9 @@ class UserModelCase(unittest.TestCase):
             name="Photo and Video accessories"
 
         )
-        
-        db.session.add_all([category_a, category_b, category_c, category_d, category_e, category_f, category_g])
+
+        db.session.add_all([category_a, category_b, category_c,
+                            category_d, category_e, category_f, category_g])
         db.session.commit()
 
     def test_follow_items(self):
@@ -104,87 +103,83 @@ class UserModelCase(unittest.TestCase):
         category_d = Category.query.filter_by(name='Compact cameras').first()
         # create four users
         u1 = User(
-            full_name='user 1',
+            first_name='user',
+            last_name='1',
             username='user1',
             email='user1@gmail.com',
             password_hash=bcrypt.generate_password_hash(
-                'password').decode("utf-8"),
-            location='UK',
-            seller=True
+                'password').decode("utf-8")
         )
         u2 = User(
-            full_name='user 2',
+            first_name='user',
+            last_name='2',
             username='user2',
             email='user2@gmail.com',
             password_hash=bcrypt.generate_password_hash(
-                'password').decode("utf-8"),
-            location='UK',
-            seller=False
+                'password').decode("utf-8")
         )
         u3 = User(
-            full_name='user 3',
+            first_name='user',
+            last_name='3',
             username='user3',
             email='user3@gmail.com',
             password_hash=bcrypt.generate_password_hash(
-                'password').decode("utf-8"),
-            location='UK',
-            seller=False
+                'password').decode("utf-8")
         )
         u4 = User(
-            full_name='user 4',
+            first_name='user',
+            last_name='4',
             username='user4',
             email='user4@gmail.com',
             password_hash=bcrypt.generate_password_hash(
-                'password').decode("utf-8"),
-            location='UK',
-            seller=False
+                'password').decode("utf-8")
         )
-        
+
         db.session.add_all([u1, u2, u3, u4])
 
-        # create four Item listings
+        # create four Item for sale
         now = datetime.utcnow()
-        item_1 = Item(
+        item_1 = ItemForSale(
             title="item 1",
             description="something about the item 1",
-            item_location="UK",
+            item_city="london",
             condition="Used",
-            price="10",
-            date_posted = now + timedelta(seconds=1),
-            owner=u1,
+            price="10.0",
+            created_at=now + timedelta(seconds=1),
+            seller=u1,
             category=category_a
         )
-        item_2 = Item(
+        item_2 = ItemForSale(
             title="item 2",
             description="something about the item 2",
-            item_location="UK",
+            item_city="leicester",
             condition="Used",
-            price="50",
-            date_posted = now + timedelta(seconds=4),
-            owner=u2,
+            price="50.0",
+            created_at=now + timedelta(seconds=4),
+            seller=u2,
             category=category_b
         )
-        item_3 = Item(
+        item_3 = ItemForSale(
             title="item 3",
             description="something about the item 3",
-            item_location="UK",
+            item_city="bristol",
             condition="Used",
-            price="70",
-            date_posted = now + timedelta(seconds=3),
-            owner=u3,
+            price="70.0",
+            created_at=now + timedelta(seconds=3),
+            seller=u3,
             category=category_c
         )
-        item_4 = Item(
-            title="item 1",
+        item_4 = ItemForSale(
+            title="item 4",
             description="something about the item 4",
-            item_location="UK",
+            item_city="london",
             condition="Used",
-            price="80",
-            date_posted = now + timedelta(seconds=2),
-            owner=u4,
+            price="80.0",
+            created_at=now + timedelta(seconds=2),
+            seller=u4,
             category=category_d
         )
-        
+
         db.session.add_all([item_1, item_2, item_3, item_4])
         db.session.commit()
 
@@ -200,10 +195,11 @@ class UserModelCase(unittest.TestCase):
         f2 = u2.followed_items().all()
         f3 = u3.followed_items().all()
         f4 = u4.followed_items().all()
-        self.assertEqual(f1, [item_2, item_4])
+        self.assertEqual(f1, [item_4, item_2])
         self.assertEqual(f2, [item_3])
         self.assertEqual(f3, [item_4])
         self.assertEqual(f4, [])
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

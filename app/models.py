@@ -57,6 +57,8 @@ class Review(TimestampMixin, db.Model):
 # User can buy many items
 # User can have many addresses
 # User can follow many users
+
+
 class User(db.Model, TimestampMixin, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -132,11 +134,11 @@ class User(db.Model, TimestampMixin, UserMixin):
     def followed_items(self):
         return ItemForSale.query.join(
             followers, (followers.c.followed_id == ItemForSale.seller_id)).filter(
-                followers.c.follower_id == self.id).order_by(
+                followers.c.follower_id == self.id).filter(ItemForSale.sold == False).order_by(
                     ItemForSale.id.desc())
 
 
-# Type decorator will allow us to store a Json type column for item image_file field
+# Type decorator will allow us to store a Json type column for item image_file field in the ItemForSale table
 class Json(TypeDecorator):
 
     impl = String
@@ -233,7 +235,7 @@ class OrderItem(db.Model, TimestampMixin):
     item_id = db.Column(db.Integer, db.ForeignKey(
         ItemForSale.id))
     order_id = db.Column(db.Integer, db.ForeignKey(Order.id))
-    
+
     def __repr__(self):
         return f"OrderItem('Order_id:{self.order_id}', 'item_id':{self.item_id}, 'Quantity:{self.quantity}')"
 

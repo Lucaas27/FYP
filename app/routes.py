@@ -29,7 +29,7 @@ def before_request():
 def inject_categories():
     # Display only categories with available items
     categories = Category.query.join(
-        ItemForSale, (Category.id == ItemForSale.category_id)).filter_by(sold=False).all()
+        ItemForSale, (Category.id == ItemForSale.category_id)).filter(ItemForSale.sold == False).all()
     return dict(categories=categories)
 
 
@@ -47,12 +47,12 @@ def index():
                            prev_url=prev_url, page_num=all_items.iter_pages(), page=page)
 
 
-@app.route('/search/<cat_id>', methods=['GET', 'POST'])
+@app.route('/search/cat/<cat_id>', methods=['GET', 'POST'])
 @app.route('/search', methods=['GET', 'POST'])
 def search(cat_id=None):
     page = request.args.get('page', 1, type=int)
-    available_items = ItemForSale.query.paginate(
-        page, app.config['LISTINGS_PER_PAGE'], False)
+    available_items = ItemForSale.query.filter_by(sold=False)\
+        .order_by(ItemForSale.id.desc()).paginate(page, app.config['LISTINGS_PER_PAGE'], False)
     if cat_id is None:
         target_string = request.form['search']
 
@@ -62,7 +62,7 @@ def search(cat_id=None):
                 ItemForSale.title.contains(target_string),
                 ItemForSale.description.contains(target_string)
             )
-        ).filter_by(sold=False).all()
+        ).filter(ItemForSale.sold == False).all()
 
         if target_string == '':
             search_msg = 'No record(s) found - displaying all records'
@@ -74,11 +74,11 @@ def search(cat_id=None):
     else:
         # inner join query returns all data from items that match the value of cat_id
         available_items = ItemForSale.query.join(
-            Category, (ItemForSale.category_id == cat_id)).paginate(
-            page, app.config['LISTINGS_PER_PAGE'], False)
-        next_url = url_for('search', page=available_items.next_num) \
+            Category, (ItemForSale.category_id == cat_id)).filter(ItemForSale.sold == False)\
+            .order_by(ItemForSale.id.desc()).paginate(page, app.config['LISTINGS_PER_PAGE'], False)
+        next_url = url_for('search', cat_id=cat_id, page=available_items.next_num) \
             if available_items.has_next else None
-        prev_url = url_for('search', page=available_items.prev_num) \
+        prev_url = url_for('search', cat_id=cat_id, page=available_items.prev_num) \
             if available_items.has_prev else None
         return render_template("search.html", available_items=available_items.items,
                                next_url=next_url, prev_url=prev_url, page=page, page_num=available_items.iter_pages())
@@ -389,6 +389,7 @@ def new_item():
 
 
 @app.route("/item/<item_id>", methods=["GET", "POST"])
+@ login_required
 def item(item_id):
     form = AddToCartForm()
     # This is the item being viewed on the page.
@@ -514,9 +515,9 @@ def update_cart():
 
     for key, value in session['cart'].items():
         if key == item_id:
-            # store quantity value in the session
+            # it stores quantity value in the session
             session['cart'][item_id]['quantity'] = new_quantity
-            # get the prie
+            # get the price
             price = float(session['cart'][item_id]['price'])
             # calculate subtotal (quantity value stored * price)
             session['cart'][item_id]['subtotal'] = (
@@ -535,6 +536,7 @@ def update_cart():
             subtotal = float(individual_quantity * price)
             # Add subtotal to cart session
             session['cart'][key]['subtotal'] = subtotal
+
             # Total value
             total += float(subtotal)
             session['total'] = total
