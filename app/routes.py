@@ -75,7 +75,7 @@ def search(cat_id=None):
         # inner join query returns all data from items that match the value of cat_id
         available_items = ItemForSale.query.join(
             Category, (ItemForSale.category_id == cat_id)).filter(ItemForSale.sold == False)\
-            .order_by(ItemForSale.id.desc()).paginate(page, app.config['LISTINGS_PER_PAGE'], False)
+            .paginate(page, app.config['LISTINGS_PER_PAGE'], False)
         next_url = url_for('search', cat_id=cat_id, page=available_items.next_num) \
             if available_items.has_next else None
         prev_url = url_for('search', cat_id=cat_id, page=available_items.prev_num) \
