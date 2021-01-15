@@ -23,10 +23,10 @@ followers = db.Table('followers',
 
 # A user can have many addresses, an address can be for many users.
 user_addresses = db.Table('user_addresses',
-                          db.Column("user_id", db.Integer,
-                                    db.ForeignKey("users.id")),
-                          db.Column("address_id", db.Integer,
-                                    db.ForeignKey("addresses.id")))
+                          db.Column('user_id', db.Integer,
+                                    db.ForeignKey('users.id')),
+                          db.Column('address_id', db.Integer,
+                                    db.ForeignKey('addresses.id')))
 
 
 # Adds automatically updated created_at and updated_at timestamp columns to a table
@@ -38,7 +38,7 @@ class TimestampMixin(object):
 
 # User can review many users and get many reviews
 class Review(TimestampMixin, db.Model):
-    __tablename__ = "reviews"
+    __tablename__ = 'reviews'
 
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(300))
@@ -60,22 +60,22 @@ class Review(TimestampMixin, db.Model):
 
 
 class User(db.Model, TimestampMixin, UserMixin):
-    __tablename__ = "users"
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(115), unique=True, nullable=False)
     image_file = db.Column(db.String(80), nullable=False,
-                           default="default.jpg")
+                           default='default.jpg')
     password_hash = db.Column(db.String(60), nullable=False)
     # relationships (many to one)
     items_for_sale = db.relationship(
-        "ItemForSale", backref="seller", lazy="dynamic")
-    orders = db.relationship("Order", backref="buyer", lazy=True)
+        'ItemForSale', backref='seller', lazy='dynamic')
+    orders = db.relationship('Order', backref='buyer', lazy=True)
     # relationships (many to many)
     address = db.relationship(
-        "Address", secondary="user_addresses", backref="user", lazy="dynamic"
+        'Address', secondary='user_addresses', backref='user', lazy='dynamic'
     )
     followed = db.relationship(
         # User refers to the right side (followed) entity
@@ -87,10 +87,10 @@ class User(db.Model, TimestampMixin, UserMixin):
     # Self referential many to many relationship with extra fields
     # A user can review many users and get many reviews
     reviewed = db.relationship(
-        'Review', backref='user_reviewed', primaryjoin=(Review.user_reviewed_id == id), lazy="dynamic"
+        'Review', backref='user_reviewed', primaryjoin=(Review.user_reviewed_id == id), lazy='dynamic'
     )
     reviewer = db.relationship(
-        'Review', backref='user_reviewer', primaryjoin=(Review.user_reviewer_id == id), lazy="dynamic"
+        'Review', backref='user_reviewer', primaryjoin=(Review.user_reviewer_id == id), lazy='dynamic'
     )
 
     def __repr__(self):
@@ -154,7 +154,7 @@ class Json(TypeDecorator):
 # Item can be in many orders
 # Item has one category
 class ItemForSale(db.Model, TimestampMixin):
-    __tablename__ = "for_sale"
+    __tablename__ = 'for_sale'
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -169,10 +169,10 @@ class ItemForSale(db.Model, TimestampMixin):
     sold = db.Column(db.Boolean, default=False)
 
     # relationships
-    seller_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
+    seller_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     item_in_order = db.relationship(
-        "OrderItem", backref="item", lazy="dynamic"
+        'OrderItem', backref='item', lazy='dynamic'
     )
 
     def __repr__(self):
@@ -182,7 +182,7 @@ class ItemForSale(db.Model, TimestampMixin):
 # The same address can belong to many users, a user can have many addresses.
 # The same address can be in many orders, an order can have one address.
 class Address(db.Model, TimestampMixin):
-    __tablename__ = "addresses"
+    __tablename__ = 'addresses'
 
     id = db.Column(db.Integer, primary_key=True)
     address = db.Column(db.String(200), nullable=False)
@@ -192,7 +192,7 @@ class Address(db.Model, TimestampMixin):
 
     # relationships
     order = db.relationship(
-        "Order", backref="order_address", lazy="dynamic")
+        'Order', backref='order_address', lazy='dynamic')
 
     def __repr__(self):
         return f"Address('{self.id}', '{self.address}','{self.country}', '{self.city}', '{self.post_code}')"
@@ -202,7 +202,7 @@ class Address(db.Model, TimestampMixin):
 # An order can have many items, an item can be in many orders
 # An order has one address, an address can have many orders
 class Order(db.Model, TimestampMixin):
-    __tablename__ = "orders"
+    __tablename__ = 'orders'
 
     id = db.Column(db.Integer, unique=True, primary_key=True)
     invoice = db.Column(db.String(30), unique=True, nullable='False')
@@ -211,12 +211,12 @@ class Order(db.Model, TimestampMixin):
     total = db.Column(db.Float)
 
     # relationships
-    buyer_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    buyer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     item = db.relationship(
-        "OrderItem", backref="order", lazy=True
+        'OrderItem', backref='order', lazy=True
     )
 
-    order_address_id = db.Column(db.Integer, db.ForeignKey("addresses.id"))
+    order_address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
 
     def __repr__(self):
         return f"Order('order_id:{self.id}','buyer_id: {self.buyer_id}', status: '{self.status}')"
@@ -225,7 +225,7 @@ class Order(db.Model, TimestampMixin):
 # Items in an order
 # belongs to an item in the order
 class OrderItem(db.Model, TimestampMixin):
-    __tablename__ = "order_items"
+    __tablename__ = 'order_items'
     id = db.Column(db.Integer, unique=True, primary_key=True)
     quantity = db.Column(db.Integer, nullable=False)
     title = db.Column(db.String(100), nullable=False)
@@ -242,12 +242,12 @@ class OrderItem(db.Model, TimestampMixin):
 
 # Category has many items
 class Category(db.Model, TimestampMixin):
-    __tablename__ = "categories"
+    __tablename__ = 'categories'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False, unique=True)
     item_cat = db.relationship(
-        "ItemForSale", backref="category", lazy="dynamic")
+        'ItemForSale', backref='category', lazy='dynamic")
 
     def __repr__(self):
         return f"Category('{self.name}')"
