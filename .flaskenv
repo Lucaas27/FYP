@@ -1,4 +1,3 @@
-FLASK_ENV=development
 FLASK_APP=run.py
 GOOGLE_OAUTH_CLIENT_ID = "669778890234-72dg6quk32c2hk8noku16en676ud30t3.apps.googleusercontent.com"
 GOOGLE_OAUTH_CLIENT_SECRET = "VV0LxWE5Fg-C3PRDzjtvPFP5"
