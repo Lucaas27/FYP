@@ -16,10 +16,10 @@ from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config.from_object(Config)
+bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 migrate = Migrate(app, db)
-bcrypt = Bcrypt(app)
 moment = Moment(app)
 mail = Mail(app)
 socketio = SocketIO(app)
