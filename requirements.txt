@@ -57,6 +57,7 @@ pdfkit==0.6.1
 phonenumbers==8.12.16
 Pillow==8.1.0
 pip-upgrader==1.4.15
+psycopg2-binary==2.8.6
 pycodestyle==2.6.0
 pycparser==2.20
 pyee==8.1.0
