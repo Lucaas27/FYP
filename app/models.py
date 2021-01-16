@@ -16,17 +16,17 @@ def load_user(user_id):
 # many to many self referential relationship between users.follower_id and users.followed_id
 followers = db.Table("followers",
                      db.Column("follower_id", db.Integer,
-                               db.ForeignKey("users.id")),
+                               db.ForeignKey('users.id')),
                      db.Column("followed_id", db.Integer,
-                               db.ForeignKey("users.id"))
+                               db.ForeignKey('users.id'))
                      )
 
 # A user can have many addresses, an address can be for many users.
 user_addresses = db.Table("user_addresses",
                           db.Column("user_id", db.Integer,
-                                    db.ForeignKey("users.id")),
+                                    db.ForeignKey('users.id')),
                           db.Column("address_id", db.Integer,
-                                    db.ForeignKey("addresses.id")))
+                                    db.ForeignKey('addresses.id')))
 
 
 # Adds automatically updated created_at and updated_at timestamp columns to a table
@@ -46,9 +46,9 @@ class Review(TimestampMixin, db.Model):
 
     # Relationships
     user_reviewed_id = db.Column(
-        db.Integer, db.ForeignKey("users.id"))
+        db.Integer, db.ForeignKey('users.id'))
     user_reviewer_id = db.Column(
-        db.Integer, db.ForeignKey("users.id"))
+        db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self):
         return f"Review('User: {self.user_reviewer_id} reviewed User: {self.user_reviewed_id}')"
@@ -169,8 +169,8 @@ class ItemForSale(db.Model, TimestampMixin):
     sold = db.Column(db.Boolean, default=False)
 
     # relationships
-    seller_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
+    seller_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     item_in_order = db.relationship(
         "OrderItem", backref="item", lazy="dynamic"
     )
@@ -211,12 +211,12 @@ class Order(db.Model, TimestampMixin):
     total = db.Column(db.Float)
 
     # relationships
-    buyer_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    buyer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     item = db.relationship(
         "OrderItem", backref="order", lazy=True
     )
 
-    order_address_id = db.Column(db.Integer, db.ForeignKey("addresses.id"))
+    order_address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
 
     def __repr__(self):
         return f"Order('order_id:{self.id}','buyer_id: {self.buyer_id}', status: '{self.status}')"
@@ -232,9 +232,8 @@ class OrderItem(db.Model, TimestampMixin):
     pic = db.Column(db.String(100), nullable=False)
 
     # relationships
-    item_id = db.Column(db.Integer, db.ForeignKey(
-        ItemForSale.id))
-    order_id = db.Column(db.Integer, db.ForeignKey(Order.id))
+    item_id = db.Column(db.Integer, db.ForeignKey('for_sale.id'))
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
 
     def __repr__(self):
         return f"OrderItem('Order_id:{self.order_id}', 'item_id':{self.item_id}, 'Quantity:{self.quantity}')"
@@ -256,5 +255,5 @@ class Category(db.Model, TimestampMixin):
 # Table needed for google OAuth
 class OAuth(OAuthConsumerMixin, db.Model):
     provider_user_id = db.Column(db.String(256), unique=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship(User)
