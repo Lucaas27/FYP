@@ -78,7 +78,7 @@
             <div class="card-body">
               <a href="{{url_for('item', item_id=item.id)}}">
                 <img class="img-fluid img-thumbnail card-img-top group list-group-image img-event"
-                  src="{{url_for('static', filename='img/items/' + item.image_file[0])}}" alt="{{ item.title }}">
+                  src="{{url_for('static', filename='img/items/' + item.image_file_default)}}" alt="{{ item.title }}">
               </a>
 
               <h3 class="card-title list-group-item-heading font-weight-bold mt-2 ">{{ item.title.title() }}</h3>

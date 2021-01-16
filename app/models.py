@@ -166,6 +166,8 @@ class ItemForSale(db.Model, TimestampMixin):
     item_views = db.Column(db.Integer, default=0)
     image_file = db.Column(Json(128), nullable=False,
                            default=["item.jpg"])
+    image_file_default = db.Column(db.String(80), nullable=False,
+                             default="item.jpg")
     sold = db.Column(db.Boolean, default=False)
 
     # relationships

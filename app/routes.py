@@ -417,7 +417,7 @@ def item(item_id):
         else:
 
             item_array = {item_id: {'title': item.title, 'quantity': quantity, 'price': item.price, 'qt_available': item.quantity,
-                                    'image': item.image_file[0], 'condition': item.condition, 'item_city': item.item_city}}
+                                    'image': item.default_image_file, 'condition': item.condition, 'item_city': item.item_city}}
             session.modified = True
             # Checks to see if the user has already started a cart.
             if 'cart' in session:
