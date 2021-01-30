@@ -187,10 +187,10 @@ def contact():
                       sender=app.config['MAIL_USERNAME'],
                       recipients=[app.config['MAIL_USERNAME']]
                       )
-        msg.body = f''' 
+        msg.body = f'''
         From: {form.name.data}
         Email: {form.email.data}
-        Message: {form.message.data} 
+        Message: {form.message.data}
         '''
         mail.send(msg)
 
@@ -360,15 +360,17 @@ def new_item():
     ''' transforms user inputs using .lower to save into
             the database in a consistent way'''
 
-    if form.validate_on_submit():
+    # if form.validate_on_submit():
+    if form.picture.data:
+        pics = save_pic(form.picture.data, "static/img/items")
         # Save picture to img/item path after resizing it
-        pics = []
-        if not form.picture.data or not any(item for item in form.picture.data):
-            pics.append('item.jpg')
-        else:
-            for item in form.picture.data:
-                pic_item = save_pic(item, "static/img/items")
-                pics.append(pic_item)
+        # pics = []
+        # if not form.picture.data or not any(item for item in form.picture.data):
+        #     pics.append('item.jpg')
+        # else:
+        #     for item in form.picture.data:
+        #         pic_item = save_pic(item, "static/img/items")
+        #         pics.append(pic_item)
 
         new_item = ItemForSale(title=form.title.data.lower(),
                                description=form.description.data.lower(),
