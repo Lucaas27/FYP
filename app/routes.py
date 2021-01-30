@@ -363,6 +363,8 @@ def new_item():
     # if form.validate_on_submit():
     if form.picture.data:
         pics = save_pic(form.picture.data, "static/img/items")
+    else:
+        pics = "static/img/items/item.jpg"
         # Save picture to img/item path after resizing it
         # pics = []
         # if not form.picture.data or not any(item for item in form.picture.data):
@@ -419,7 +421,7 @@ def item(item_id):
         else:
 
             item_array = {item_id: {'title': item.title, 'quantity': quantity, 'price': item.price, 'qt_available': item.quantity,
-                                    'image': item.image_file[0], 'condition': item.condition, 'item_city': item.item_city}}
+                                    'image': item.image_file, 'condition': item.condition, 'item_city': item.item_city}}
             session.modified = True
             # Checks to see if the user has already started a cart.
             if 'cart' in session:

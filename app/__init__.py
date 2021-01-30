@@ -1,7 +1,6 @@
 from flask import Flask, redirect, session, url_for
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user,AnonymousUserMixin
 from flask_admin import Admin, AdminIndexView
@@ -19,7 +18,6 @@ app.config.from_object(Config)
 bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
-migrate = Migrate(app, db)
 moment = Moment(app)
 mail = Mail(app)
 socketio = SocketIO(app)

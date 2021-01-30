@@ -13,27 +13,21 @@
     <div class="col-12 col-sm-6 my-4" aria-labelledby="item-picture">
       <div class="row justify-content-center">
         <img class="img-fluid w-50 thumb img-thumbnail" id="largeImage"
-          src="{{url_for('static', filename='img/items/' + item.image_file[0])}}" alt="{{item.title}}">
+          src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}">
       </div>
       <div class="row my-4 thumbnails">
-        {% if item.image_file[1] in item.image_file %}
         <div class="col-4">
           <img class="img-fluid thumb img-thumbnail"
-            src="{{url_for('static', filename='img/items/' + item.image_file[1])}}" alt="{{item.title}}">
+            src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}">
         </div>
-        {%endif%}
-        {% if item.image_file[2] in item.image_file %}
         <div class="col-4">
           <img class="img-fluid thumb img-thumbnail"
-            src="{{url_for('static', filename='img/items/' + item.image_file[2])}}" alt="{{item.title}}">
+            src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}">
         </div>
-        {%endif%}
-        {% if item.image_file[3] in item.image_file %}
         <div class="col-4">
           <img class="img-fluid thumb img-thumbnail"
-            src="{{url_for('static', filename='img/items/' + item.image_file[3])}}" alt="{{item.title}}">
+            src="{{url_for('static', filename='img/items/' + item.image_file)}}" alt="{{item.title}}">
         </div>
-        {%endif%}
       </div>
     </div>
     <div class="col-12 col-sm-6 my-4">
