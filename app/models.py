@@ -14,19 +14,19 @@ def load_user(user_id):
 
 
 # many to many self referential relationship between users.follower_id and users.followed_id
-followers = db.Table("followers",
-                     db.Column("follower_id", db.Integer,
+followers = db.Table('followers',
+                     db.Column('follower_id', db.Integer,
                                db.ForeignKey('users.id')),
-                     db.Column("followed_id", db.Integer,
+                     db.Column('followed_id', db.Integer,
                                db.ForeignKey('users.id'))
                      )
 
 # A user can have many addresses, an address can be for many users.
-user_addresses = db.Table("user_addresses",
+user_addresses = db.Table('user_addresses',
                           db.Column("user_id", db.Integer,
-                                    db.ForeignKey('users.id')),
+                                    db.ForeignKey("users.id")),
                           db.Column("address_id", db.Integer,
-                                    db.ForeignKey('addresses.id')))
+                                    db.ForeignKey("addresses.id")))
 
 
 # Adds automatically updated created_at and updated_at timestamp columns to a table
@@ -79,32 +79,32 @@ class User(db.Model, TimestampMixin, UserMixin):
     )
     followed = db.relationship(
         # User refers to the right side (followed) entity
-        "User", secondary=followers,
+        'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
         secondaryjoin=(followers.c.followed_id == id),
-        backref=db.backref("followers", lazy="dynamic"), lazy="dynamic")
+        backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
     # Self referential many to many relationship with extra fields
     # A user can review many users and get many reviews
     reviewed = db.relationship(
-        "Review", backref="user_reviewed", primaryjoin=(Review.user_reviewed_id == id), lazy="dynamic"
+        'Review', backref='user_reviewed', primaryjoin=(Review.user_reviewed_id == id), lazy="dynamic"
     )
     reviewer = db.relationship(
-        "Review", backref="user_reviewer", primaryjoin=(Review.user_reviewer_id == id), lazy="dynamic"
+        'Review', backref='user_reviewer', primaryjoin=(Review.user_reviewer_id == id), lazy="dynamic"
     )
 
     def __repr__(self):
         return f"User('{self.username}')"
 
     def get_reset_token(self, expires_secs=1800):
-        s = Serilizer(app.config["SECRET_KEY"], expires_secs)
-        return s.dumps({"user_id": self.id}).decode("utf-8")
+        s = Serilizer(app.config['SECRET_KEY'], expires_secs)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
 
     @staticmethod
     def verify_reset_token(token):
-        s = Serilizer(app.config["SECRET_KEY"])
+        s = Serilizer(app.config['SECRET_KEY'])
         try:
-            user_id = s.loads(token)["user_id"]
+            user_id = s.loads(token)['user_id']
         except:
             return None
         return User.query.get(user_id)
@@ -169,8 +169,8 @@ class ItemForSale(db.Model, TimestampMixin):
     sold = db.Column(db.Boolean, default=False)
 
     # relationships
-    seller_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    seller_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
     item_in_order = db.relationship(
         "OrderItem", backref="item", lazy="dynamic"
     )
@@ -205,18 +205,18 @@ class Order(db.Model, TimestampMixin):
     __tablename__ = "orders"
 
     id = db.Column(db.Integer, unique=True, primary_key=True)
-    invoice = db.Column(db.String(30), unique=True, nullable="False")
-    status = db.Column(db.String(30), default="Pending", nullable="False")
-    phone_number = db.Column(db.String(13), nullable="False")
+    invoice = db.Column(db.String(30), unique=True, nullable='False')
+    status = db.Column(db.String(30), default='Pending', nullable='False')
+    phone_number = db.Column(db.String(13), nullable='False')
     total = db.Column(db.Float)
 
     # relationships
-    buyer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    buyer_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     item = db.relationship(
         "OrderItem", backref="order", lazy=True
     )
 
-    order_address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
+    order_address_id = db.Column(db.Integer, db.ForeignKey("addresses.id"))
 
     def __repr__(self):
         return f"Order('order_id:{self.id}','buyer_id: {self.buyer_id}', status: '{self.status}')"
@@ -232,8 +232,9 @@ class OrderItem(db.Model, TimestampMixin):
     pic = db.Column(db.String(100), nullable=False)
 
     # relationships
-    item_id = db.Column(db.Integer, db.ForeignKey('for_sale.id'))
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
+    item_id = db.Column(db.Integer, db.ForeignKey(
+        ItemForSale.id))
+    order_id = db.Column(db.Integer, db.ForeignKey(Order.id))
 
     def __repr__(self):
         return f"OrderItem('Order_id:{self.order_id}', 'item_id':{self.item_id}, 'Quantity:{self.quantity}')"
@@ -255,5 +256,5 @@ class Category(db.Model, TimestampMixin):
 # Table needed for google OAuth
 class OAuth(OAuthConsumerMixin, db.Model):
     provider_user_id = db.Column(db.String(256), unique=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(User)

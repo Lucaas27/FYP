@@ -5,7 +5,7 @@ import secrets
 import string
 import stripe
 from datetime import datetime, date
-from app import app, db, bcrypt, mail
+from app import app, db, mail
 from app.forms import *
 from app.models import *
 from app.funcs import save_pic, send_reset_email, array_merge
@@ -187,10 +187,10 @@ def contact():
                       sender=app.config['MAIL_USERNAME'],
                       recipients=[app.config['MAIL_USERNAME']]
                       )
-        msg.body = f'''
+        msg.body = f''' 
         From: {form.name.data}
         Email: {form.email.data}
-        Message: {form.message.data}
+        Message: {form.message.data} 
         '''
         mail.send(msg)
 
@@ -417,7 +417,7 @@ def item(item_id):
         else:
 
             item_array = {item_id: {'title': item.title, 'quantity': quantity, 'price': item.price, 'qt_available': item.quantity,
-                                    'image': item.image_file, 'condition': item.condition, 'item_city': item.item_city}}
+                                    'image': item.image_file[0], 'condition': item.condition, 'item_city': item.item_city}}
             session.modified = True
             # Checks to see if the user has already started a cart.
             if 'cart' in session:
