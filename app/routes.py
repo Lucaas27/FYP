@@ -361,18 +361,14 @@ def new_item():
             the database in a consistent way'''
 
     if form.validate_on_submit():
-        if form.picture.data:
-            pics = save_pic(form.picture.data, "static/img/items")
-        else:
-            pics = "item.jpg"
         # Save picture to img/item path after resizing it
-        # pics = []
-        # if not form.picture.data or not any(item for item in form.picture.data):
-        #     pics.append('item.jpg')
-        # else:
-        #     for item in form.picture.data:
-        #         pic_item = save_pic(item, "static/img/items")
-        #         pics.append(pic_item)
+        pics = []
+        if not form.picture.data or not any(item for item in form.picture.data):
+            pics.append('item.jpg')
+        else:
+            for item in form.picture.data:
+                pic_item = save_pic(item, "static/img/items")
+                pics.append(pic_item)
 
         new_item = ItemForSale(title=form.title.data.lower(),
                                description=form.description.data.lower(),

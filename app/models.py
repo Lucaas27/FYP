@@ -139,15 +139,15 @@ class User(db.Model, TimestampMixin, UserMixin):
 
 
 # Type decorator will allow us to store a Json type column for item image_file field in the ItemForSale table
-# class Json(TypeDecorator):
+class Json(TypeDecorator):
 
-#     impl = String
+    impl = String
 
-#     def process_bind_param(self, value, dialect):
-#         return json.dumps(value)
+    def process_bind_param(self, value, dialect):
+        return json.dumps(value)
 
-#     def process_result_value(self, value, dialect):
-#         return json.loads(value)
+    def process_result_value(self, value, dialect):
+        return json.loads(value)
 
 
 # Item has one seller
@@ -164,8 +164,8 @@ class ItemForSale(db.Model, TimestampMixin):
     item_city = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Float, nullable=False)
     item_views = db.Column(db.Integer, default=0)
-    image_file = db.Column(db.String(80), nullable=False,
-                           default="item.jpg")
+    image_file = db.Column(Json(128), nullable=False,
+                           default=['item.jpg'])
     sold = db.Column(db.Boolean, default=False)
 
     # relationships

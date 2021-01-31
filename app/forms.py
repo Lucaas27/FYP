@@ -168,7 +168,7 @@ class AddItemForm(FlaskForm):
     price = h5fields.DecimalField("Price", default=0, widget=h5widgets.NumberInput(min=0, step="0.01"), validators=[
         DataRequired("Please set a valid price")])
 
-    picture = FileField('Image', validators=[
+    picture = MultipleFileField('Images (Up to 4)', validators=[
         FileAllowed(['jpg', 'png', 'jpeg'])])
 
     category_id = SelectField('Select category', coerce=int)
