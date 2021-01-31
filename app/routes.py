@@ -360,11 +360,11 @@ def new_item():
     ''' transforms user inputs using .lower to save into
             the database in a consistent way'''
 
-    # if form.validate_on_submit():
-    if form.picture.data:
-        pics = save_pic(form.picture.data, "static/img/items")
-    else:
-        pics = "static/img/items/item.jpg"
+    if form.validate_on_submit():
+        if form.picture.data:
+            pics = save_pic(form.picture.data, "static/img/items")
+        else:
+            pics = "item.jpg"
         # Save picture to img/item path after resizing it
         # pics = []
         # if not form.picture.data or not any(item for item in form.picture.data):

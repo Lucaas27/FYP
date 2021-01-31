@@ -168,7 +168,7 @@ class AddItemForm(FlaskForm):
     price = h5fields.DecimalField("Price", default=0, widget=h5widgets.NumberInput(min=0, step="0.01"), validators=[
         DataRequired("Please set a valid price")])
 
-    picture = MultipleFileField('Images (Up to 4)', validators=[
+    picture = FileField('Image', validators=[
         FileAllowed(['jpg', 'png', 'jpeg'])])
 
     category_id = SelectField('Select category', coerce=int)
@@ -196,7 +196,8 @@ class NewOrderForm(FlaskForm):
 
 
 class ContactForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired(), Length(min=3, max=50)])
+    name = StringField("Name", validators=[
+                       DataRequired(), Length(min=3, max=50)])
 
     email = h5fields.EmailField(
         'Email', validators=[DataRequired(message="Please insert an email")])
