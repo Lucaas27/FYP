@@ -41,7 +41,7 @@ idna==2.10
 is-disposable-email==1.0.0
 isort==5.7.0
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 lazy-object-proxy==1.4.3
 lxml==4.6.2
 Mako==1.1.4
