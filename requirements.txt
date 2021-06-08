@@ -55,7 +55,7 @@ packaging==20.8
 parse==1.19.0
 pdfkit==0.6.1
 phonenumbers==8.12.16
-Pillow==8.1.0
+Pillow==8.2.0
 pip-upgrader==1.4.15
 psycopg2-binary==2.8.6
 pycodestyle==2.6.0
